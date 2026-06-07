@@ -5,7 +5,6 @@ namespace App\Controller\Management\Volunteer;
 use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Answer;
-use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
@@ -18,9 +17,7 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\DeletedVolunteerManager;
 use App\Manager\MessageManager;
-use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
-use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
@@ -54,16 +51,6 @@ class VolunteersController extends BaseController
      * @var StructureManager
      */
     private $structureManager;
-
-    /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
-    /**
-     * @var RefreshManager
-     */
-    private $refreshManager;
 
     /**
      * @var CampaignManager
@@ -117,8 +104,6 @@ class VolunteersController extends BaseController
 
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        PegassManager $pegassManager,
-        RefreshManager $refreshManager,
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         PhoneManager $phoneManager,
@@ -132,8 +117,6 @@ class VolunteersController extends BaseController
     {
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
-        $this->pegassManager           = $pegassManager;
-        $this->refreshManager          = $refreshManager;
         $this->campaignManager         = $campaignManager;
         $this->communicationManager    = $communicationManager;
         $this->phoneManager            = $phoneManager;
@@ -201,12 +184,13 @@ class VolunteersController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Locks volunteer from being removed at next Pegass sync
+            // Locks volunteer from being touched by the next CSV sync
             if ($volunteer->shouldBeLocked($oldVolunteer)) {
                 $volunteer->setLocked(true);
             }
 
-            // We should not trigger Pegass updates on a volunteer not taken from Pegass
+            // Manually-created volunteers are never in the CSV — pin lastSyncedAt
+            // to the year 2100 so the Finalize sweep does not anonymize them.
             if (!$volunteer->getId()) {
                 $volunteer->setLastSyncedAt(new \DateTime('2100-12-31'));
             }
@@ -278,35 +262,6 @@ class VolunteersController extends BaseController
         $volunteer->setExternalId(Uuid::uuid4());
 
         return $this->manualUpdateAction($request, $volunteer);
-    }
-
-    #[Route(path: "/pegass/{id}", name: "pegass")]
-    #[IsGranted("ROLE_ADMIN")]
-    public function pegass(Volunteer $volunteer)
-    {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->render('management/volunteers/pegass.html.twig', [
-            'volunteer' => $volunteer,
-            'content'   => $entity->getContent() ?: [],
-            'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
-            'entity'    => $entity,
-        ]);
-    }
-
-    #[Route(path: "/pegass-reset/{csrf}/{id}", name: "pegass_reset")]
-    #[IsGranted("ROLE_ADMIN")]
-    #[Template("management/volunteers/volunteer.html.twig")]
-    public function pegassReset(Volunteer $volunteer, Csrf $csrf)
-    {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
-
-        $this->refreshManager->refreshVolunteer($entity, true);
-
-        return $this->getContext($volunteer);
     }
 
     #[Route(path: "/edit-structures/{id}", name: "edit_structures")]

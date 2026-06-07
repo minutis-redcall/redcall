@@ -196,11 +196,6 @@ class VolunteerManager
         );
     }
 
-    public function synchronizeWithPegass()
-    {
-        $this->volunteerRepository->synchronizeWithPegass();
-    }
-
     public function getIdsByExternalIds(array $externalIds) : array
     {
         return array_column(
@@ -308,14 +303,6 @@ class VolunteerManager
     public function filterMinors(array $volunteerIds) : array
     {
         return array_column($this->volunteerRepository->filterMinors($volunteerIds), 'id');
-    }
-
-    /**
-     * @return int[]
-     */
-    public function findVolunteersToAnonymize() : array
-    {
-        return $this->volunteerRepository->findVolunteersToAnonymize();
     }
 
     public function anonymize(Volunteer $volunteer)

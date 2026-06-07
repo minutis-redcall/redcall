@@ -21,11 +21,11 @@ class MaintenanceManagerTest extends KernelTestCase
         $this->settingManager = $container->get(SettingManager::class);
     }
 
-    public function testRefreshUpdatesLastRefreshTimestamp()
+    public function testDataSyncUpdatesLastRefreshTimestamp()
     {
         $before = time();
 
-        $this->manager->refresh();
+        $this->manager->dataSync();
 
         $after = time();
 
@@ -35,13 +35,13 @@ class MaintenanceManagerTest extends KernelTestCase
         $this->assertLessThanOrEqual($after, $lastRefresh);
     }
 
-    public function testRefreshOverwritesPreviousTimestamp()
+    public function testDataSyncOverwritesPreviousTimestamp()
     {
         // Set a known value
         $this->settingManager->set(Settings::MAINTENANCE_LAST_REFRESH, 1000);
 
         $before = time();
-        $this->manager->refresh();
+        $this->manager->dataSync();
 
         $lastRefresh = (int) $this->settingManager->get(Settings::MAINTENANCE_LAST_REFRESH);
 

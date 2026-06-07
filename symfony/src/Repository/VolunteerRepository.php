@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
-use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
@@ -309,28 +308,6 @@ class VolunteerRepository extends BaseRepository
             )
             ->getQuery()
             ->getResult();
-    }
-
-    public function synchronizeWithPegass()
-    {
-        $qb = $this->createQueryBuilder('v');
-
-        $sub = $this->getEntityManager()->createQueryBuilder()
-                         ->select('TRIM(LEADING \'0\' FROM p.identifier)')
-                         ->from(Pegass::class, 'p')
-                         ->where('p.type = :type')
-                         ->andWhere('p.enabled = :enabled');
-
-        $qb
-            ->setParameter('type', Pegass::TYPE_VOLUNTEER)
-            ->setParameter('enabled', false);
-
-        $qb
-            ->update()
-            ->set('v.enabled', ':enabled')
-            ->where($qb->expr()->in('v.externalId', $sub->getDQL()))
-            ->getQuery()
-            ->execute();
     }
 
     /**
@@ -761,22 +738,6 @@ class VolunteerRepository extends BaseRepository
                     ->join('v.badges', 'b')
                     ->andWhere('b.id = :badge')
                     ->setParameter('badge', $badge);
-    }
-
-    /**
-     * @return int[]
-     */
-    public function findVolunteersToAnonymize() : array
-    {
-        $rows = $this->createQueryBuilder('v')
-                     ->select('v.id')
-                     ->join(Pegass::class, 'p', 'WITH', 'v.externalId = p.externalId')
-                     ->andWhere('p.enabled = false')
-                     ->setMaxResults(1000)
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_column($rows, 'id');
     }
 
     public function countActive() : int

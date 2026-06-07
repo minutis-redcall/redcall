@@ -138,11 +138,6 @@
                 {% else %}
                     <span aria-label="{{ 'manage_volunteers.flags.volunteer'|trans }}" title="{{ 'manage_volunteers.flags.volunteer'|trans }}">👤</span>
                 {% endif %}
-                {% if not clickable and is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
-                        🛠
-                    </a>
-                {% endif %}
             </span>
         </h4>
         <div id="volunteer-structures-{{ uuid }}">
@@ -177,14 +172,6 @@
                     {{ macros.phone(volunteer.phone) }}
                     {% if not volunteer.phoneNumberOptin %}</del>{% endif %}
                     <br/>
-                {% endif %}
-
-                {% if is_granted('ROLE_ADMIN') %}
-                    <div>
-                        <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
-                            🛠 {{ 'admin.pegass.open'|trans }}
-                        </a>
-                    </div>
                 {% endif %}
 
                 {% if is_granted('VOLUNTEER', volunteer) %}

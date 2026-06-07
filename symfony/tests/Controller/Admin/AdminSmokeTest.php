@@ -119,23 +119,14 @@ class AdminSmokeTest extends BaseWebTestCase
     // /admin/maintenance  remaining routes
     // ──────────────────────────────────────────────
 
-    public function testMaintenanceRefreshOk(): void
-    {
-        $client = static::createClient();
-        $this->admin($client);
-        $client->request('GET', '/admin/maintenance/refresh');
-        // Either 200 (renders maintenance template) or 302 (redirects after action).
-        $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
-    }
-
-    public function testMaintenancePegassFilesOk(): void
+    public function testMaintenanceDataSyncOk(): void
     {
         // services_test.yaml replaces GoogleTaskBundle's TaskSender with
         // Bundles\SandboxBundle\Service\NullTaskSender so the dispatched
         // tasks don't execute (and hit Google APIs without credentials).
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/maintenance/pegass-files');
+        $client->request('GET', '/admin/maintenance/data-sync');
         $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
     }
 

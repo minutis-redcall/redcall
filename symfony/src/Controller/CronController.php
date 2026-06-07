@@ -17,14 +17,12 @@ class CronController extends AbstractController
 {
     private const CRONS = [
         'user:cron',
-        'pegass:files', // legacy — removed in commit 7
         'sync:data',
         'twilio:price',
         'clear:campaign',
         'clear:media',
         'clear:space',
         'clear:expirable',
-        'clear:volunteer',
         'report:communication',
         'import:national',
     ];

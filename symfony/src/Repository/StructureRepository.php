@@ -7,7 +7,6 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -197,28 +196,6 @@ class StructureRepository extends BaseRepository
         $qb->orderBy('s.enabled DESC, s.name');
 
         return $qb;
-    }
-
-    public function synchronizeWithPegass()
-    {
-        $qb = $this->createQueryBuilder('s');
-
-        $sub = $this->getEntityManager()->createQueryBuilder()
-                         ->select('p.identifier')
-                         ->from(Pegass::class, 'p')
-                         ->where('p.type = :type')
-                         ->andWhere('p.enabled = :enabled');
-
-        $qb
-            ->setParameter('type', Pegass::TYPE_STRUCTURE)
-            ->setParameter('enabled', false);
-
-        $qb
-            ->update()
-            ->set('s.enabled', ':enabled')
-            ->where($qb->expr()->in('s.externalId', $sub->getDQL()))
-            ->getQuery()
-            ->execute();
     }
 
     public function getCampaignStructures(Campaign $campaign) : array

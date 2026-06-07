@@ -47,20 +47,6 @@ class MaintenanceControllerTest extends BaseWebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
-    public function testMaintenanceSearch()
-    {
-        $client   = static::createClient();
-        $fixtures = $this->getFixtures($client->getContainer());
-
-        $root = $fixtures->createRawUser('root_search@test.com', 'password', true);
-
-        $this->login($client, $root);
-
-        $crawler = $client->request('GET', '/admin/maintenance/search');
-
-        $this->assertResponseIsSuccessful();
-    }
-
     public function testMaintenanceMessage()
     {
         $client   = static::createClient();

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use App\Entity\Pegass;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
@@ -21,10 +20,7 @@ final class Version20220211174017 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('DELETE FROM pegass WHERE type NOT IN (:structure, :volunteer)', [
-            'structure' => Pegass::TYPE_STRUCTURE,
-            'volunteer' => Pegass::TYPE_VOLUNTEER,
-        ]);
+        $this->addSql("DELETE FROM pegass WHERE type NOT IN ('structure', 'volunteer')");
     }
 
     public function down(Schema $schema) : void

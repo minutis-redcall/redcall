@@ -383,7 +383,7 @@ class PegassController extends BaseController
     #[Route(path: "/rtmr", name: "rtmr")]
     public function rtmr(Request $request)
     {
-        $badge = $this->badgeManager->findOneByName(\App\Manager\RefreshManager::RTMR_BADGE);
+        $badge = $this->badgeManager->findOneByName(\App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE);
 
         if (!$badge) {
             $volunteers = [];

@@ -585,19 +585,10 @@ maintenance:
       success: 'Green (success)'
   modal:
     refresh_button: 'Refresh the datas'
-  pegass: 'Synchronize RedCall and DSI files entirely.'
+  data_sync: 'Synchronize RedCall with the daily DSI CSV export.'
+  data_sync_started: 'Synchronize launched, it will take a while.'
   annuaire: 'Update "Annuaire national" french database.'
-  pegass_started: 'Synchronize launched, it will take a while.'
-  refresh: 'Synchronize RedCall and Pegass databases entirely'
-  refresh_started: 'Synchronize launched, it will take a while.'
-  search:
-    description: 'This tool is made to help you build the right xpath search expression.'
-    expression: 'Enter the XPath expression to match your nivol data.'
-    invalid: 'Expression is not valid: %error%.'
-    match: 'Expression match with this document: %data%.'
-    nivol: 'Enter a nivol to render its XML content and test your expression.'
-    notmatch: 'Expression does not match this document.'
-    title: 'Advanced nivols search in Pegass'
+  annuaire_national_started: 'Annuaire national synchronization launched.'
   title: Maintenance
 manage_structures:
   action:
@@ -659,35 +650,6 @@ manage_structures:
   title: 'Manage structures'
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
-  view_pegass_entry: 'Open DSI database entry'
-  pegass:
-    title: 'DSI data for structure %name%'
-    subtitle: 'Last sync: %date%'
-    back: '← Back'
-    section:
-      identity: 'Identity'
-      contact: 'Contact'
-      hierarchy: 'Hierarchy'
-      activities: 'Activities'
-      activities_help: 'Activities run by this structure.'
-      responsible: 'Person in charge'
-      volunteers: 'Linked volunteers'
-      volunteers_count: '%count% volunteer(s)'
-      volunteers_help: 'NIVOL of volunteers linked to this structure.'
-      raw: 'Raw data (JSON)'
-    field:
-      id: ID
-      label: Label
-      short_label: 'Short label'
-      type: Type
-      address: Address
-      phone: 'Phone'
-      email: Email
-      parent: 'Parent structure'
-      parent_id: 'ID %id%'
-      responsible_id: 'Person ID'
-      none: '—'
-    raw_toggle: 'Show / hide'
   volunteer_list:
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
@@ -725,54 +687,9 @@ manage_volunteers:
     enable: Enable
     enable_volunteer: 'Enable volunteer'
     lock: Lock
-    reset_pegass_entry: 'Reset entry from DSI database'
     title: Actions
     unlock: Unlock
     update_manual: 'Update volunteer information'
-    view_pegass_entry: 'Open DSI database entry'
-  pegass:
-    title: 'DSI data for %name%'
-    subtitle: 'Last sync: %date%'
-    back: '← Back'
-    section:
-      identity: 'Identity'
-      contact: 'Contact'
-      activities: 'Activities'
-      activities_help: 'Action groups the volunteer takes part in.'
-      trainings: 'Trainings'
-      trainings_help: 'Trainings held by the volunteer.'
-      skills: 'Skills'
-      nominations: 'Nominations'
-      raw: 'Raw data (JSON)'
-    field:
-      nivol: NIVOL
-      structure: 'Main structure'
-      status: Status
-      active: Active
-      inactive: Inactive
-      minor: 'Minor'
-      email_personal: 'Personal email'
-      email_work: 'Red Cross email'
-      phone: 'Phone'
-      other_contact: 'Other contact (%type%)'
-      structure_id: 'Structure %id%'
-    training:
-      code: Code
-      label: Label
-      obtained: 'Obtained on'
-      renewed_until: 'Valid until'
-      none: 'No training recorded.'
-    activity:
-      none: 'No activity recorded.'
-    skill:
-      none: 'No skill recorded.'
-    nomination:
-      code: Code
-      label: Label
-      structure: Structure
-      date: 'Validation date'
-      none: 'No nomination recorded.'
-    raw_toggle: 'Show / hide'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'

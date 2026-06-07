@@ -11,7 +11,6 @@ use App\Entity\Communication;
 use App\Entity\Media;
 use App\Entity\Message;
 use App\Entity\Operation;
-use App\Entity\Pegass;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\Template;
@@ -349,24 +348,6 @@ class DataFixtures
         $this->entityManager->flush();
 
         return $session;
-    }
-
-    public function createPegass(
-        string $type = Pegass::TYPE_VOLUNTEER,
-        string $identifier = 'PEG-001',
-        ?array $content = null,
-        bool $enabled = true
-    ) : Pegass {
-        $pegass = new Pegass();
-        $pegass->setType($type);
-        $pegass->setIdentifier($identifier);
-        $pegass->setContent($content);
-        $pegass->setEnabled($enabled);
-
-        $this->entityManager->persist($pegass);
-        $this->entityManager->flush();
-
-        return $pegass;
     }
 
     public function createOperation(

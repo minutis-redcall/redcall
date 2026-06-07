@@ -362,36 +362,6 @@ class VolunteersControllerTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
-    // GET /management/volunteers/pegass/{id}
-    // ──────────────────────────────────────────────
-
-    public function testPegass404WhenNoPegassEntity(): void
-    {
-        $client    = static::createClient();
-        $fixtures  = $this->getFixtures($client->getContainer());
-        $admin     = $fixtures->createRawUser('vol_pegass-'.uniqid().'@test.com', 'password', true);
-        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEG-'.uniqid());
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
-
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    public function testPegassForbiddenForNonAdmin(): void
-    {
-        $client    = static::createClient();
-        $fixtures  = $this->getFixtures($client->getContainer());
-        $user      = $fixtures->createRawUser('vol_pegass_u-'.uniqid().'@test.com', 'password', false);
-        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEGU-'.uniqid());
-
-        $this->login($client, $user);
-        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
-
-        $this->assertResponseStatusCodeSame(403);
-    }
-
-    // ──────────────────────────────────────────────
     // GET /management/volunteers/edit-structures/{id}
     // ──────────────────────────────────────────────
 
