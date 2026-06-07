@@ -34,7 +34,7 @@ class ManageUserStructuresType extends AbstractType
             ->add('structures', UserStructuresType::class, [
                 'multiple' => true,
                 'expanded' => true,
-                'label'    => 'admin.pegass.delete_structures',
+                'label'    => 'admin.users.delete_structures',
                 'user'     => $options['user'],
             ])
             ->add('submit', SubmitType::class, [

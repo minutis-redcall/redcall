@@ -87,7 +87,7 @@ admin:
       not_exists: 'This identifier does not exist.'
   home:
     link: Administration
-  pegass:
+  users:
     add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'

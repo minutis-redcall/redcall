@@ -7,7 +7,7 @@ use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
-class PegassControllerTest extends BaseWebTestCase
+class UserControllerTest extends BaseWebTestCase
 {
     private function getFixtures($container) : DataFixtures
     {
@@ -42,7 +42,7 @@ class PegassControllerTest extends BaseWebTestCase
 
         $this->login($client, $admin);
 
-        $crawler = $client->request('GET', '/admin/pegass');
+        $crawler = $client->request('GET', '/admin/redcall-users');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('body', 'pegass_target@test.com');
@@ -62,7 +62,7 @@ class PegassControllerTest extends BaseWebTestCase
         $this->login($client, $admin);
         $csrf = $this->getCsrfToken($client->getContainer());
 
-        $client->request('GET', sprintf('/admin/pegass/toggle-verify/%s/%s', $csrf, $target->getId()));
+        $client->request('GET', sprintf('/admin/redcall-users/toggle-verify/%s/%s', $csrf, $target->getId()));
         $this->assertResponseIsSuccessful();
 
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
@@ -85,7 +85,7 @@ class PegassControllerTest extends BaseWebTestCase
         $this->login($client, $admin);
         $csrf = $this->getCsrfToken($client->getContainer());
 
-        $client->request('GET', sprintf('/admin/pegass/toggle-trust/%s/%s', $csrf, $target->getId()));
+        $client->request('GET', sprintf('/admin/redcall-users/toggle-trust/%s/%s', $csrf, $target->getId()));
         $this->assertResponseIsSuccessful();
 
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
@@ -108,7 +108,7 @@ class PegassControllerTest extends BaseWebTestCase
         $this->login($client, $admin);
         $csrf = $this->getCsrfToken($client->getContainer());
 
-        $client->request('GET', sprintf('/admin/pegass/toggle-admin/%s/%s', $csrf, $target->getId()));
+        $client->request('GET', sprintf('/admin/redcall-users/toggle-admin/%s/%s', $csrf, $target->getId()));
         $this->assertResponseIsSuccessful();
 
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
@@ -129,7 +129,7 @@ class PegassControllerTest extends BaseWebTestCase
         $this->login($client, $admin);
         $csrf = $this->getCsrfToken($client->getContainer());
 
-        $client->request('GET', sprintf('/admin/pegass/delete/%s/%s', $csrf, $target->getId()));
+        $client->request('GET', sprintf('/admin/redcall-users/delete/%s/%s', $csrf, $target->getId()));
         $this->assertResponseIsSuccessful();
 
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
@@ -147,7 +147,7 @@ class PegassControllerTest extends BaseWebTestCase
 
         $this->login($client, $admin);
 
-        $crawler = $client->request('GET', '/admin/pegass/create-user');
+        $crawler = $client->request('GET', '/admin/redcall-users/create-user');
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');

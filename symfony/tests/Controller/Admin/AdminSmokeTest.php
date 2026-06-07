@@ -197,14 +197,14 @@ class AdminSmokeTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
-    // /admin/pegass — remaining
+    // /admin/redcall-users — remaining
     // ──────────────────────────────────────────────
 
     public function testPegassRtmrOk(): void
     {
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/pegass/rtmr');
+        $client->request('GET', '/admin/redcall-users/rtmr');
         $this->assertResponseIsSuccessful();
     }
 
@@ -212,7 +212,7 @@ class AdminSmokeTest extends BaseWebTestCase
     {
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/pegass/administrators');
+        $client->request('GET', '/admin/redcall-users/administrators');
         $this->assertResponseIsSuccessful();
     }
 
@@ -220,7 +220,7 @@ class AdminSmokeTest extends BaseWebTestCase
     {
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/pegass/list-users');
+        $client->request('GET', '/admin/redcall-users/list-users');
         $this->assertResponseIsSuccessful();
     }
 }

@@ -87,7 +87,7 @@ admin:
       not_exists: 'Cet identifiant n''existe pas.'
   home:
     link: Administration
-  pegass:
+  users:
     add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
     create_user: 'Ajouter un nouvel utilisateur'

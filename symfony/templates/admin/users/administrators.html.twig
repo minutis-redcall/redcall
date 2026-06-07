@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'admin.pegass.administrators.title'|trans }}{% endblock %}
+{% block title %}{{ 'admin.users.administrators.title'|trans }}{% endblock %}
 
 {% block body %}
     <div class="col-md-12 rc-section">
-        <h3>{{ 'admin.pegass.administrators.title'|trans }}</h3>
+        <h3>{{ 'admin.users.administrators.title'|trans }}</h3>
 
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>{{ 'admin.pegass.administrators.user'|trans }}</th>
-                        <th>{{ 'admin.pegass.administrators.type'|trans }}</th>
+                        <th>{{ 'admin.users.administrators.user'|trans }}</th>
+                        <th>{{ 'admin.users.administrators.type'|trans }}</th>
                         <th>{{ 'base.actions'|trans }}</th>
                     </tr>
                 </thead>
@@ -26,7 +26,7 @@
                                 <span class="badge badge-danger">ROOT</span>
                             </td>
                             <td>
-                                <span class="text-muted">{{ 'admin.pegass.administrators.cannot_revoke_root'|trans }}</span>
+                                <span class="text-muted">{{ 'admin.users.administrators.cannot_revoke_root'|trans }}</span>
                             </td>
                         </tr>
                     {% endfor %}
@@ -41,10 +41,10 @@
                             </td>
                             <td>
                                 {% if not user.isEqualTo(app.user) %}
-                                    <a href="{{ path('admin_pegass_revoke_admin', {id: user.id, csrf: csrf_token('pegass')}) }}" 
+                                    <a href="{{ path('admin_redcall_users_revoke_admin', {id: user.id, csrf: csrf_token('pegass')}) }}" 
                                        class="btn btn-sm btn-outline-danger"
-                                       onclick="return confirm('{{ 'admin.pegass.administrators.revoke_confirm'|trans }}')">
-                                        {{ 'admin.pegass.administrators.revoke'|trans }}
+                                       onclick="return confirm('{{ 'admin.users.administrators.revoke_confirm'|trans }}')">
+                                        {{ 'admin.users.administrators.revoke'|trans }}
                                     </a>
                                 {% endif %}
                             </td>
@@ -55,7 +55,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('admin_pegass_index') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+            <a href="{{ path('admin_redcall_users_index') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
         </div>
     </div>
 {% endblock %}

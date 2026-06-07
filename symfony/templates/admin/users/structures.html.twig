@@ -6,7 +6,7 @@
 
     <div class="rc-section">
 
-        <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.username}) }}</h3>
+        <h3>{{ 'admin.users.structures'|trans({'%name%': user.username}) }}</h3>
 
         {% if user.structures(false).count %}
 
@@ -22,7 +22,7 @@
                     <span class="slider"></span>
                 </label>
                 <label for="select-all">
-                    <em class="text-muted">{{ 'admin.pegass.max'|trans({'%max%': 800}) }}</em>
+                    <em class="text-muted">{{ 'admin.users.max'|trans({'%max%': 800}) }}</em>
                 </label>
             {% endif %}
 
@@ -39,13 +39,13 @@
             <hr/>
         {% endif %}
 
-        {{ 'admin.pegass.add_structure'|trans }}
+        {{ 'admin.users.add_structure'|trans }}
         <div id="structure-to-add">
             {{ render(controller('\\App\\Controller\\WidgetController::structureEditor')) }}
         </div>
 
         <div class="rc-back-link">
-            <a href="{{ path('admin_pegass_index') }}"
+            <a href="{{ path('admin_redcall_users_index') }}"
                class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
         </div>
 
@@ -53,7 +53,7 @@
 
     <script type="text/javascript">
         $('#structure-to-add input').change(function () {
-            document.location = '{{ path('admin_pegass_add_structure', {id: user.id, csrf: csrf_token('pegass')})|e('js') }}?structure=' + $(this).val();
+            document.location = '{{ path('admin_redcall_users_add_structure', {id: user.id, csrf: csrf_token('pegass')})|e('js') }}?structure=' + $(this).val();
         });
     </script>
 

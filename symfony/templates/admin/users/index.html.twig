@@ -8,22 +8,22 @@
 
     <div class="col-md-12 rc-section">
 
-        <h3>{{ 'admin.pegass.title'|trans }}</h3>
+        <h3>{{ 'admin.users.title'|trans }}</h3>
 
         <div class="text-center">
             <br/>
             <div class="btn-group mb-4">
-                <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-primary">
-                    <i class="fas fa-user-plus mr-2"></i>{{ 'admin.pegass.create_user'|trans }}
+                <a href="{{ path('admin_redcall_users_create_user') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus mr-2"></i>{{ 'admin.users.create_user'|trans }}
                 </a>
-                <a href="{{ path('admin_pegass_list_users') }}" class="btn btn-outline-secondary">
-                    <i class="fas fa-list mr-2"></i>{{ 'admin.pegass.list_users'|trans }}
+                <a href="{{ path('admin_redcall_users_list_users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-list mr-2"></i>{{ 'admin.users.list_users'|trans }}
                 </a>
-                <a href="{{ path('admin_pegass_administrators') }}" class="btn btn-outline-info">
-                    <i class="fas fa-user-shield mr-2"></i>{{ 'admin.pegass.administrators.title'|trans }}
+                <a href="{{ path('admin_redcall_users_administrators') }}" class="btn btn-outline-info">
+                    <i class="fas fa-user-shield mr-2"></i>{{ 'admin.users.administrators.title'|trans }}
                 </a>
-                <a href="{{ path('admin_pegass_rtmr') }}" class="btn btn-outline-warning">
-                    <i class="fas fa-id-badge mr-2"></i>{{ 'admin.pegass.rtmr.title'|trans }}
+                <a href="{{ path('admin_redcall_users_rtmr') }}" class="btn btn-outline-warning">
+                    <i class="fas fa-id-badge mr-2"></i>{{ 'admin.users.rtmr.title'|trans }}
                 </a>
             </div>
             <br/>
@@ -65,41 +65,41 @@
                                             <div class="dropdown-divider"></div>
 
                                             {# Verification #}
-                                            <a class="dropdown-item {{ user.verified ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item {{ user.verified ? 'text-danger' : 'text-success' }}" href="{{ path('admin_redcall_users_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas {{ user.verified ? 'fa-times-circle' : 'fa-check-circle' }} mr-2"></i>
                                                 {{ (user.verified ? 'password_login.user_list.unverify' : 'password_login.user_list.verify')|trans }}
                                             </a>
 
                                             {# Trust #}
-                                            <a class="dropdown-item {{ user.trusted ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item {{ user.trusted ? 'text-danger' : 'text-success' }}" href="{{ path('admin_redcall_users_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas {{ user.trusted ? 'fa-user-slash' : 'fa-user-check' }} mr-2"></i>
                                                 {{ (user.trusted ? 'password_login.user_list.untrust' : 'password_login.user_list.trust')|trans }}
                                             </a>
 
                                             {# Admin #}
-                                            <a class="dropdown-item {{ user.admin ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item {{ user.admin ? 'text-danger' : 'text-success' }}" href="{{ path('admin_redcall_users_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas fa-shield-alt mr-2"></i>
                                                 {{ (user.admin ? 'password_login.user_list.unadmin' : 'password_login.user_list.admin')|trans }}
                                             </a>
 
                                             {# Root #}
                                             {% if app.user.root %}
-                                                <a class="dropdown-item {{ user.root ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <a class="dropdown-item {{ user.root ? 'text-danger' : 'text-success' }}" href="{{ path('admin_redcall_users_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                     <i class="fas fa-crown mr-2"></i>
-                                                    {{ (user.root ? 'admin.pegass.unroot' : 'admin.pegass.root')|trans }}
+                                                    {{ (user.root ? 'admin.users.unroot' : 'admin.users.root')|trans }}
                                                 </a>
                                             {% endif %}
 
                                             <div class="dropdown-divider"></div>
 
                                             {# Lock #}
-                                            <a class="dropdown-item {{ user.locked ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item {{ user.locked ? 'text-danger' : 'text-success' }}" href="{{ path('admin_redcall_users_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas {{ user.locked ? 'fa-unlock' : 'fa-lock' }} mr-2"></i>
-                                                {{ (user.locked ? 'admin.pegass.unlock' : 'admin.pegass.lock')|trans }}
+                                                {{ (user.locked ? 'admin.users.unlock' : 'admin.users.lock')|trans }}
                                             </a>
 
                                             {# Delete #}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}" onclick="return confirm('{{ 'admin.pegass.delete_confirm'|trans({'%email%': user.username})|e('js') }}');">
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_redcall_users_delete', {id: user.id, csrf: csrf_token('pegass')}) }}" onclick="return confirm('{{ 'admin.users.delete_confirm'|trans({'%email%': user.username})|e('js') }}');">
                                                 <i class="fas fa-trash-alt mr-2"></i>{{ 'password_login.user_list.delete'|trans }}
                                             </a>
                                         </div>
@@ -110,7 +110,7 @@
                             {% if user.volunteer %}
                                 <div class="mb-3">
                                     <a href="{{ path('management_volunteers_manual_update', {'id': user.volunteer.id}) }}" target="_blank" class="badge badge-light p-2">
-                                        <i class="fas fa-link mr-1"></i>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
+                                        <i class="fas fa-link mr-1"></i>{{ 'admin.users.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
                                     </a>
                                 </div>
                             {% endif %}
@@ -119,11 +119,11 @@
                                 <span class="badge {{ user.verified ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_valid'|trans }}">V</span>
                                 <span class="badge {{ user.trusted ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_trusted'|trans }}">T</span>
                                 <span class="badge {{ user.admin ? 'badge-primary' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_admin'|trans }}">A</span>
-                                <span class="badge {{ user.root ? 'badge-danger' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.is_root'|trans }}">R</span>
-                                <span class="badge {{ user.locked ? 'badge-dark' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.locked'|trans }}">L</span>
+                                <span class="badge {{ user.root ? 'badge-danger' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.users.is_root'|trans }}">R</span>
+                                <span class="badge {{ user.locked ? 'badge-dark' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.users.locked'|trans }}">L</span>
                             </div>
 
-                            <div class="external-id-editor mb-3" data-id="{{ user.id }}" data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
+                            <div class="external-id-editor mb-3" data-id="{{ user.id }}" data-uri="{{ path('admin_redcall_users_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
                                 {% if user.locked %}
                                     <code class="p-1 px-2 bg-light rounded text-dark">{{ user.externalId }}</code>
                                 {% else %}
@@ -137,7 +137,7 @@
                                 {% endfor %}
                             </div>
 
-                            <a href="{{ path('admin_pegass_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
+                            <a href="{{ path('admin_redcall_users_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
                                 <i class="fas fa-sitemap mr-2"></i>{{ 'management.update_structures'|trans }}
                             </a>
                         </div>
@@ -158,10 +158,10 @@
             <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
         </div>
         <div class="text-left">
-            <sup>(4)</sup> {{ 'admin.pegass.root_details'|trans }}
+            <sup>(4)</sup> {{ 'admin.users.root_details'|trans }}
         </div>
         <div class="text-left">
-            <sup>(5)</sup> {{ 'admin.pegass.locked_details'|trans }}
+            <sup>(5)</sup> {{ 'admin.users.locked_details'|trans }}
         </div>
 
         <br/>

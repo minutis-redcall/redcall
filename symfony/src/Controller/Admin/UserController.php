@@ -22,10 +22,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 /**
  *
- * This controller handles administration tools for Pegass users and structures.
+ * Administration tools for the RedCall users tied to volunteer NIVOLs:
+ * privilege toggles, structure assignment, RTMR list, etc. The PasswordLogin
+ * bundle owns the generic /admin/users/ list — this controller lives under
+ * /admin/redcall-users to avoid the collision.
  */
-#[Route("/admin/pegass", name: "admin_pegass_")]
-class PegassController extends BaseController
+#[Route("/admin/redcall-users", name: "admin_redcall_users_")]
+class UserController extends BaseController
 {
     /**
      * @var UserManager
@@ -82,7 +85,7 @@ class PegassController extends BaseController
             $criteria = $search->get('criteria')->getData();
         }
 
-        return $this->render('admin/pegass/index.html.twig', [
+        return $this->render('admin/users/index.html.twig', [
             'search'    => $search->createView(),
             'type'      => ($request->attributes->get('type') ?? $request->query->get('type') ?? $request->request->get('type')),
             'users'     => $this->paginationManager->getPager(
@@ -100,7 +103,7 @@ class PegassController extends BaseController
             return $user->getExternalId();
         }, $users));
 
-        return $this->render('admin/pegass/user_list.html.twig', [
+        return $this->render('admin/users/user_list.html.twig', [
             'list' => $list,
         ]);
     }
@@ -154,12 +157,12 @@ class PegassController extends BaseController
             $user->setLocked(true);
             $this->userManager->save($user);
 
-            return $this->redirectToRoute('admin_pegass_update_structures', [
+            return $this->redirectToRoute('admin_redcall_users_update_structures', [
                 'id' => $user->getId(),
             ]);
         }
 
-        return $this->render('admin/pegass/structures.html.twig', [
+        return $this->render('admin/users/structures.html.twig', [
             'user'       => $user,
             'form'       => $form->createView(),
             'structures' => $this->structureManager->getStructuresForUser($user),
@@ -192,7 +195,7 @@ class PegassController extends BaseController
 
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_update_structures', [
+        return $this->redirectToRoute('admin_redcall_users_update_structures', [
             'id' => $user->getId(),
         ]);
     }
@@ -221,12 +224,12 @@ class PegassController extends BaseController
 
             $this->userManager->createUser($volunteer->getExternalId());
 
-            return $this->redirectToRoute('admin_pegass_index', [
+            return $this->redirectToRoute('admin_redcall_users_index', [
                 'form[criteria]' => $volunteer->getExternalId(),
             ]);
         }
 
-        return $this->render('admin/pegass/create_user.html.twig', [
+        return $this->render('admin/users/create_user.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -244,7 +247,7 @@ class PegassController extends BaseController
         $user->setIsVerified(1 - $user->isVerified());
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
+        return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
         ]);
     }
@@ -262,7 +265,7 @@ class PegassController extends BaseController
         $user->setIsTrusted(1 - $user->isTrusted());
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
+        return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
         ]);
     }
@@ -280,7 +283,7 @@ class PegassController extends BaseController
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
+        return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
         ]);
     }
@@ -298,7 +301,7 @@ class PegassController extends BaseController
         $user->setLocked(1 - $user->isLocked());
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
+        return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
         ]);
     }
@@ -321,7 +324,7 @@ class PegassController extends BaseController
 
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
+        return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
         ]);
     }
@@ -338,7 +341,7 @@ class PegassController extends BaseController
 
         $this->userManager->remove($user);
 
-        return $this->redirectToRoute('admin_pegass_index');
+        return $this->redirectToRoute('admin_redcall_users_index');
     }
 
     #[Route(path: "/administrators", name: "administrators")]
@@ -354,7 +357,7 @@ class PegassController extends BaseController
                                    ->getQuery()
                                    ->getResult();
 
-        return $this->render('admin/pegass/administrators.html.twig', [
+        return $this->render('admin/users/administrators.html.twig', [
             'users' => $users,
             'roots' => $roots,
         ]);
@@ -377,7 +380,7 @@ class PegassController extends BaseController
         $user->setIsAdmin(false);
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_administrators');
+        return $this->redirectToRoute('admin_redcall_users_administrators');
     }
 
     #[Route(path: "/rtmr", name: "rtmr")]
@@ -395,7 +398,7 @@ class PegassController extends BaseController
                                                  ->getResult();
         }
 
-        return $this->render('admin/pegass/rtmr.html.twig', [
+        return $this->render('admin/users/rtmr.html.twig', [
             'volunteers' => $volunteers,
         ]);
     }
