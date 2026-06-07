@@ -1,0 +1,207 @@
+{% extends 'base.html.twig' %}
+
+{% macro field(label, value) %}
+    <div class="mb-2">
+        <div class="text-muted small">{{ label }}</div>
+        <div>
+            {% if value is empty %}
+                <span class="text-muted">—</span>
+            {% else %}
+                <strong>{{ value }}</strong>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro fmtDate(value) %}
+    {%- if value is empty -%}
+        <span class="text-muted">—</span>
+    {%- else -%}
+        {{ value|date('d/m/Y') }}
+    {%- endif -%}
+{% endmacro %}
+
+{% block body %}
+    {% import _self as ui %}
+
+    <div class="rc-section">
+
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h1 class="mb-1">
+                    {{ volunteer.displayName }}
+                    <small class="text-muted">({{ volunteer.externalId }})</small>
+                </h1>
+                {% if snapshot %}
+                    <div class="text-muted">
+                        {{ 'manage_volunteers.sync_log.subtitle'|trans({'%date%': snapshot.syncedAt|date('d/m/Y H:i')}) }} UTC
+                    </div>
+                {% else %}
+                    <div class="text-muted">{{ 'manage_volunteers.sync_log.no_snapshot'|trans }}</div>
+                {% endif %}
+            </div>
+            <a href="{{ path('management_volunteers_list') }}" class="btn btn-outline-secondary btn-sm">
+                {{ 'manage_volunteers.sync_log.back'|trans }}
+            </a>
+        </div>
+
+        {% if snapshot %}
+
+            <div class="mb-3">
+                {% if payload.age and payload.age > 0 and payload.age < 18 %}
+                    <span class="badge badge-warning">🐻 {{ 'manage_volunteers.sync_log.field.minor'|trans }}</span>
+                {% endif %}
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><strong>{{ 'manage_volunteers.sync_log.section.identity'|trans }}</strong></div>
+                        <div class="card-body">
+                            {{ ui.field('NIVOL', payload.nivol|default('')) }}
+                            {{ ui.field('manage_volunteers.sync_log.field.last_name'|trans, payload.lastName|default('')) }}
+                            {{ ui.field('manage_volunteers.sync_log.field.first_name'|trans, payload.firstName|default('')) }}
+                            {{ ui.field('manage_volunteers.sync_log.field.age'|trans, payload.age|default('—')) }}
+                            <div class="mb-2">
+                                <div class="text-muted small">{{ 'manage_volunteers.sync_log.field.structure'|trans }}</div>
+                                <div><code>{{ payload.structureId|default('—') }}</code></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header"><strong>{{ 'manage_volunteers.sync_log.section.contact'|trans }}</strong></div>
+                        <div class="card-body">
+                            {{ ui.field('manage_volunteers.sync_log.field.email_personal'|trans, payload.personalEmail|default('')) }}
+                            {{ ui.field('manage_volunteers.sync_log.field.email_work'|trans, payload.organizationEmail|default('')) }}
+                            {{ ui.field('manage_volunteers.sync_log.field.phone'|trans, payload.phone|default('')) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <strong>{{ 'manage_volunteers.sync_log.section.activities'|trans }}</strong>
+                    <span class="badge badge-secondary">{{ payload.actions|default([])|length }}</span>
+                </div>
+                <div class="card-body">
+                    {% if payload.actions|default([])|length %}
+                        <ul class="list-unstyled mb-0">
+                            {% for action in payload.actions %}
+                                <li class="mb-2">
+                                    <span class="badge badge-light">{{ 'manage_volunteers.sync_log.field.structure_id'|trans({'%id%': action.structureId}) }}</span>
+                                    <strong>{{ action.groupActionLabel }}</strong>
+                                    <span class="text-muted small">(#{{ action.groupActionId }})</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">{{ 'manage_volunteers.sync_log.activity.none'|trans }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <strong>{{ 'manage_volunteers.sync_log.section.trainings'|trans }}</strong>
+                    <span class="badge badge-secondary">{{ payload.trainings|default([])|length }}</span>
+                </div>
+                <div class="card-body p-0">
+                    {% if payload.trainings|default([])|length %}
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th>{{ 'manage_volunteers.sync_log.training.code'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.training.label'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.training.obtained'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.training.renewed_until'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for training in payload.trainings %}
+                                <tr>
+                                    <td><code>{{ training.code }}</code></td>
+                                    <td>{{ training.label }}</td>
+                                    <td>{{ ui.fmtDate(training.gotAt) }}</td>
+                                    <td>{{ ui.fmtDate(training.expiresAt) }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <div class="card-body"><span class="text-muted">{{ 'manage_volunteers.sync_log.training.none'|trans }}</span></div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if payload.skills|default([])|length %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <strong>{{ 'manage_volunteers.sync_log.section.skills'|trans }}</strong>
+                        <span class="badge badge-secondary">{{ payload.skills|length }}</span>
+                    </div>
+                    <div class="card-body">
+                        {% for skill in payload.skills %}
+                            <span class="badge badge-info mr-1">{{ skill.label }} <small>(#{{ skill.competenceId }})</small></span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if payload.nominations|default([])|length %}
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <strong>{{ 'manage_volunteers.sync_log.section.nominations'|trans }}</strong>
+                        <span class="badge badge-secondary">{{ payload.nominations|length }}</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <table class="table table-striped mb-0">
+                            <thead>
+                            <tr>
+                                <th>{{ 'manage_volunteers.sync_log.nomination.code'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.nomination.label'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.nomination.structure'|trans }}</th>
+                                <th>{{ 'manage_volunteers.sync_log.nomination.date'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for nomination in payload.nominations %}
+                                <tr>
+                                    <td><code>{{ nomination.code }}</code></td>
+                                    <td>{{ nomination.label }}</td>
+                                    <td><span class="badge badge-light">{{ nomination.structureId }}</span></td>
+                                    <td>{{ ui.fmtDate(nomination.gotAt) }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header" style="cursor: pointer;" data-toggle="collapse" data-target="#sync-raw" aria-expanded="false">
+                    <strong>{{ 'manage_volunteers.sync_log.section.raw'|trans }}</strong>
+                    <span class="text-muted small float-right">{{ 'manage_volunteers.sync_log.raw_toggle'|trans }}</span>
+                </div>
+                <div id="sync-raw" class="collapse">
+                    <div class="card-body p-0">
+                        <pre class="mb-0 p-3"><code>{{ raw }}</code></pre>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-warning">
+                {{ 'manage_volunteers.sync_log.no_snapshot_explain'|trans }}
+            </div>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}

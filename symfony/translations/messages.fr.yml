@@ -690,6 +690,44 @@ manage_volunteers:
     title: Actions
     unlock: Dégeler
     update_manual: 'Mettre à jour les informations bénévoles'
+    view_sync_log: 'Voir les dernières données de synchro'
+  sync_log:
+    subtitle: 'Dernière synchro : %date%'
+    back: '← Retour'
+    no_snapshot: 'Aucune donnée de synchro pour ce bénévole.'
+    no_snapshot_explain: 'Aucune synchronisation CSV n''a touché ce bénévole pour le moment. Soit il a été créé à la main, soit son NIVOL n''apparaît pas dans l''export DSI quotidien.'
+    section:
+      identity: 'Identité'
+      contact: 'Contact'
+      activities: 'Activités'
+      trainings: 'Formations'
+      skills: 'Compétences'
+      nominations: 'Nominations'
+      raw: 'Données brutes (JSON)'
+    field:
+      minor: 'Mineur(e)'
+      last_name: 'Nom'
+      first_name: 'Prénom'
+      age: 'Âge'
+      structure: 'ID structure principale'
+      email_personal: 'Email personnel'
+      email_work: 'Email Croix-Rouge'
+      phone: 'Téléphone'
+      structure_id: 'Structure %id%'
+    training:
+      code: Code
+      label: Libellé
+      obtained: 'Obtention'
+      renewed_until: 'Recyclage'
+      none: 'Aucune formation dans le dernier export.'
+    activity:
+      none: 'Aucune activité dans le dernier export.'
+    nomination:
+      code: Code
+      label: Libellé
+      structure: Structure
+      date: 'Date de validation'
+    raw_toggle: 'Afficher / masquer'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
     edit: 'Editer les structures'

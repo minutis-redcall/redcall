@@ -21,6 +21,7 @@ use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
+use App\Repository\VolunteerSyncSnapshotRepository;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
@@ -102,6 +103,8 @@ class VolunteersController extends BaseController
      */
     private $simpleProcessor;
 
+    private VolunteerSyncSnapshotRepository $snapshotRepository;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         CampaignManager $campaignManager,
@@ -113,7 +116,8 @@ class VolunteersController extends BaseController
         TranslatorInterface $translator,
         Environment $templating,
         SimpleProcessor $simpleProcessor,
-        DeletedVolunteerManager $deletedVolunteerManager)
+        DeletedVolunteerManager $deletedVolunteerManager,
+        VolunteerSyncSnapshotRepository $snapshotRepository)
     {
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
@@ -127,6 +131,7 @@ class VolunteersController extends BaseController
         $this->templating              = $templating;
         $this->simpleProcessor         = $simpleProcessor;
         $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->snapshotRepository      = $snapshotRepository;
     }
 
     #[Route(name: "list", path: "/{id}", requirements: ["id" => "\d+"], defaults: ["id" => null])]
@@ -262,6 +267,20 @@ class VolunteersController extends BaseController
         $volunteer->setExternalId(Uuid::uuid4());
 
         return $this->manualUpdateAction($request, $volunteer);
+    }
+
+    #[Route(path: "/sync-log/{id}", name: "sync_log")]
+    #[IsGranted("ROLE_ADMIN")]
+    public function syncLog(Volunteer $volunteer)
+    {
+        $snapshot = $this->snapshotRepository->findOneByExternalId($volunteer->getExternalId());
+
+        return $this->render('management/volunteers/sync_log.html.twig', [
+            'volunteer' => $volunteer,
+            'snapshot'  => $snapshot,
+            'payload'   => $snapshot?->getPayloadArray(),
+            'raw'       => $snapshot?->getPayload(),
+        ]);
     }
 
     #[Route(path: "/edit-structures/{id}", name: "edit_structures")]

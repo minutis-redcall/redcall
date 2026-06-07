@@ -690,6 +690,44 @@ manage_volunteers:
     title: Actions
     unlock: Unlock
     update_manual: 'Update volunteer information'
+    view_sync_log: 'Open last sync data'
+  sync_log:
+    subtitle: 'Last sync: %date%'
+    back: '← Back'
+    no_snapshot: 'No sync data captured yet for this volunteer.'
+    no_snapshot_explain: 'This volunteer has not been touched by any CSV sync yet. They might be a manually-created volunteer or their NIVOL is not present in the daily DSI export.'
+    section:
+      identity: 'Identity'
+      contact: 'Contact'
+      activities: 'Activities'
+      trainings: 'Trainings'
+      skills: 'Skills'
+      nominations: 'Nominations'
+      raw: 'Raw payload (JSON)'
+    field:
+      minor: 'Minor'
+      last_name: 'Last name'
+      first_name: 'First name'
+      age: 'Age'
+      structure: 'Main structure ID'
+      email_personal: 'Personal email'
+      email_work: 'Red Cross email'
+      phone: 'Phone'
+      structure_id: 'Structure %id%'
+    training:
+      code: Code
+      label: Label
+      obtained: 'Obtained on'
+      renewed_until: 'Valid until'
+      none: 'No training in the latest export.'
+    activity:
+      none: 'No activity in the latest export.'
+    nomination:
+      code: Code
+      label: Label
+      structure: Structure
+      date: 'Validation date'
+    raw_toggle: 'Show / hide'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'

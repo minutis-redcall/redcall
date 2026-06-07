@@ -32,6 +32,12 @@
                             <div class="dropdown-divider"></div>
                         {% endif %}
 
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a class="dropdown-item" href="{{ path('management_volunteers_sync_log', app.request.query.all|merge({id: volunteer.id})) }}" target="_blank">
+                                {{ 'manage_volunteers.action.view_sync_log'|trans }}
+                            </a>
+                        {% endif %}
+
                         <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">
                             {{ 'manage_volunteers.action.update_manual'|trans }}
                         </a>

@@ -5,10 +5,12 @@ namespace App\Sync\Importer;
 use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Volunteer;
+use App\Entity\VolunteerSyncSnapshot;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Repository\VolunteerSyncSnapshotRepository;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
@@ -28,6 +30,7 @@ class VolunteerImporter
     private UserManager $userManager;
     private PhoneManager $phoneManager;
     private BadgeFactory $badgeFactory;
+    private VolunteerSyncSnapshotRepository $snapshotRepository;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -36,14 +39,16 @@ class VolunteerImporter
         UserManager $userManager,
         PhoneManager $phoneManager,
         BadgeFactory $badgeFactory,
+        VolunteerSyncSnapshotRepository $snapshotRepository,
         ?LoggerInterface $logger = null
     ) {
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->userManager      = $userManager;
-        $this->phoneManager     = $phoneManager;
-        $this->badgeFactory     = $badgeFactory;
-        $this->logger           = $logger ?? new NullLogger();
+        $this->volunteerManager   = $volunteerManager;
+        $this->structureManager   = $structureManager;
+        $this->userManager        = $userManager;
+        $this->phoneManager       = $phoneManager;
+        $this->badgeFactory       = $badgeFactory;
+        $this->snapshotRepository = $snapshotRepository;
+        $this->logger             = $logger ?? new NullLogger();
     }
 
     public function import(VolunteerRow $row, ?\DateTimeImmutable $syncedAt = null) : void
@@ -89,6 +94,16 @@ class VolunteerImporter
 
         $this->volunteerManager->save($volunteer);
         $this->updateBoundUserStructures($volunteer);
+        $this->writeSnapshot($externalId, $row, $syncedAt ?? new \DateTimeImmutable());
+    }
+
+    private function writeSnapshot(string $externalId, VolunteerRow $row, \DateTimeImmutable $syncedAt) : void
+    {
+        $snapshot = $this->snapshotRepository->findOneByExternalId($externalId) ?? new VolunteerSyncSnapshot();
+        $snapshot->setExternalId($externalId);
+        $snapshot->setSyncedAt(\DateTime::createFromImmutable($syncedAt));
+        $snapshot->setPayloadArray($row->toArray());
+        $this->snapshotRepository->save($snapshot);
     }
 
     private function updateStructures(Volunteer $volunteer, VolunteerRow $row) : void

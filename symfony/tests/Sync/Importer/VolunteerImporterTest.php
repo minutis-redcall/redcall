@@ -5,6 +5,7 @@ namespace App\Tests\Sync\Importer;
 use App\Entity\Phone;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
+use App\Repository\VolunteerSyncSnapshotRepository;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
@@ -260,5 +261,53 @@ class VolunteerImporterTest extends KernelTestCase
 
         $this->assertContains('groupeAction-1', $externalIds);
         $this->assertContains('groupeAction-17', $externalIds);
+    }
+
+    public function testSnapshotIsPersistedAfterImport()
+    {
+        $this->fixtures->createStructure('UL 980', '980');
+
+        $row = $this->row([
+            'trainings' => [
+                [
+                    'formationId' => '167',
+                    'code'        => 'PSE2',
+                    'label'       => 'PSE NIVEAU 2',
+                    'gotAt'       => '2022-10-26T14:09:22+00:00',
+                    'expiresAt'   => '2027-12-31T14:09:22+00:00',
+                ],
+            ],
+        ]);
+        $this->importer->import($row, new \DateTimeImmutable('2026-06-07 02:00:00'));
+        $this->em->clear();
+
+        /** @var VolunteerSyncSnapshotRepository $snapshotRepository */
+        $snapshotRepository = self::getContainer()->get(VolunteerSyncSnapshotRepository::class);
+        $snapshot           = $snapshotRepository->findOneByExternalId('1100999999X');
+
+        $this->assertNotNull($snapshot, 'A snapshot should be persisted for each imported volunteer');
+        $this->assertSame('1100999999X', $snapshot->getExternalId());
+        $this->assertSame('2026-06-07 02:00:00', $snapshot->getSyncedAt()->format('Y-m-d H:i:s'));
+
+        $payload = $snapshot->getPayloadArray();
+        $this->assertSame('Jean', $payload['firstName']);
+        $this->assertSame('PSE2', $payload['trainings'][0]['code']);
+    }
+
+    public function testSnapshotIsOverwrittenOnSubsequentSync()
+    {
+        $this->fixtures->createStructure('UL 980', '980');
+
+        $this->importer->import($this->row(['firstName' => 'Jean']), new \DateTimeImmutable('2026-06-01'));
+        $this->importer->import($this->row(['firstName' => 'JEAN-PAUL']), new \DateTimeImmutable('2026-06-07'));
+        $this->em->clear();
+
+        /** @var VolunteerSyncSnapshotRepository $snapshotRepository */
+        $snapshotRepository = self::getContainer()->get(VolunteerSyncSnapshotRepository::class);
+        $snapshot           = $snapshotRepository->findOneByExternalId('1100999999X');
+
+        $this->assertNotNull($snapshot);
+        $this->assertSame('JEAN-PAUL', $snapshot->getPayloadArray()['firstName']);
+        $this->assertSame('2026-06-07', $snapshot->getSyncedAt()->format('Y-m-d'));
     }
 }
