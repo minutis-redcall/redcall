@@ -137,6 +137,7 @@ class StructuresController extends BaseController
 
         return $this->render('management/structures/pegass.html.twig', [
             'structure' => $structure,
+            'content'   => $entity->getContent() ?: [],
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
             'entity'    => $entity,
         ]);

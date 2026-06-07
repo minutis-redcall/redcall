@@ -660,6 +660,34 @@ manage_structures:
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
   view_pegass_entry: 'Open DSI database entry'
+  pegass:
+    title: 'DSI data for structure %name%'
+    subtitle: 'Last sync: %date%'
+    back: '← Back'
+    section:
+      identity: 'Identity'
+      contact: 'Contact'
+      hierarchy: 'Hierarchy'
+      activities: 'Activities'
+      activities_help: 'Activities run by this structure.'
+      responsible: 'Person in charge'
+      volunteers: 'Linked volunteers'
+      volunteers_count: '%count% volunteer(s)'
+      volunteers_help: 'NIVOL of volunteers linked to this structure.'
+      raw: 'Raw data (JSON)'
+    field:
+      id: ID
+      label: Label
+      short_label: 'Short label'
+      type: Type
+      address: Address
+      phone: 'Phone'
+      email: Email
+      parent: 'Parent structure'
+      parent_id: 'ID %id%'
+      responsible_id: 'Person ID'
+      none: '—'
+    raw_toggle: 'Show / hide'
   volunteer_list:
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
@@ -702,6 +730,49 @@ manage_volunteers:
     unlock: Unlock
     update_manual: 'Update volunteer information'
     view_pegass_entry: 'Open DSI database entry'
+  pegass:
+    title: 'DSI data for %name%'
+    subtitle: 'Last sync: %date%'
+    back: '← Back'
+    section:
+      identity: 'Identity'
+      contact: 'Contact'
+      activities: 'Activities'
+      activities_help: 'Action groups the volunteer takes part in.'
+      trainings: 'Trainings'
+      trainings_help: 'Trainings held by the volunteer.'
+      skills: 'Skills'
+      nominations: 'Nominations'
+      raw: 'Raw data (JSON)'
+    field:
+      nivol: NIVOL
+      structure: 'Main structure'
+      status: Status
+      active: Active
+      inactive: Inactive
+      minor: 'Minor'
+      email_personal: 'Personal email'
+      email_work: 'Red Cross email'
+      phone: 'Phone'
+      other_contact: 'Other contact (%type%)'
+      structure_id: 'Structure %id%'
+    training:
+      code: Code
+      label: Label
+      obtained: 'Obtained on'
+      renewed_until: 'Valid until'
+      none: 'No training recorded.'
+    activity:
+      none: 'No activity recorded.'
+    skill:
+      none: 'No skill recorded.'
+    nomination:
+      code: Code
+      label: Label
+      structure: Structure
+      date: 'Validation date'
+      none: 'No nomination recorded.'
+    raw_toggle: 'Show / hide'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
@@ -811,6 +882,11 @@ management:
   no_other_users: "No other users have access to this structure"
   missing_volunteer: "User has no volunteer entity (likely removed)"
   external_id_label: "External ID: %external_id%"
+  tree:
+    level_title: "Level %depth% in the hierarchy"
+    peers: "{0}person can trigger|{1}other person can trigger|]1,Inf[other people can trigger"
+    structures: "{0}no structures in your scope|{1}structure in your scope|]1,Inf[structures in your scope"
+    peers_total: "{0}no peers identified|{1}peer identified in total|]1,Inf[peers identified in total"
 message:
   call:
     announcement: '%brand% at %hours% hours %mins%.'
