@@ -1,4 +1,5 @@
 .idea
+.DS_Store
 /logs/*
 !/logs/.gitkeep
 /var/*
@@ -23,3 +24,7 @@ TestController.php
 
 /gcp/cloudFunctions/twilioWebhooks/node_modules/
 
+# Docker volume mounts (runtime state, not source)
+/docker/mysql/data/
+/docker/caddy/data/
+/docker/caddy/config/

@@ -1,0 +1,19 @@
+:80 {
+    root * /var/www/symfony/public
+
+    reverse_proxy /status php:9000 {
+        transport fastcgi {
+            env SCRIPT_NAME /status
+        }
+    }
+
+    encode zstd gzip
+
+    php_fastcgi php:9000
+    file_server
+
+    log {
+        output stdout
+        format json
+    }
+}
