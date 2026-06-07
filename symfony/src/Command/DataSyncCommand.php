@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Sync\DataSyncOrchestrator;
+use App\Sync\Reporter\ConsoleSyncProgressReporter;
 use App\Sync\Source\LocalCsvSource;
 use App\Task\StartDataSyncTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
@@ -56,7 +57,13 @@ class DataSyncCommand extends Command
             // one-shot here — drop the cap.
             ini_set('memory_limit', '-1');
 
-            $this->orchestrator->setLogger(new ConsoleLogger($output));
+            // Phase labels + progress bars are emitted by the reporter on
+            // stdout. The logger is mapped to verbose-only so its routine
+            // "X / Y" lines don't fight with the progress bar redraws.
+            $this->orchestrator->setLogger(new ConsoleLogger($output, [
+                \Psr\Log\LogLevel::INFO => OutputInterface::VERBOSITY_VERBOSE,
+            ]));
+            $this->orchestrator->setProgressReporter(new ConsoleSyncProgressReporter($output));
 
             $output->writeln(sprintf('<info>Running sync inline from %s (syncedAt=%s)</info>', $dir, $syncedAt->format('c')));
 

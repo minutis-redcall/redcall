@@ -18,6 +18,8 @@ use App\Sync\Importer\VolunteerImporter;
 use App\Sync\Reader\CsvReader;
 use App\Sync\Reconciliation\RtmrReconciliator;
 use App\Sync\Reference\ReferenceTables;
+use App\Sync\Reporter\NullSyncProgressReporter;
+use App\Sync\Reporter\SyncProgressReporter;
 use App\Sync\Source\CsvSourceInterface;
 use App\Task\FinalizeDataSyncTask;
 use App\Task\SyncStructuresChunkTask;
@@ -59,6 +61,7 @@ class DataSyncOrchestrator
     private EntityManagerInterface $em;
     private TaskSender $async;
     private LoggerInterface $logger;
+    private SyncProgressReporter $progress;
 
     public function __construct(
         CsvSourceInterface $source,
@@ -84,11 +87,17 @@ class DataSyncOrchestrator
         $this->em                = $em;
         $this->async             = $async;
         $this->logger            = $logger ?? new NullLogger();
+        $this->progress          = new NullSyncProgressReporter();
     }
 
     public function setLogger(LoggerInterface $logger) : void
     {
         $this->logger = $logger;
+    }
+
+    public function setProgressReporter(SyncProgressReporter $reporter) : void
+    {
+        $this->progress = $reporter;
     }
 
     /**
@@ -113,8 +122,10 @@ class DataSyncOrchestrator
 
     private function run(\DateTimeImmutable $syncedAt, CsvSourceInterface $source, bool $dispatchAsync) : void
     {
+        $this->progress->info('Downloading CSV files...');
         $files = $source->download();
         $this->logger->info(sprintf('Downloaded %d CSV files', count($files)));
+        $this->progress->info(sprintf('Downloaded %d CSV files', count($files)));
 
         if (count($files) < self::MIN_CSV_FILES) {
             $this->logger->critical(sprintf(
@@ -126,13 +137,16 @@ class DataSyncOrchestrator
             return;
         }
 
+        $this->progress->info('Loading reference tables...');
         $this->referenceTables->load($files);
 
         $structureRows = $this->collectStructures($files);
         $this->logger->info(sprintf('Collected %d structures', count($structureRows)));
+        $this->progress->info(sprintf('Collected %d structures', count($structureRows)));
 
         $volunteerRows = $this->collectVolunteers($files);
         $this->logger->info(sprintf('Collected %d volunteers', count($volunteerRows)));
+        $this->progress->info(sprintf('Collected %d volunteers', count($volunteerRows)));
 
         if ($dispatchAsync) {
             $this->dispatchStructureChunks($structureRows, $syncedAt);
@@ -151,7 +165,9 @@ class DataSyncOrchestrator
     private function processStructureChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
     {
         $total = count($rows);
-        $done  = 0;
+        $this->progress->startBar(sprintf('Importing %d structures', $total), $total);
+
+        $done = 0;
         foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
             foreach ($chunk as $row) {
                 $this->structureImporter->import($row, $syncedAt);
@@ -160,8 +176,11 @@ class DataSyncOrchestrator
             // Drop Doctrine's identity map so it doesn't grow linearly with
             // the input. Critical for inline runs over the full prod export.
             $this->em->clear();
+            $this->progress->advanceBar(count($chunk));
             $this->logger->info(sprintf('Structures imported: %d / %d', $done, $total));
         }
+
+        $this->progress->finishBar();
     }
 
     /**
@@ -170,15 +189,20 @@ class DataSyncOrchestrator
     private function processVolunteerChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
     {
         $total = count($rows);
-        $done  = 0;
+        $this->progress->startBar(sprintf('Importing %d volunteers', $total), $total);
+
+        $done = 0;
         foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
             foreach ($chunk as $row) {
                 $this->volunteerImporter->import($row, $syncedAt);
             }
             $done += count($chunk);
             $this->em->clear();
+            $this->progress->advanceBar(count($chunk));
             $this->logger->info(sprintf('Volunteers imported: %d / %d', $done, $total));
         }
+
+        $this->progress->finishBar();
     }
 
     /**
@@ -212,9 +236,16 @@ class DataSyncOrchestrator
      */
     public function finalize(\DateTimeImmutable $syncedAt) : void
     {
+        $this->progress->info('Finalize — disabling stale structures');
         $this->disableStaleStructures($syncedAt);
+
+        $this->progress->info('Finalize — anonymizing stale volunteers');
         $this->anonymizeStaleVolunteers($syncedAt);
+
+        $this->progress->info('Finalize — reconciling RTMR privileges');
         $this->reconcileRtmr();
+
+        $this->progress->info('Sync complete.');
     }
 
     /**
@@ -244,9 +275,12 @@ class DataSyncOrchestrator
         }
 
         // Step 1 — base info
-        $bag = [];
-        foreach ($this->csvReader->read($files['redcall_benevoles.csv']) as $row) {
+        $bag         = [];
+        $benevoleCsv = $files['redcall_benevoles.csv'];
+        $this->progress->startBar('Reading volunteers', $this->csvReader->countRows($benevoleCsv));
+        foreach ($this->csvReader->read($benevoleCsv) as $row) {
             // nivol,nom,prenom,age,email,email_crf,telephone,id_structure
+            $this->progress->advanceBar();
             $nivol = $row[0];
             if ('' === $nivol) {
                 continue;
@@ -266,11 +300,15 @@ class DataSyncOrchestrator
                 'nominations'       => [],
             ];
         }
+        $this->progress->finishBar();
 
         // Step 2 — actions
         if (isset($files['redcall_groupes_actions_menees.csv'])) {
-            foreach ($this->csvReader->read($files['redcall_groupes_actions_menees.csv']) as $row) {
+            $actionsCsv = $files['redcall_groupes_actions_menees.csv'];
+            $this->progress->startBar('Reading actions', $this->csvReader->countRows($actionsCsv));
+            foreach ($this->csvReader->read($actionsCsv) as $row) {
                 // nivol,id_structure,id_groupe_action
+                $this->progress->advanceBar();
                 $nivol = $row[0];
                 if (!isset($bag[$nivol])) {
                     continue;
@@ -285,12 +323,16 @@ class DataSyncOrchestrator
                     groupActionLabel: (string) $this->referenceTables->getGroupActionLabel($groupId)
                 ))->toArray();
             }
+            $this->progress->finishBar();
         }
 
         // Step 3 — skills
         if (isset($files['redcall_competences_acquises.csv'])) {
-            foreach ($this->csvReader->read($files['redcall_competences_acquises.csv']) as $row) {
+            $skillsCsv = $files['redcall_competences_acquises.csv'];
+            $this->progress->startBar('Reading skills', $this->csvReader->countRows($skillsCsv));
+            foreach ($this->csvReader->read($skillsCsv) as $row) {
                 // nivol,id_competence
+                $this->progress->advanceBar();
                 $nivol = $row[0];
                 if (!isset($bag[$nivol])) {
                     continue;
@@ -304,12 +346,16 @@ class DataSyncOrchestrator
                     label: (string) $this->referenceTables->getCompetenceLabel($competenceId)
                 ))->toArray();
             }
+            $this->progress->finishBar();
         }
 
         // Step 4 — trainings
         if (isset($files['redcall_formes.csv'])) {
-            foreach ($this->csvReader->read($files['redcall_formes.csv']) as $row) {
+            $trainingsCsv = $files['redcall_formes.csv'];
+            $this->progress->startBar('Reading trainings', $this->csvReader->countRows($trainingsCsv));
+            foreach ($this->csvReader->read($trainingsCsv) as $row) {
                 // nivol,id_formation,date_obtention,date_recyclage
+                $this->progress->advanceBar();
                 $nivol = $row[0];
                 if (!isset($bag[$nivol])) {
                     continue;
@@ -327,12 +373,16 @@ class DataSyncOrchestrator
                     expiresAt: $this->parseFrenchDate($row[3] ?? '')
                 ))->toArray();
             }
+            $this->progress->finishBar();
         }
 
         // Step 5 — nominations
         if (isset($files['redcall_nommes.csv'])) {
-            foreach ($this->csvReader->read($files['redcall_nommes.csv']) as $row) {
+            $nominationsCsv = $files['redcall_nommes.csv'];
+            $this->progress->startBar('Reading nominations', $this->csvReader->countRows($nominationsCsv));
+            foreach ($this->csvReader->read($nominationsCsv) as $row) {
                 // nivol,id_structure,id_nomination,date_validation,date_fin
+                $this->progress->advanceBar();
                 $nivol = $row[0];
                 if (!isset($bag[$nivol])) {
                     continue;
@@ -350,6 +400,7 @@ class DataSyncOrchestrator
                     gotAt: $this->parseIsoDate($row[3] ?? '')
                 ))->toArray();
             }
+            $this->progress->finishBar();
         }
 
         // Convert raw arrays to VolunteerRow DTOs

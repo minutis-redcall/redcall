@@ -96,4 +96,37 @@ class CsvReaderTest extends TestCase
         // Generators are lazy: start iteration to trigger fopen
         iterator_to_array($reader->read('/nonexistent/path/file.csv'), false);
     }
+
+    public function testCountRowsExcludesHeader()
+    {
+        file_put_contents($this->tmpFile, "id,libelle\n1,Alpha\n2,Beta\n3,Gamma\n");
+
+        $this->assertSame(3, (new CsvReader())->countRows($this->tmpFile));
+    }
+
+    public function testCountRowsHandlesFileWithoutTrailingNewline()
+    {
+        file_put_contents($this->tmpFile, "id,libelle\n1,Alpha\n2,Beta");
+
+        $this->assertSame(1, (new CsvReader())->countRows($this->tmpFile));
+    }
+
+    public function testCountRowsOnHeaderOnly()
+    {
+        file_put_contents($this->tmpFile, "id,libelle\n");
+
+        $this->assertSame(0, (new CsvReader())->countRows($this->tmpFile));
+    }
+
+    public function testCountRowsOnLargeFile()
+    {
+        $fp = fopen($this->tmpFile, 'w');
+        fwrite($fp, "id,libelle\n");
+        for ($i = 0; $i < 5000; $i++) {
+            fwrite($fp, sprintf("%d,row-%d\n", $i, $i));
+        }
+        fclose($fp);
+
+        $this->assertSame(5000, (new CsvReader())->countRows($this->tmpFile));
+    }
 }
