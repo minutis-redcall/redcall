@@ -21,6 +21,7 @@ use App\Sync\Reference\ReferenceTables;
 use App\Sync\Reporter\NullSyncProgressReporter;
 use App\Sync\Reporter\SyncProgressReporter;
 use App\Sync\Source\CsvSourceInterface;
+use App\Sync\Writer\VolunteerSyncSnapshotWriter;
 use App\Task\FinalizeDataSyncTask;
 use App\Task\SyncStructuresChunkTask;
 use App\Task\SyncVolunteersChunkTask;
@@ -60,6 +61,7 @@ class DataSyncOrchestrator
     private VolunteerManager $volunteerManager;
     private EntityManagerInterface $em;
     private TaskSender $async;
+    private VolunteerSyncSnapshotWriter $snapshotWriter;
     private LoggerInterface $logger;
     private SyncProgressReporter $progress;
 
@@ -74,6 +76,7 @@ class DataSyncOrchestrator
         VolunteerManager $volunteerManager,
         EntityManagerInterface $em,
         TaskSender $async,
+        VolunteerSyncSnapshotWriter $snapshotWriter,
         ?LoggerInterface $logger = null
     ) {
         $this->source            = $source;
@@ -86,6 +89,7 @@ class DataSyncOrchestrator
         $this->volunteerManager  = $volunteerManager;
         $this->em                = $em;
         $this->async             = $async;
+        $this->snapshotWriter    = $snapshotWriter;
         $this->logger            = $logger ?? new NullLogger();
         $this->progress          = new NullSyncProgressReporter();
     }
@@ -196,6 +200,9 @@ class DataSyncOrchestrator
             foreach ($chunk as $row) {
                 $this->volunteerImporter->import($row, $syncedAt);
             }
+            // One batched INSERT ... ON DUPLICATE KEY UPDATE for the whole
+            // chunk instead of 50 × (SELECT + INSERT/UPDATE + EM flush).
+            $this->snapshotWriter->flush();
             $done += count($chunk);
             $this->em->clear();
             $this->progress->advanceBar(count($chunk));

@@ -142,6 +142,8 @@ services:
     public: true
   App\Sync\DataSyncOrchestrator:
     public: true
+  App\Sync\Writer\VolunteerSyncSnapshotWriter:
+    public: true
 
   App\Sync\Source\GcsCsvSource:
     arguments:

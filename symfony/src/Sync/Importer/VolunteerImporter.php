@@ -5,17 +5,16 @@ namespace App\Sync\Importer;
 use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Volunteer;
-use App\Entity\VolunteerSyncSnapshot;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
-use App\Repository\VolunteerSyncSnapshotRepository;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\TrainingRow;
 use App\Sync\Dto\VolunteerRow;
+use App\Sync\Writer\VolunteerSyncSnapshotWriter;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
@@ -30,7 +29,7 @@ class VolunteerImporter
     private UserManager $userManager;
     private PhoneManager $phoneManager;
     private BadgeFactory $badgeFactory;
-    private VolunteerSyncSnapshotRepository $snapshotRepository;
+    private VolunteerSyncSnapshotWriter $snapshotWriter;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -39,16 +38,16 @@ class VolunteerImporter
         UserManager $userManager,
         PhoneManager $phoneManager,
         BadgeFactory $badgeFactory,
-        VolunteerSyncSnapshotRepository $snapshotRepository,
+        VolunteerSyncSnapshotWriter $snapshotWriter,
         ?LoggerInterface $logger = null
     ) {
-        $this->volunteerManager   = $volunteerManager;
-        $this->structureManager   = $structureManager;
-        $this->userManager        = $userManager;
-        $this->phoneManager       = $phoneManager;
-        $this->badgeFactory       = $badgeFactory;
-        $this->snapshotRepository = $snapshotRepository;
-        $this->logger             = $logger ?? new NullLogger();
+        $this->volunteerManager = $volunteerManager;
+        $this->structureManager = $structureManager;
+        $this->userManager      = $userManager;
+        $this->phoneManager     = $phoneManager;
+        $this->badgeFactory     = $badgeFactory;
+        $this->snapshotWriter   = $snapshotWriter;
+        $this->logger           = $logger ?? new NullLogger();
     }
 
     public function import(VolunteerRow $row, ?\DateTimeImmutable $syncedAt = null) : void
@@ -99,11 +98,10 @@ class VolunteerImporter
 
     private function writeSnapshot(string $externalId, VolunteerRow $row, \DateTimeImmutable $syncedAt) : void
     {
-        $snapshot = $this->snapshotRepository->findOneByExternalId($externalId) ?? new VolunteerSyncSnapshot();
-        $snapshot->setExternalId($externalId);
-        $snapshot->setSyncedAt(\DateTime::createFromImmutable($syncedAt));
-        $snapshot->setPayloadArray($row->toArray());
-        $this->snapshotRepository->save($snapshot);
+        // Buffered upsert via raw DBAL — flushed by the orchestrator at the
+        // end of every chunk. Avoids the per-row SELECT + INSERT/UPDATE +
+        // EM flush that previously doubled the round-trips against MySQL.
+        $this->snapshotWriter->queue($externalId, $syncedAt, $row->toArray());
     }
 
     private function updateStructures(Volunteer $volunteer, VolunteerRow $row) : void

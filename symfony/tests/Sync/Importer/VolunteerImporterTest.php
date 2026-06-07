@@ -6,6 +6,7 @@ use App\Entity\Phone;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
 use App\Repository\VolunteerSyncSnapshotRepository;
+use App\Sync\Writer\VolunteerSyncSnapshotWriter;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
@@ -279,6 +280,9 @@ class VolunteerImporterTest extends KernelTestCase
             ],
         ]);
         $this->importer->import($row, new \DateTimeImmutable('2026-06-07 02:00:00'));
+        // The writer batches snapshots and only flushes at chunk boundaries.
+        // Here we trigger the flush manually to inspect what was queued.
+        self::getContainer()->get(VolunteerSyncSnapshotWriter::class)->flush();
         $this->em->clear();
 
         /** @var VolunteerSyncSnapshotRepository $snapshotRepository */
@@ -300,6 +304,7 @@ class VolunteerImporterTest extends KernelTestCase
 
         $this->importer->import($this->row(['firstName' => 'Jean']), new \DateTimeImmutable('2026-06-01'));
         $this->importer->import($this->row(['firstName' => 'JEAN-PAUL']), new \DateTimeImmutable('2026-06-07'));
+        self::getContainer()->get(VolunteerSyncSnapshotWriter::class)->flush();
         $this->em->clear();
 
         /** @var VolunteerSyncSnapshotRepository $snapshotRepository */
