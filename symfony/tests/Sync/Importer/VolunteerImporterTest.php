@@ -75,7 +75,13 @@ class VolunteerImporterTest extends KernelTestCase
 
     public function testPse2TrainingBadgeIsSaved()
     {
-        // The regression that triggered this whole rewrite
+        // The regression that triggered this whole rewrite.
+        // Note: training badge `expires_at` is set by the orchestrator's
+        // precreateBadges() step (single-concurrency, batch SQL) — not by
+        // VolunteerImporter::import() anymore, since per-row badge UPDATEs
+        // would deadlock under concurrent chunk execution. The full-flow
+        // assertion on expires_at lives in DataSyncOrchestratorTest; here
+        // we only check that the badge gets attached to the volunteer.
         $this->fixtures->createStructure('UL 980', '980');
 
         $row = $this->row([
@@ -96,15 +102,8 @@ class VolunteerImporterTest extends KernelTestCase
         $volunteer = $this->volunteerManager->findOneByExternalId('1100999999X');
         $this->assertNotNull($volunteer);
 
-        $byExternalId = [];
-        foreach ($volunteer->getBadges(false) as $badge) {
-            $byExternalId[$badge->getExternalId()] = $badge;
-        }
-
-        $this->assertArrayHasKey('training-167', $byExternalId);
-        $pse2 = $byExternalId['training-167'];
-        $this->assertSame('PSE2', $pse2->getName());
-        $this->assertSame('2027-12-31', $pse2->getExpiresAt()->format('Y-m-d'));
+        $externalIds = array_map(fn ($b) => $b->getExternalId(), $volunteer->getBadges(false)->toArray());
+        $this->assertContains('training-167', $externalIds, 'PSE2 must be attached as a training-167 badge');
     }
 
     public function testExpiredTrainingIsSkipped()

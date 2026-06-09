@@ -105,8 +105,18 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $volunteer = $this->volunteerManager->findOneByExternalId('T0000000001B');
         $this->assertNotNull($volunteer);
 
-        $externalIds = array_map(fn ($b) => $b->getExternalId(), $volunteer->getBadges(false)->toArray());
-        $this->assertContains('training-167', $externalIds, 'PSE2 (valid until 2027) must be persisted as training-167');
+        $byExternalId = [];
+        foreach ($volunteer->getBadges(false) as $badge) {
+            $byExternalId[$badge->getExternalId()] = $badge;
+        }
+        $this->assertArrayHasKey('training-167', $byExternalId, 'PSE2 (valid until 2027) must be persisted as training-167');
+
+        // The orchestrator's precreateBadges() phase upserts every training
+        // badge with the latest dateRecyclage seen across the run before any
+        // chunk runs. The fixture has PSE2_OK with expiresAt 2027-12-31.
+        $pse2 = $byExternalId['training-167'];
+        $this->assertSame('PSE2', $pse2->getName());
+        $this->assertSame('2027-12-31', $pse2->getExpiresAt()->format('Y-m-d'));
     }
 
     public function testVolunteerWithExpiredTrainingDoesNotGetBadge()

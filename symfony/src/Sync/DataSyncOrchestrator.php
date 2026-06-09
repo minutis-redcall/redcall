@@ -13,6 +13,7 @@ use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\StructureRow;
 use App\Sync\Dto\TrainingRow;
 use App\Sync\Dto\VolunteerRow;
+use App\Sync\Importer\BadgeFactory;
 use App\Sync\Importer\StructureImporter;
 use App\Sync\Importer\VolunteerImporter;
 use App\Sync\Reader\CsvReader;
@@ -57,6 +58,7 @@ class DataSyncOrchestrator
     private ReferenceTables $referenceTables;
     private StructureImporter $structureImporter;
     private VolunteerImporter $volunteerImporter;
+    private BadgeFactory $badgeFactory;
     private RtmrReconciliator $rtmrReconciliator;
     private StructureManager $structureManager;
     private VolunteerManager $volunteerManager;
@@ -73,6 +75,7 @@ class DataSyncOrchestrator
         ReferenceTables $referenceTables,
         StructureImporter $structureImporter,
         VolunteerImporter $volunteerImporter,
+        BadgeFactory $badgeFactory,
         RtmrReconciliator $rtmrReconciliator,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
@@ -86,6 +89,7 @@ class DataSyncOrchestrator
         $this->referenceTables   = $referenceTables;
         $this->structureImporter = $structureImporter;
         $this->volunteerImporter = $volunteerImporter;
+        $this->badgeFactory      = $badgeFactory;
         $this->rtmrReconciliator = $rtmrReconciliator;
         $this->structureManager  = $structureManager;
         $this->volunteerManager  = $volunteerManager;
@@ -164,6 +168,12 @@ class DataSyncOrchestrator
         $this->logger->info(sprintf('Collected %d volunteers', count($volunteerRows)));
         $this->progress->info(sprintf('Collected %d volunteers', count($volunteerRows)));
 
+        // Pre-create every badge referenced by any volunteer row, in a single
+        // serialized step. Chunk tasks (which run with 30× concurrency on the
+        // sync-chunk queue) only READ badges afterwards — no concurrent UPDATE
+        // on the shared `badge` rows, no more deadlocks.
+        $this->precreateBadges($volunteerRows);
+
         if ($dispatchAsync) {
             $this->dispatchStructureChunks($structureRows, $syncedAt);
             $this->dispatchVolunteerChunks($volunteerRows, $syncedAt);
@@ -232,6 +242,122 @@ class DataSyncOrchestrator
         }
 
         $this->progress->finishBar();
+    }
+
+    /**
+     * Walks every VolunteerRow once and bulk-upserts every badge it references
+     * (groupeAction-/skill-/training-/nomination-{id}). For trainings we keep
+     * the LATEST dateRecyclage seen across volunteers as the badge's
+     * expires_at — that way `Badge::hasExpired()` (used by the locked-volunteer
+     * cleanup) is meaningful: the badge is "expired" only when nobody's
+     * matching cert is valid anymore.
+     *
+     * Concurrent chunk tasks would otherwise all race to UPDATE the same ~700
+     * shared badge rows and deadlock in production. This pre-step runs once
+     * inside StartDataSyncTask (sync-start queue, single-concurrency).
+     *
+     * @param VolunteerRow[] $volunteerRows
+     */
+    private function precreateBadges(array $volunteerRows) : void
+    {
+        $now              = new \DateTimeImmutable();
+        $actionBadges     = [];
+        $skillBadges      = [];
+        $trainingBadges   = [];
+        $nominationBadges = [];
+
+        foreach ($volunteerRows as $row) {
+            foreach ($row->actions as $action) {
+                /** @var ActionRow $action */
+                if ('' === $action->groupActionId) {
+                    continue;
+                }
+                $actionBadges['groupeAction-'.$action->groupActionId] = [
+                    'externalId'  => 'groupeAction-'.$action->groupActionId,
+                    'name'        => $action->groupActionLabel,
+                    'description' => $action->groupActionLabel,
+                    'expiresAt'   => null,
+                ];
+            }
+
+            foreach ($row->skills as $skill) {
+                /** @var SkillRow $skill */
+                if ('' === $skill->competenceId) {
+                    continue;
+                }
+                $skillBadges['skill-'.$skill->competenceId] = [
+                    'externalId'  => 'skill-'.$skill->competenceId,
+                    'name'        => $skill->label,
+                    'description' => $skill->label,
+                    'expiresAt'   => null,
+                ];
+            }
+
+            foreach ($row->trainings as $training) {
+                /** @var TrainingRow $training */
+                if ('' === $training->formationId) {
+                    continue;
+                }
+                if ($training->expiresAt !== null && $training->expiresAt < $now) {
+                    // Don't bother creating a badge for a formation whose
+                    // every known training is already expired.
+                    continue;
+                }
+                $key   = 'training-'.$training->formationId;
+                $first = !isset($trainingBadges[$key]);
+                if ($first) {
+                    $expiry = $training->expiresAt;
+                } else {
+                    $expiry = $this->mergeMaxExpiry(
+                        $trainingBadges[$key]['expiresAt'],
+                        $training->expiresAt
+                    );
+                }
+                $trainingBadges[$key] = [
+                    'externalId'  => $key,
+                    'name'        => $training->code,
+                    'description' => $training->label,
+                    'expiresAt'   => $expiry,
+                ];
+            }
+
+            foreach ($row->nominations as $nomination) {
+                /** @var NominationRow $nomination */
+                if ('' === $nomination->nominationId) {
+                    continue;
+                }
+                $nominationBadges['nomination-'.$nomination->nominationId] = [
+                    'externalId'  => 'nomination-'.$nomination->nominationId,
+                    'name'        => $nomination->code,
+                    'description' => $nomination->label,
+                    'expiresAt'   => null,
+                ];
+            }
+        }
+
+        $this->badgeFactory->bulkUpsert(array_values($actionBadges));
+        $this->badgeFactory->bulkUpsert(array_values($skillBadges));
+        $this->badgeFactory->bulkUpsert(array_values($trainingBadges));
+        $this->badgeFactory->bulkUpsert(array_values($nominationBadges));
+
+        $count = count($actionBadges) + count($skillBadges) + count($trainingBadges) + count($nominationBadges);
+        $this->logger->info(sprintf('Pre-created/refreshed %d badges', $count));
+        $this->progress->info(sprintf('Pre-created/refreshed %d badges', $count));
+    }
+
+    /**
+     * Compose two optional DateTimeImmutable values keeping the *later* one.
+     * A null on either side means "no known expiry" — kept null so the badge
+     * stays valid forever as long as at least one volunteer has a never-
+     * expiring training of that type.
+     */
+    private function mergeMaxExpiry(?\DateTimeImmutable $a, ?\DateTimeImmutable $b) : ?\DateTimeImmutable
+    {
+        if ($a === null || $b === null) {
+            return null;
+        }
+
+        return $a > $b ? $a : $b;
     }
 
     /**

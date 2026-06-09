@@ -217,15 +217,16 @@ class VolunteerImporter
                 continue;
             }
 
-            $badge = $this->badgeFactory->findOrCreate(
+            // The badge (and its expires_at) was already pre-created by
+            // DataSyncOrchestrator::precreateBadges() in StartDataSyncTask,
+            // before any chunk got dispatched. We only attach it here.
+            // findOrCreate is kept as a safety net for the rare case where a
+            // CSV row references an id that wasn't seen during the pre-pass.
+            $badges[] = $this->badgeFactory->findOrCreate(
                 sprintf('training-%s', $training->formationId),
                 $training->code,
                 $training->label
             );
-
-            $this->badgeFactory->setTrainingExpiration($badge, $training->expiresAt);
-
-            $badges[] = $badge;
         }
 
         foreach ($row->nominations as $nomination) {
