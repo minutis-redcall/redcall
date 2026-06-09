@@ -695,7 +695,7 @@ manage_volunteers:
     subtitle: 'Dernière synchro : %date%'
     back: '← Retour'
     no_snapshot: 'Aucune donnée de synchro pour ce bénévole.'
-    no_snapshot_explain: 'Aucune synchronisation CSV n''a touché ce bénévole pour le moment. Soit il a été créé à la main, soit son NIVOL n''apparaît pas dans l''export DSI quotidien.'
+    no_snapshot_explain: 'Aucune synchronisation CSV n''a touché ce bénévole pour le moment. Soit il a été créé à la main, soit son NIVOL n''apparaît pas dans l''export DSI quotidien, soit il est gelé (les bénévoles gelés ne sont pas synchronisés).'
     section:
       identity: 'Identité'
       contact: 'Contact'

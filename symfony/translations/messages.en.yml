@@ -695,7 +695,7 @@ manage_volunteers:
     subtitle: 'Last sync: %date%'
     back: '← Back'
     no_snapshot: 'No sync data captured yet for this volunteer.'
-    no_snapshot_explain: 'This volunteer has not been touched by any CSV sync yet. They might be a manually-created volunteer or their NIVOL is not present in the daily DSI export.'
+    no_snapshot_explain: 'This volunteer has not been touched by any CSV sync yet. They might be a manually-created volunteer, their NIVOL is not present in the daily DSI export, or they are frozen (frozen volunteers are skipped by the sync).'
     section:
       identity: 'Identity'
       contact: 'Contact'
