@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Entity\User;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -76,10 +75,12 @@ class PasswordLoginBundleTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
-    // /admin/users/  (list)
+    // /admin/users/ — now a redirect to the RedCall admin (the legacy
+    // list/toggle/delete actions were removed; admin_redcall_users_*
+    // is the live surface).
     // ──────────────────────────────────────────────
 
-    public function testAdminUsersListOk(): void
+    public function testAdminUsersListRedirectsToRedcallAdmin(): void
     {
         $client = static::createClient();
         $admin  = $this->getFixtures($client->getContainer())
@@ -87,7 +88,7 @@ class PasswordLoginBundleTest extends BaseWebTestCase
         $this->login($client, $admin);
 
         $client->request('GET', '/admin/users/');
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseRedirects('/admin/redcall-users');
     }
 
     public function testAdminUsersListForbiddenForNonAdmin(): void
@@ -118,114 +119,6 @@ class PasswordLoginBundleTest extends BaseWebTestCase
         $client->request('GET', '/admin/users/profile/'.$target->getUsername());
 
         $this->assertResponseIsSuccessful();
-    }
-
-    // ──────────────────────────────────────────────
-    // /admin/users/toggle-verify/{username}/{csrf}
-    // ──────────────────────────────────────────────
-
-    public function testAdminToggleVerifyFlipsFlag(): void
-    {
-        $client    = static::createClient();
-        $container = $client->getContainer();
-        $fixtures  = $this->getFixtures($container);
-
-        $admin  = $fixtures->createRawUser('pl-tv-admin-'.uniqid().'@test.com', 'password', true);
-        $target = $fixtures->createRawUser('pl-tv-target-'.uniqid().'@test.com', 'password', false, false);
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf(
-            '/admin/users/toggle-verify/%s/%s',
-            $target->getUsername(),
-            $this->csrf($container)
-        ));
-
-        $this->assertResponseRedirects('/admin/users/');
-
-        $em = $container->get('doctrine.orm.entity_manager');
-        $em->clear();
-        $refreshed = $em->getRepository(User::class)->find($target->getId());
-        $this->assertTrue($refreshed->isVerified());
-    }
-
-    public function testAdminToggleVerifyBadCsrfReturns404(): void
-    {
-        $client    = static::createClient();
-        $container = $client->getContainer();
-        $fixtures  = $this->getFixtures($container);
-
-        $admin  = $fixtures->createRawUser('pl-tv-bad-admin-'.uniqid().'@test.com', 'password', true);
-        $target = $fixtures->createRawUser('pl-tv-bad-target-'.uniqid().'@test.com', 'password');
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf('/admin/users/toggle-verify/%s/bad-csrf', $target->getUsername()));
-
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    // ──────────────────────────────────────────────
-    // /admin/users/toggle-trust/{username}/{csrf}
-    // ──────────────────────────────────────────────
-
-    public function testAdminToggleTrustFlipsFlag(): void
-    {
-        $client    = static::createClient();
-        $container = $client->getContainer();
-        $fixtures  = $this->getFixtures($container);
-
-        $admin  = $fixtures->createRawUser('pl-tt-admin-'.uniqid().'@test.com', 'password', true);
-        $target = $fixtures->createRawUser('pl-tt-target-'.uniqid().'@test.com', 'password');
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf(
-            '/admin/users/toggle-trust/%s/%s',
-            $target->getUsername(),
-            $this->csrf($container)
-        ));
-
-        $this->assertResponseRedirects('/admin/users/');
-    }
-
-    // ──────────────────────────────────────────────
-    // /admin/users/toggle-admin/{username}/{csrf}
-    // ──────────────────────────────────────────────
-
-    public function testAdminToggleAdminFlipsFlag(): void
-    {
-        $client    = static::createClient();
-        $container = $client->getContainer();
-        $fixtures  = $this->getFixtures($container);
-
-        $admin  = $fixtures->createRawUser('pl-ta-admin-'.uniqid().'@test.com', 'password', true);
-        $target = $fixtures->createRawUser('pl-ta-target-'.uniqid().'@test.com', 'password');
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf(
-            '/admin/users/toggle-admin/%s/%s',
-            $target->getUsername(),
-            $this->csrf($container)
-        ));
-
-        $this->assertResponseRedirects('/admin/users/');
-    }
-
-    // ──────────────────────────────────────────────
-    // /admin/users/delete/{username}/{csrf}
-    // ──────────────────────────────────────────────
-
-    public function testAdminDeleteUserBadCsrfReturns404(): void
-    {
-        $client    = static::createClient();
-        $container = $client->getContainer();
-        $fixtures  = $this->getFixtures($container);
-
-        $admin  = $fixtures->createRawUser('pl-del-admin-'.uniqid().'@test.com', 'password', true);
-        $target = $fixtures->createRawUser('pl-del-target-'.uniqid().'@test.com', 'password');
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf('/admin/users/delete/%s/bad-csrf', $target->getUsername()));
-
-        $this->assertResponseStatusCodeSame(404);
     }
 
     // ──────────────────────────────────────────────

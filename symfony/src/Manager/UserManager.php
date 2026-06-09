@@ -140,17 +140,20 @@ class UserManager extends BaseUserManager
         return array_unique($users, SORT_REGULAR);
     }
 
-    public function createUser(string $externalId)
+    public function createUser(string $externalId, ?string $actorId = null)
     {
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
 
-        $input = new ArrayInput([
+        $parameters = [
             'command'      => 'user:create',
             'external-id'  => [$externalId],
-        ]);
+        ];
+        if (null !== $actorId) {
+            $parameters['--actor-id'] = $actorId;
+        }
 
-        $application->run($input, new NullOutput());
+        $application->run(new ArrayInput($parameters), new NullOutput());
     }
 
     /**

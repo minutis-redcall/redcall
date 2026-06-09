@@ -11,7 +11,7 @@
         <div class="d-flex flex-column align-items-center">
             {% if is_granted('ROLE_ADMIN') %}
                 {% if display_manage_users is not defined or display_manage_users %}
-                    <a href="{{ path('password_login_admin_list') }}" class="btn btn-outline-info btn-block btn-sm mb-3">
+                    <a href="{{ path('admin_redcall_users_index') }}" class="btn btn-outline-info btn-block btn-sm mb-3">
                         {{ 'password_login.user_list.button'|trans }}
                     </a>
                 {% endif %}

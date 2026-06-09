@@ -1,0 +1,154 @@
+{% set snapshot = entry.snapshot %}
+{% set action = entry.action %}
+{% set jsonFlags = constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') %}
+
+{% set action_class = {
+    'create': 'badge-success',
+    'update': 'badge-warning',
+    'delete': 'badge-danger',
+}[action] | default('badge-secondary') %}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+                <span class="badge {{ action_class }} mr-2">
+                    {{ ('admin.users.history.action.' ~ action)|trans }}
+                </span>
+                <strong>
+                    {% if entry.targetDisplayName %}
+                        {{ entry.targetDisplayName }}
+                    {% elseif entry.targetUsername %}
+                        {{ entry.targetUsername }}
+                    {% else %}
+                        <em class="text-muted">{{ 'admin.users.history.unknown_target'|trans }}</em>
+                    {% endif %}
+                </strong>
+                {% if entry.targetUsername %}
+                    <small class="text-muted">&middot; {{ entry.targetUsername }}</small>
+                {% endif %}
+                {% if entry.targetExternalId %}
+                    <small class="text-muted">&middot; <code>{{ entry.targetExternalId }}</code></small>
+                {% endif %}
+            </div>
+            <div class="text-right">
+                <div>{{ entry.createdAt|date('d/m/Y H:i:s') }}</div>
+                <small class="text-muted">
+                    {{ 'admin.users.history.actor'|trans }}:
+                    {% if entry.actor %}
+                        {{ entry.actor.displayName }}
+                    {% else %}
+                        <em>{{ entry.actorLabel }}</em>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="audit-detail small">
+            {% if action == 'update' %}
+                {% set old = snapshot.old ?? {} %}
+                {% set new = snapshot.new ?? {} %}
+                {% set changed = false %}
+
+                {% for field in ['isVerified', 'isTrusted', 'isAdmin', 'isRoot', 'locked'] %}
+                    {% if old[field] is defined and new[field] is defined and old[field] != new[field] %}
+                        {% set changed = true %}
+                        <div>
+                            {{ ('admin.users.history.field.' ~ field)|trans }}:
+                            <s class="text-muted">{{ old[field] ? ('base.simple_yes'|trans) : ('base.simple_no'|trans) }}</s>
+                            &rarr;
+                            <strong>{{ new[field] ? ('base.simple_yes'|trans) : ('base.simple_no'|trans) }}</strong>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+                {% if old.username is defined and new.username is defined and old.username != new.username %}
+                    {% set changed = true %}
+                    <div>
+                        {{ 'admin.users.history.field.username'|trans }}:
+                        <s class="text-muted">{{ old.username ?? '—' }}</s>
+                        &rarr;
+                        <strong>{{ new.username ?? '—' }}</strong>
+                    </div>
+                {% endif %}
+
+                {% if old.externalId is defined and new.externalId is defined and old.externalId != new.externalId %}
+                    {% set changed = true %}
+                    <div>
+                        {{ 'admin.users.history.field.externalId'|trans }}:
+                        <s class="text-muted">{{ old.externalId ?? '—' }}</s>
+                        &rarr;
+                        <strong>{{ new.externalId ?? '—' }}</strong>
+                    </div>
+                {% endif %}
+
+                {% if old.passwordFingerprint is defined and new.passwordFingerprint is defined and old.passwordFingerprint != new.passwordFingerprint %}
+                    {% set changed = true %}
+                    <div>{{ 'admin.users.history.field.password'|trans }}</div>
+                {% endif %}
+
+                {% set old_struct_ids = (old.structures ?? [])|map(s => s.id) %}
+                {% set new_struct_ids = (new.structures ?? [])|map(s => s.id) %}
+                {% set added = (new.structures ?? [])|filter(s => s.id not in old_struct_ids) %}
+                {% set removed = (old.structures ?? [])|filter(s => s.id not in new_struct_ids) %}
+
+                {% if added|length or removed|length %}
+                    {% set changed = true %}
+                    {% if added|length %}
+                        <div>
+                            {{ 'admin.users.history.field.structures_added'|trans }}:
+                            {% for s in added %}
+                                <span class="badge badge-light">{{ s.name ?? s.externalId }}</span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if removed|length %}
+                        <div>
+                            {{ 'admin.users.history.field.structures_removed'|trans }}:
+                            {% for s in removed %}
+                                <span class="badge badge-light"><s>{{ s.name ?? s.externalId }}</s></span>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                {% if not changed %}
+                    <em class="text-muted">{{ 'admin.users.history.no_visible_change'|trans }}</em>
+                {% endif %}
+
+            {% else %}
+                {# create or delete — show a compact summary #}
+                <div>
+                    {% set flags = [] %}
+                    {% if snapshot.isVerified %}{% set flags = flags|merge(['V']) %}{% endif %}
+                    {% if snapshot.isTrusted %}{% set flags = flags|merge(['T']) %}{% endif %}
+                    {% if snapshot.isAdmin %}{% set flags = flags|merge(['A']) %}{% endif %}
+                    {% if snapshot.isRoot %}{% set flags = flags|merge(['R']) %}{% endif %}
+                    {% if snapshot.locked %}{% set flags = flags|merge(['L']) %}{% endif %}
+                    {% if flags|length %}
+                        {{ 'admin.users.history.field.flags'|trans }}:
+                        {% for f in flags %}<span class="badge badge-light">{{ f }}</span>{% endfor %}
+                    {% endif %}
+                </div>
+                {% if snapshot.structures is defined %}
+                    <div>
+                        {{ 'admin.users.history.field.structures'|trans }}:
+                        {{ snapshot.structures|length }}
+                        {% if snapshot.structures|length > 0 %}
+                            ({% for s in snapshot.structures|slice(0, 5) %}{{ s.name ?? s.externalId }}{% if not loop.last %}, {% endif %}{% endfor %}{% if snapshot.structures|length > 5 %}…{% endif %})
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="mt-2">
+            <a class="small" data-toggle="collapse" href="#raw-{{ entry.id }}" role="button" aria-expanded="false" aria-controls="raw-{{ entry.id }}">
+                {{ 'admin.users.history.view_raw'|trans }}
+            </a>
+            <div class="collapse mt-2" id="raw-{{ entry.id }}">
+                <pre class="small bg-light p-2 rounded" style="max-height: 320px; overflow: auto;">{{ snapshot|json_encode(jsonFlags) }}</pre>
+            </div>
+        </div>
+    </div>
+</div>

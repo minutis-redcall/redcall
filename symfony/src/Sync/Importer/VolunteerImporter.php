@@ -7,6 +7,7 @@ use App\Entity\Phone;
 use App\Entity\Volunteer;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
+use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Sync\Dto\ActionRow;
@@ -30,6 +31,7 @@ class VolunteerImporter
     private PhoneManager $phoneManager;
     private BadgeFactory $badgeFactory;
     private VolunteerSyncSnapshotWriter $snapshotWriter;
+    private UserAuditLogManager $userAuditLogManager;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -39,15 +41,17 @@ class VolunteerImporter
         PhoneManager $phoneManager,
         BadgeFactory $badgeFactory,
         VolunteerSyncSnapshotWriter $snapshotWriter,
+        UserAuditLogManager $userAuditLogManager,
         ?LoggerInterface $logger = null
     ) {
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->userManager      = $userManager;
-        $this->phoneManager     = $phoneManager;
-        $this->badgeFactory     = $badgeFactory;
-        $this->snapshotWriter   = $snapshotWriter;
-        $this->logger           = $logger ?? new NullLogger();
+        $this->volunteerManager    = $volunteerManager;
+        $this->structureManager    = $structureManager;
+        $this->userManager         = $userManager;
+        $this->phoneManager        = $phoneManager;
+        $this->badgeFactory        = $badgeFactory;
+        $this->snapshotWriter      = $snapshotWriter;
+        $this->userAuditLogManager = $userAuditLogManager;
+        $this->logger              = $logger ?? new NullLogger();
     }
 
     public function import(VolunteerRow $row, ?\DateTimeImmutable $syncedAt = null) : void
@@ -250,7 +254,9 @@ class VolunteerImporter
         if (!$user) {
             return;
         }
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $this->userManager->changeVolunteer($user, $volunteer->getExternalId());
+        $this->userAuditLogManager->logUpdated(null, 'sync: pegass', $user, $old);
     }
 
     private function normalizeName(string $name) : string

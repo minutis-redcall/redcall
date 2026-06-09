@@ -2,6 +2,8 @@
 
 namespace Bundles\PasswordLoginBundle\Command;
 
+use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use Bundles\PasswordLoginBundle\Base\BaseCommand;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Symfony\Component\Console\Command\Command;
@@ -16,11 +18,17 @@ class UserAdminCommand extends Command
      */
     private $userManager;
 
-    public function __construct(UserManager $userManager)
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
+    public function __construct(UserManager $userManager, UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct();
 
-        $this->userManager = $userManager;
+        $this->userManager         = $userManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     protected function configure() : void
@@ -44,8 +52,12 @@ class UserAdminCommand extends Command
             return 1;
         }
 
+        $old = $user instanceof User ? $this->userAuditLogManager->buildSnapshot($user) : null;
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->userManager->save($user);
+        if ($user instanceof User && null !== $old) {
+            $this->userAuditLogManager->logUpdated(null, 'CLI: user:admin', $user, $old);
+        }
 
         $status = $user->isAdmin() ? '<question>admin</question>' : '<error>simple user</error>';
         $output->writeln("User <info>{$username}</info> is now: {$status}.");
