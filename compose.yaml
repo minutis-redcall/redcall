@@ -1,0 +1,72 @@
+# =============================================================================
+# RedCall - Docker Compose (development)
+# =============================================================================
+#
+# Start the dev stack:
+#   docker compose up -d
+#
+# The app is available at:
+#   http://127.0.0.1:83
+#   (update WEBSITE_URL in symfony/.env to http://127.0.0.1:83)
+#
+# MySQL is accessible from the host at:
+#   mysql -h 127.0.0.1 -P 3309 -u root redcall_prod
+#
+# Host ports are offset by +3 from the standard service ports
+# (HTTP 80 -> 83, MySQL 3306 -> 3309) to avoid collisions with other projects.
+#
+# Useful commands:
+#   docker compose logs -f          Follow all logs
+#   docker compose exec php sh      Shell into the PHP container
+#   docker compose exec php composer install
+#   docker compose exec php bin/console doctrine:migrations:migrate
+#   docker compose down             Stop and remove containers
+#
+# Inside the PHP container, MySQL is reachable at host=mysql, port=3306.
+# DATABASE_HOST is overridden below so the same symfony/.env works for both
+# native (host MySQL) and Docker (containerised MySQL) setups.
+# =============================================================================
+
+services:
+
+  mysql:
+    build:
+      context: ./docker/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-redcall_prod}
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'yes'
+      MYSQL_ROOT_HOST: '%'
+    ports:
+      - "3309:3306"
+    volumes:
+      - ./docker/mysql/my.cnf:/etc/my.cnf
+      - ./docker/mysql/data:/var/lib/mysql
+
+  caddy:
+    build:
+      context: ./docker/caddy
+    depends_on:
+      - php
+    ports:
+      - "83:80"
+    volumes:
+      - ./symfony:/var/www/symfony
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./docker/caddy/data:/data
+      - ./docker/caddy/config:/config
+
+  php:
+    build:
+      context: ./docker/php
+    depends_on:
+      - mysql
+    environment:
+      DATABASE_HOST: mysql
+      DATABASE_PORT: 3306
+      DATABASE_USER: ${DATABASE_USER:-root}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD-}
+    expose:
+      - "9000"
+    volumes:
+      - ./symfony:/var/www/symfony
+      - ./logs:/var/log/app

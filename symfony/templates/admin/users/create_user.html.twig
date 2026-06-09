@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="rc-section">
+
+        <h3>{{ 'admin.users.create_user'|trans }}</h3>
+
+        {{ form_start(form) }}
+        {{ form_row(form.externalId) }}
+        {{ form_end(form) }}
+
+        <div class="rc-back-link">
+            <a href="{{ path('admin_redcall_users_index') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
+
+    </div>
+
+{% endblock %}

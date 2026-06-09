@@ -1,0 +1,60 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <div class="rc-section">
+
+        <h3>{{ 'admin.users.structures'|trans({'%name%': user.username}) }}</h3>
+
+        {% if user.structures(false).count %}
+
+            {{ form_start(form) }}
+
+            {{ form_label(form.structures) }}
+
+            {% if user.structures.count >= 1 %}
+                <label class="switch">
+                    <input type="checkbox"
+                           id="select-all"
+                           onclick="$('#structures input[type=\'checkbox\']').slice(0, 800).prop('checked', $(this).is(':checked'));"/>
+                    <span class="slider"></span>
+                </label>
+                <label for="select-all">
+                    <em class="text-muted">{{ 'admin.users.max'|trans({'%max%': 800}) }}</em>
+                </label>
+            {% endif %}
+
+            <div id="structures">
+                {% for child in form.structures %}
+                    <div class="{% if not structures[child.vars.value].enabled %}color-grey{% endif %}">
+                        {{ form_widget(child) }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            {{ form_end(form) }}
+
+            <hr/>
+        {% endif %}
+
+        {{ 'admin.users.add_structure'|trans }}
+        <div id="structure-to-add">
+            {{ render(controller('\\App\\Controller\\WidgetController::structureEditor')) }}
+        </div>
+
+        <div class="rc-back-link">
+            <a href="{{ path('admin_redcall_users_index') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $('#structure-to-add input').change(function () {
+            document.location = '{{ path('admin_redcall_users_add_structure', {id: user.id, csrf: csrf_token('pegass')})|e('js') }}?structure=' + $(this).val();
+        });
+    </script>
+
+{% endblock %}

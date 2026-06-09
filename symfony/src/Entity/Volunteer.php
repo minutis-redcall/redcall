@@ -95,7 +95,7 @@ class Volunteer implements LockableInterface
      * @var \DateTimeInterface
      */
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private $lastPegassUpdate;
+    private $lastSyncedAt;
 
     /**
      * @var array
@@ -289,14 +289,14 @@ class Volunteer implements LockableInterface
         return $this->getPhone() ? $this->getPhone()->getNational() : null;
     }
 
-    public function getLastPegassUpdate() : ?\DateTimeInterface
+    public function getLastSyncedAt() : ?\DateTimeInterface
     {
-        return $this->lastPegassUpdate;
+        return $this->lastSyncedAt;
     }
 
-    public function setLastPegassUpdate(\DateTimeInterface $lastPegassUpdate) : Volunteer
+    public function setLastSyncedAt(\DateTimeInterface $lastSyncedAt) : Volunteer
     {
-        $this->lastPegassUpdate = $lastPegassUpdate;
+        $this->lastSyncedAt = $lastSyncedAt;
 
         return $this;
     }
@@ -586,20 +586,21 @@ class Volunteer implements LockableInterface
         });
     }
 
-    public function getNextPegassUpdate() : ?DateTime
+    public function getNextSyncDate() : ?DateTime
     {
-        if (!$this->lastPegassUpdate) {
+        if (!$this->lastSyncedAt) {
             return null;
         }
 
-        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_VOLUNTEER] * 24 * 60 * 60));
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris).
+        // The CSV sync runs every 24h.
+        $utc      = (new DateTime($this->lastSyncedAt->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
+        $interval = new DateInterval('P1D');
 
-        $nextPegassUpdate = clone $utc;
-        $nextPegassUpdate->add($interval);
+        $next = clone $utc;
+        $next->add($interval);
 
-        return $nextPegassUpdate;
+        return $next;
     }
 
     public function getTruncatedName() : string

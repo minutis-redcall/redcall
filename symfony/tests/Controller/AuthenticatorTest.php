@@ -109,6 +109,74 @@ class AuthenticatorTest extends BaseWebTestCase
         $this->assertAuthenticated($client);
     }
 
+    public function testFormLoginIssuesRememberMeCookieWhenTicked() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        $this->getFixtures($container)->createRawUser(
+            'formlogin_remember@test.com',
+            'StrongPassword123!',
+            false,
+            true
+        );
+
+        $client->followRedirects();
+        $crawler = $client->request('GET', '/connect');
+        $this->assertResponseIsSuccessful();
+
+        $form             = $crawler->filter('#classic-login form')->form();
+        $form['username'] = 'formlogin_remember@test.com';
+        $form['password'] = 'StrongPassword123!';
+        $form['_remember_me']->tick();
+        $client->submit($form);
+
+        $this->assertResponseIsSuccessful();
+
+        // The firewall's remember-me handler only issues a REMEMBERME cookie
+        // when the Passport carries a RememberMeBadge. Regression net for the
+        // Symfony 5→8 authenticator rewrite, which silently broke this until
+        // the badge was wired in.
+        $cookie = $client->getCookieJar()->get('REMEMBERME');
+        $this->assertNotNull(
+            $cookie,
+            'Expected a REMEMBERME cookie to be set after ticking the checkbox'
+        );
+        $this->assertNotEmpty($cookie->getValue());
+    }
+
+    public function testFormLoginDoesNotIssueRememberMeCookieWhenUnticked() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        $this->getFixtures($container)->createRawUser(
+            'formlogin_no_remember@test.com',
+            'StrongPassword123!',
+            false,
+            true
+        );
+
+        $client->followRedirects();
+        $crawler = $client->request('GET', '/connect');
+        $this->assertResponseIsSuccessful();
+
+        $form             = $crawler->filter('#classic-login form')->form();
+        $form['username'] = 'formlogin_no_remember@test.com';
+        $form['password'] = 'StrongPassword123!';
+        // Checkbox left unticked.
+        $client->submit($form);
+
+        $this->assertResponseIsSuccessful();
+
+        $this->assertNull(
+            $client->getCookieJar()->get('REMEMBERME'),
+            'Expected no REMEMBERME cookie when the checkbox is unticked'
+        );
+    }
+
     public function testFormLoginWrongPassword() : void
     {
         $client    = static::createClient();
@@ -224,6 +292,14 @@ class AuthenticatorTest extends BaseWebTestCase
         // Step 4 — the session should now carry an authenticated user.
         $client->followRedirects(false);
         $this->assertAuthenticated($client);
+
+        // Step 5 — SSO-style authenticators (Nivol, Minutis, GoogleConnect)
+        // attach a RememberMeBadge unconditionally, so a REMEMBERME cookie
+        // must be issued. Regression net for the Symfony 5→8 jump that
+        // silently dropped remember-me on every authenticator.
+        $cookie = $client->getCookieJar()->get('REMEMBERME');
+        $this->assertNotNull($cookie, 'Nivol login should issue a REMEMBERME cookie');
+        $this->assertNotEmpty($cookie->getValue());
     }
 
     public function testNivolLoginWrongCode() : void

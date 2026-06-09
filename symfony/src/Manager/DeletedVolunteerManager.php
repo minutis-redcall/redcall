@@ -3,7 +3,6 @@
 namespace App\Manager;
 
 use App\Entity\DeletedVolunteer;
-use App\Entity\Pegass;
 use App\Entity\Volunteer;
 use App\Repository\DeletedVolunteerRepository;
 use App\Tools\Hash;
@@ -11,30 +10,13 @@ use App\Tools\Random;
 
 class DeletedVolunteerManager
 {
-    /**
-     * @var DeletedVolunteerRepository
-     */
-    private $deletedVolunteerRepository;
+    private DeletedVolunteerRepository $deletedVolunteerRepository;
 
-    /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
+    private VolunteerManager $volunteerManager;
 
     public function __construct(DeletedVolunteerRepository $deletedVolunteerRepository)
     {
         $this->deletedVolunteerRepository = $deletedVolunteerRepository;
-    }
-
-    #[\Symfony\Contracts\Service\Attribute\Required]
-    public function setPegassManager(PegassManager $pegassManager) : void
-    {
-        $this->pegassManager = $pegassManager;
     }
 
     #[\Symfony\Contracts\Service\Attribute\Required]
@@ -71,7 +53,6 @@ class DeletedVolunteerManager
 
     public function anonymize(Volunteer $volunteer)
     {
-        // Adding an entry on the deleted volunteers table
         $id = Hash::hash($volunteer->getExternalId());
 
         if (!$this->deletedVolunteerRepository->findOneByHashedExternalId($id)) {
@@ -81,18 +62,11 @@ class DeletedVolunteerManager
             $this->deletedVolunteerRepository->add($deletedVolunteer);
         }
 
-        // Generating a new external id
+        // Generate a fresh external id, retrying if another volunteer already has it
         do {
             $externalId = sprintf('deleted-%s', Random::generate(16));
-        } while ($this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $externalId));
+        } while ($this->volunteerManager->findOneByExternalId($externalId));
 
-        // Removing Pegass entry (useless for accounting purposes)
-        $pegass = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId());
-        if ($pegass) {
-            $this->pegassManager->delete($pegass);
-        }
-
-        // Updating volunteer's external id
         $volunteer->setExternalId($externalId);
         $this->volunteerManager->save($volunteer);
     }

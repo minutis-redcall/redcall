@@ -4,11 +4,9 @@ namespace App\Controller\Management\Structure;
 
 use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
-use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Type\StructureType;
-use App\Manager\PegassManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Model\Csrf;
@@ -39,11 +37,6 @@ class StructuresController extends BaseController
     private $paginationManager;
 
     /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
-    /**
      * @var UserManager
      */
     private $userManager;
@@ -60,14 +53,12 @@ class StructuresController extends BaseController
 
     public function __construct(StructureManager $structureManager,
         PaginationManager $paginationManager,
-        PegassManager $pegassManager,
         UserManager $userManager,
         KernelInterface $kernel,
         TranslatorInterface $translator)
     {
         $this->structureManager  = $structureManager;
         $this->paginationManager = $paginationManager;
-        $this->pegassManager     = $pegassManager;
         $this->userManager       = $userManager;
         $this->kernel            = $kernel;
         $this->translator        = $translator;
@@ -124,22 +115,6 @@ class StructuresController extends BaseController
             'structure' => $structure,
             'form'      => $form->createView(),
         ];
-    }
-
-    #[Route(name: "pegass", path: "/pegass/{id}")]
-#[IsGranted("ROLE_ADMIN")]
-    public function pegass(Structure $structure)
-    {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getExternalId(), false);
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->render('management/structures/pegass.html.twig', [
-            'structure' => $structure,
-            'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
-            'entity'    => $entity,
-        ]);
     }
 
     #[Route(name: "export", path: "/export/{id}")]

@@ -38,3 +38,11 @@ services:
   Symfony\Component\Security\Csrf\CsrfTokenManagerInterface:
     alias: 'Bundles\SandboxBundle\Security\Csrf\TestCsrfTokenManager'
     public: true
+
+  # Sync pipeline points at the committed CSV fixtures instead of GCS in tests
+  App\Sync\Source\LocalCsvSource:
+    arguments:
+      $rootDir: '%kernel.project_dir%/tests/Fixtures/sync'
+  App\Sync\Source\CsvSourceInterface:
+    alias: 'App\Sync\Source\LocalCsvSource'
+    public: true

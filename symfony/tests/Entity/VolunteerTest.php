@@ -4,7 +4,6 @@ namespace App\Tests\Entity;
 
 use App\Entity\Badge;
 use App\Entity\Category;
-use App\Entity\Pegass;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\User;
@@ -578,27 +577,26 @@ class VolunteerTest extends TestCase
         $this->assertFalse($badges->contains($badgeA));
     }
 
-    // --- getNextPegassUpdate ---
+    // --- getNextSyncDate ---
 
-    public function testGetNextPegassUpdateReturnsNullWhenNoLastUpdate(): void
+    public function testGetNextSyncDateReturnsNullWhenNoLastUpdate(): void
     {
         $volunteer = $this->createVolunteer();
 
-        $this->assertNull($volunteer->getNextPegassUpdate());
+        $this->assertNull($volunteer->getNextSyncDate());
     }
 
-    public function testGetNextPegassUpdateReturnsDateWithTtlAdded(): void
+    public function testGetNextSyncDateReturnsTomorrow(): void
     {
         $volunteer = $this->createVolunteer();
         $lastUpdate = new DateTime('2025-01-01 12:00:00', new DateTimeZone('UTC'));
-        $volunteer->setLastPegassUpdate($lastUpdate);
+        $volunteer->setLastSyncedAt($lastUpdate);
 
-        $next = $volunteer->getNextPegassUpdate();
+        $next = $volunteer->getNextSyncDate();
 
         $this->assertNotNull($next);
-        $expectedSeconds = Pegass::TTL[Pegass::TYPE_VOLUNTEER] * 24 * 60 * 60;
-        $expected = new DateTime('2025-01-01 12:00:00', new DateTimeZone('UTC'));
-        $expected->modify(sprintf('+%d seconds', $expectedSeconds));
+        // The CSV sync runs every 24h, so the next expected sync is now+1d.
+        $expected = new DateTime('2025-01-02 12:00:00', new DateTimeZone('UTC'));
 
         $this->assertEquals($expected, $next);
     }

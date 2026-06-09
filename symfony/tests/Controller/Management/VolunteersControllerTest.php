@@ -362,31 +362,32 @@ class VolunteersControllerTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
-    // GET /management/volunteers/pegass/{id}
+    // GET /management/volunteers/sync-log/{id}
     // ──────────────────────────────────────────────
 
-    public function testPegass404WhenNoPegassEntity(): void
+    public function testSyncLogRendersForAdminEvenWhenNoSnapshot(): void
     {
         $client    = static::createClient();
         $fixtures  = $this->getFixtures($client->getContainer());
-        $admin     = $fixtures->createRawUser('vol_pegass-'.uniqid().'@test.com', 'password', true);
-        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEG-'.uniqid());
+        $admin     = $fixtures->createRawUser('vol_sl_admin-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-SL-'.uniqid());
 
         $this->login($client, $admin);
-        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
+        $client->request('GET', sprintf('/management/volunteers/sync-log/%d', $volunteer->getId()));
 
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('.alert-warning', 'A "no snapshot" banner should be visible when no sync data exists yet');
     }
 
-    public function testPegassForbiddenForNonAdmin(): void
+    public function testSyncLogForbiddenForNonAdmin(): void
     {
         $client    = static::createClient();
         $fixtures  = $this->getFixtures($client->getContainer());
-        $user      = $fixtures->createRawUser('vol_pegass_u-'.uniqid().'@test.com', 'password', false);
-        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEGU-'.uniqid());
+        $user      = $fixtures->createRawUser('vol_sl_user-'.uniqid().'@test.com', 'password', false);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-SLU-'.uniqid());
 
         $this->login($client, $user);
-        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
+        $client->request('GET', sprintf('/management/volunteers/sync-log/%d', $volunteer->getId()));
 
         $this->assertResponseStatusCodeSame(403);
     }

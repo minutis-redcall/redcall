@@ -22,6 +22,7 @@ use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -133,9 +134,10 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
             ->create(ConnectType::class)
             ->handleRequest($request);
 
-        $data     = $connectForm->getData();
-        $username = $data['username'];
-        $password = $data['password'];
+        $data       = $connectForm->getData();
+        $username   = $data['username'];
+        $password   = $data['password'];
+        $rememberMe = (bool) ($data['_remember_me'] ?? false);
 
         if (null === $username || null === $password) {
             $this->logger->warning('FormLoginAuthenticator: missing username or password', [
@@ -147,8 +149,17 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
         }
 
         $this->logger->info('FormLoginAuthenticator: building passport', [
-            'username' => $username,
+            'username'    => $username,
+            'remember_me' => $rememberMe,
         ]);
+
+        // Symfony 5.4+ requires explicit opt-in via RememberMeBadge for the
+        // firewall's remember_me handler to issue a cookie. Without this badge
+        // the remember_me: config in security.yaml is dormant.
+        $badges = [];
+        if ($rememberMe) {
+            $badges[] = new RememberMeBadge();
+        }
 
         return new Passport(
             new UserBadge($username, function ($identifier) {
@@ -169,7 +180,8 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
 
                 return $user;
             }),
-            new PasswordCredentials($password)
+            new PasswordCredentials($password),
+            $badges
         );
     }
 

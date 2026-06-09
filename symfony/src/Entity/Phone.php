@@ -119,7 +119,7 @@ class Phone implements PhoneInterface
         return $this->e164;
     }
 
-    public function setE164(string $e164) : self
+    public function setE164(?string $e164) : self
     {
         $this->e164 = $e164;
 

@@ -134,7 +134,7 @@
                         </div>
                         <div class="mb-3">
                             {% if is_granted('ROLE_ADMIN') %}
-                                <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank" class="text-dark font-weight-bold">
+                                <a href="{{ path('admin_redcall_users_update_structures', {id: app.user.id}) }}" target="_blank" class="text-dark font-weight-bold">
                                     {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
                                 </a>
                             {% else %}

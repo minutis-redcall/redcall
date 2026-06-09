@@ -31,7 +31,8 @@ class VolunteerListRepository extends BaseRepository
                     ->where('u.id = :id')
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
-                    ->orderBy('s.externalId', 'asc')
+                    ->orderBy('s.shortcut', 'asc')
+                    ->addOrderBy('l.name', 'asc')
                     ->getQuery()
                     ->getResult();
     }

@@ -196,11 +196,6 @@ class VolunteerManager
         );
     }
 
-    public function synchronizeWithPegass()
-    {
-        $this->volunteerRepository->synchronizeWithPegass();
-    }
-
     public function getIdsByExternalIds(array $externalIds) : array
     {
         return array_column(
@@ -310,14 +305,6 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterMinors($volunteerIds), 'id');
     }
 
-    /**
-     * @return int[]
-     */
-    public function findVolunteersToAnonymize() : array
-    {
-        return $this->volunteerRepository->findVolunteersToAnonymize();
-    }
-
     public function anonymize(Volunteer $volunteer)
     {
         $volunteer->setEnabled(false);
@@ -353,7 +340,7 @@ class VolunteerManager
         $volunteer->setEnabled(false);
         $volunteer->setLocked(true);
         $volunteer->getBadges()->clear();
-        $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
+        $volunteer->setLastSyncedAt(new \DateTime('2000-01-01'));
         $volunteer->setReport([]);
         $volunteer->getStructures()->clear();
         $volunteer->setUser(null);

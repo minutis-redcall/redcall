@@ -73,12 +73,12 @@ class StatisticsRepository
     public function getVolunteerPegassUpdate()
     {
         $sql = "select 
-                        min(volunteer.last_pegass_update) oldest_update, 
-                        max(volunteer.last_pegass_update) newest_update 
+                        min(volunteer.last_synced_at) oldest_update, 
+                        max(volunteer.last_synced_at) newest_update 
                 from volunteer 
                 where volunteer.enabled = 1 
                 and locked = 0
-                and last_pegass_update < '2100-01-01'
+                and last_synced_at < '2100-01-01'
         ";
 
         $rsm = new ResultSetMapping();
@@ -101,8 +101,8 @@ class StatisticsRepository
     public function getStructurePegassUpdate()
     {
         $sql = "
-            select min(structure.last_pegass_update) oldest_update, 
-                   max(structure.last_pegass_update) newest_update 
+            select min(structure.last_synced_at) oldest_update, 
+                   max(structure.last_synced_at) newest_update 
                    from structure where structure.enabled = 1
         ";
 

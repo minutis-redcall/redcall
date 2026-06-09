@@ -36,3 +36,11 @@ services:
       - '@Bundles\SandboxBundle\Manager\FakeOperationResourceManager'
       - '@App\Manager\VolunteerManager'
     public: true
+
+  # Expose Doctrine's per-query DebugDataHolder publicly so the sync
+  # orchestrator can reset() it periodically. With profiling: true (dev),
+  # every executed SQL accumulates in this holder until kernel reset —
+  # over a full --dir run that's hundreds of MB.
+  Symfony\Bridge\Doctrine\Middleware\Debug\DebugDataHolder:
+    alias: doctrine.debug_data_holder
+    public: true

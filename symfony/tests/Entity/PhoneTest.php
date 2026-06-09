@@ -134,6 +134,24 @@ class PhoneTest extends TestCase
         $this->assertNull($phone->getNational());
     }
 
+    /**
+     * The volunteer edition form binds an HiddenType e164 field with
+     * `required => false`. When it is submitted empty (e.g. the JS that
+     * computes the international format never ran), the form data is null
+     * and Symfony's data mapper calls setE164(null). The setter must
+     * accept this without raising a TypeError — validation will then
+     * reject the empty phone.
+     */
+    public function testSetE164AcceptsNull(): void
+    {
+        $phone = new Phone();
+        $phone->setE164('+33612345678');
+
+        $phone->setE164(null);
+
+        $this->assertNull($phone->getE164());
+    }
+
     public function testPopulateFromE164WithInternationalNumber(): void
     {
         $phone = new Phone();

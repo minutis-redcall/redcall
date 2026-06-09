@@ -134,11 +134,6 @@ class StructureManager
         }
     }
 
-    public function synchronizeWithPegass()
-    {
-        $this->structureRepository->synchronizeWithPegass();
-    }
-
     public function getStructuresQueryBuilderForUser(User $user) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder($user, null);

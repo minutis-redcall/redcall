@@ -3,23 +3,15 @@
 namespace App\Manager;
 
 use App\Settings;
-use App\Task\PegassCreateChunks;
+use App\Task\StartDataSyncTask;
 use App\Task\SyncAnnuaire;
-use App\Task\SyncWithPegassTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\SettingsBundle\Manager\SettingManager;
 
 class MaintenanceManager
 {
-    /**
-     * @var SettingManager
-     */
-    private $settingManager;
-
-    /**
-     * @var TaskSender
-     */
-    private $async;
+    private SettingManager $settingManager;
+    private TaskSender $async;
 
     public function __construct(SettingManager $settingManager, TaskSender $async)
     {
@@ -27,16 +19,13 @@ class MaintenanceManager
         $this->async          = $async;
     }
 
-    public function refresh()
+    public function dataSync()
     {
-        $this->async->fire(SyncWithPegassTask::class);
+        $this->async->fire(StartDataSyncTask::class, [
+            'syncedAt' => (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM),
+        ]);
 
         $this->settingManager->set(Settings::MAINTENANCE_LAST_REFRESH, time());
-    }
-
-    public function pegassFiles()
-    {
-        $this->async->fire(PegassCreateChunks::class);
     }
 
     public function annuaireNational()

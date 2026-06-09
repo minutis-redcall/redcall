@@ -168,14 +168,14 @@
         </td>
     </tr>
 
-    {% if session.volunteer.lastPegassUpdate %}
+    {% if session.volunteer.lastSyncedAt %}
         <tr style="border-right: 1px solid {{ lightgrey }};">
             <td style="padding:5px;">
                 <strong>{{ 'space.consult_data.identity_last_update'|trans }}</strong>
             </td>
             <td style="padding:5px;">
                 {% if not session.volunteer.locked %}
-                    {{ session.volunteer.lastPegassUpdate|date('d/m/Y H:i') }}
+                    {{ session.volunteer.lastSyncedAt|date('d/m/Y H:i') }}
                 {% else %}
                     -
                 {% endif %}
@@ -183,14 +183,14 @@
         </tr>
     {% endif %}
 
-    {% if session.volunteer.nextPegassUpdate %}
+    {% if session.volunteer.nextSyncDate %}
         <tr style="border-right: 1px solid {{ lightgrey }};">
             <td style="padding:5px;">
                 <strong>{{ 'space.consult_data.identity_next_update'|trans }}</strong>
             </td>
             <td style="padding:5px;">
                 {% if not session.volunteer.locked %}
-                    {{ session.volunteer.nextPegassUpdate|date('d/m/Y H:i') }}
+                    {{ session.volunteer.nextSyncDate|date('d/m/Y H:i') }}
                 {% else %}
                     -
                 {% endif %}

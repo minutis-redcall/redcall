@@ -1,0 +1,6 @@
+structure_id,structure_parent_id,structure_libelle,structure_libelle_court,adresse_numero,adresse_type_voie,adresse_voie,adresse_lieu_dit,adresse_code_postal,adresse_commune
+1,,"CROIX-ROUGE FRANCAISE",CRF,,,,,,
+80,1,"DT DE PARIS","DT PARIS",,,,,,
+980,80,"UL EXEMPLE A","UL EX A",1,Rue,TEST,,75001,PARIS
+981,80,"UL EXEMPLE B","UL EX B",2,Rue,TEST,,75002,PARIS
+4242,1,"UL ORPHELINE","UL ORPH",,,,,,

@@ -176,38 +176,6 @@ class StructuresControllerTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
-    // GET /management/structures/pegass/{id}
-    // ──────────────────────────────────────────────
-
-    public function testPegassEndpointReturns404WhenNoPegassEntity(): void
-    {
-        $client    = static::createClient();
-        $fixtures  = $this->getFixtures($client->getContainer());
-        $admin     = $fixtures->createRawUser('struct_pegass-'.uniqid().'@test.com', 'password', true);
-        $structure = $fixtures->createStructure('PEGSTR-'.uniqid(), 'EXT-PEG-'.uniqid());
-
-        $this->login($client, $admin);
-        $client->request('GET', sprintf('/management/structures/pegass/%d', $structure->getId()));
-
-        // There's no Pegass entity attached to this fixture structure so the
-        // controller raises NotFound.
-        $this->assertResponseStatusCodeSame(404);
-    }
-
-    public function testPegassEndpointForbiddenForNonAdmin(): void
-    {
-        $client   = static::createClient();
-        $fixtures = $this->getFixtures($client->getContainer());
-        $user     = $fixtures->createRawUser('struct_pegass_user-'.uniqid().'@test.com', 'password', false);
-        $structure = $fixtures->createStructure('PEGSTRU-'.uniqid(), 'EXT-PEGU-'.uniqid());
-
-        $this->login($client, $user);
-        $client->request('GET', sprintf('/management/structures/pegass/%d', $structure->getId()));
-
-        $this->assertResponseStatusCodeSame(403);
-    }
-
-    // ──────────────────────────────────────────────
     // GET /management/structures/export/{id}
     // ──────────────────────────────────────────────
 

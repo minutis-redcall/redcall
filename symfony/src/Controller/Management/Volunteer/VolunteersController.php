@@ -5,7 +5,6 @@ namespace App\Controller\Management\Volunteer;
 use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Answer;
-use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
@@ -18,25 +17,24 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\DeletedVolunteerManager;
 use App\Manager\MessageManager;
-use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
-use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
+use App\Repository\VolunteerSyncSnapshotRepository;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -54,16 +52,6 @@ class VolunteersController extends BaseController
      * @var StructureManager
      */
     private $structureManager;
-
-    /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
-    /**
-     * @var RefreshManager
-     */
-    private $refreshManager;
 
     /**
      * @var CampaignManager
@@ -115,10 +103,10 @@ class VolunteersController extends BaseController
      */
     private $simpleProcessor;
 
+    private VolunteerSyncSnapshotRepository $snapshotRepository;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        PegassManager $pegassManager,
-        RefreshManager $refreshManager,
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         PhoneManager $phoneManager,
@@ -128,12 +116,11 @@ class VolunteersController extends BaseController
         TranslatorInterface $translator,
         Environment $templating,
         SimpleProcessor $simpleProcessor,
-        DeletedVolunteerManager $deletedVolunteerManager)
+        DeletedVolunteerManager $deletedVolunteerManager,
+        VolunteerSyncSnapshotRepository $snapshotRepository)
     {
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
-        $this->pegassManager           = $pegassManager;
-        $this->refreshManager          = $refreshManager;
         $this->campaignManager         = $campaignManager;
         $this->communicationManager    = $communicationManager;
         $this->phoneManager            = $phoneManager;
@@ -144,6 +131,7 @@ class VolunteersController extends BaseController
         $this->templating              = $templating;
         $this->simpleProcessor         = $simpleProcessor;
         $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->snapshotRepository      = $snapshotRepository;
     }
 
     #[Route(name: "list", path: "/{id}", requirements: ["id" => "\d+"], defaults: ["id" => null])]
@@ -184,7 +172,7 @@ class VolunteersController extends BaseController
     }
 
     #[Route(path: "/manual-update/{id}", name: "manual_update")]
-#[IsGranted("VOLUNTEER", subject: "volunteer")]
+    #[IsGranted("VOLUNTEER", subject: "volunteer")]
     public function manualUpdateAction(Request $request, Volunteer $volunteer)
     {
         $isCreate = !$volunteer->getId();
@@ -201,14 +189,15 @@ class VolunteersController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Locks volunteer from being removed at next Pegass sync
+            // Locks volunteer from being touched by the next CSV sync
             if ($volunteer->shouldBeLocked($oldVolunteer)) {
                 $volunteer->setLocked(true);
             }
 
-            // We should not trigger Pegass updates on a volunteer not taken from Pegass
+            // Manually-created volunteers are never in the CSV — pin lastSyncedAt
+            // to the year 2100 so the Finalize sweep does not anonymize them.
             if (!$volunteer->getId()) {
-                $volunteer->setLastPegassUpdate(new \DateTime('2100-12-31'));
+                $volunteer->setLastSyncedAt(new \DateTime('2100-12-31'));
             }
 
             // Automatically lock phone & email if necessary
@@ -280,36 +269,22 @@ class VolunteersController extends BaseController
         return $this->manualUpdateAction($request, $volunteer);
     }
 
-    #[Route(path: "/pegass/{id}", name: "pegass")]
-#[IsGranted("ROLE_ADMIN")]
-    public function pegass(Volunteer $volunteer)
+    #[Route(path: "/sync-log/{id}", name: "sync_log")]
+    #[IsGranted("ROLE_ADMIN")]
+    public function syncLog(Volunteer $volunteer)
     {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
+        $snapshot = $this->snapshotRepository->findOneByExternalId($volunteer->getExternalId());
 
-        return $this->render('management/volunteers/pegass.html.twig', [
+        return $this->render('management/volunteers/sync_log.html.twig', [
             'volunteer' => $volunteer,
-            'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
-            'entity'    => $entity,
+            'snapshot'  => $snapshot,
+            'payload'   => $snapshot?->getPayloadArray(),
+            'raw'       => $snapshot?->getPayload(),
         ]);
     }
 
-    #[Route(path: "/pegass-reset/{csrf}/{id}", name: "pegass_reset")]
-#[IsGranted("ROLE_ADMIN")]
-#[Template("management/volunteers/volunteer.html.twig")]
-    public function pegassReset(Volunteer $volunteer, Csrf $csrf)
-    {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
-
-        $this->refreshManager->refreshVolunteer($entity, true);
-
-        return $this->getContext($volunteer);
-    }
-
     #[Route(path: "/edit-structures/{id}", name: "edit_structures")]
-#[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_ADMIN")]
     public function editStructures(Volunteer $volunteer)
     {
         return $this->render('management/volunteers/structures.html.twig', [
@@ -318,7 +293,7 @@ class VolunteersController extends BaseController
     }
 
     #[Route(path: "/remove-all-structures/{csrf}/{id}", name: "remove_all_structures")]
-#[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_ADMIN")]
     public function removeAllStructures(Volunteer $volunteer)
     {
         foreach ($volunteer->getStructures() as $structure) {
@@ -333,7 +308,7 @@ class VolunteersController extends BaseController
     }
 
     #[Route(path: "/add-structure/{csrf}/{id}", name: "add_structure")]
-#[IsGranted("ROLE_ADMIN")]
+    #[IsGranted("ROLE_ADMIN")]
     public function addStructure(Request $request, string $csrf, Volunteer $volunteer)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
@@ -440,8 +415,8 @@ class VolunteersController extends BaseController
     }
 
     #[Route(path: "/toggle-lock-{id}/{token}", name: "toggle_lock")]
-#[IsGranted("VOLUNTEER", subject: "volunteer")]
-#[Template("management/volunteers/volunteer.html.twig")]
+    #[IsGranted("VOLUNTEER", subject: "volunteer")]
+    #[Template("management/volunteers/volunteer.html.twig")]
     public function toggleLock(Volunteer $volunteer, Csrf $token)
     {
         $volunteer->setLocked(1 - $volunteer->isLocked());
@@ -452,8 +427,8 @@ class VolunteersController extends BaseController
     }
 
     #[Route(path: "/toggle-enable-{id}/{token}", name: "toggle_enable")]
-#[IsGranted("VOLUNTEER", subject: "volunteer")]
-#[Template("management/volunteers/volunteer.html.twig")]
+    #[IsGranted("VOLUNTEER", subject: "volunteer")]
+    #[Template("management/volunteers/volunteer.html.twig")]
     public function toggleEnable(Volunteer $volunteer, Csrf $token)
     {
         if ($volunteer->getUser() && $volunteer->isEnabled()) {

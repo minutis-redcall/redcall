@@ -87,7 +87,7 @@ admin:
       not_exists: 'This identifier does not exist.'
   home:
     link: Administration
-  pegass:
+  users:
     add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'
@@ -585,19 +585,10 @@ maintenance:
       success: 'Green (success)'
   modal:
     refresh_button: 'Refresh the datas'
-  pegass: 'Synchronize RedCall and DSI files entirely.'
+  data_sync: 'Synchronize RedCall with the daily DSI CSV export.'
+  data_sync_started: 'Synchronize launched, it will take a while.'
   annuaire: 'Update "Annuaire national" french database.'
-  pegass_started: 'Synchronize launched, it will take a while.'
-  refresh: 'Synchronize RedCall and Pegass databases entirely'
-  refresh_started: 'Synchronize launched, it will take a while.'
-  search:
-    description: 'This tool is made to help you build the right xpath search expression.'
-    expression: 'Enter the XPath expression to match your nivol data.'
-    invalid: 'Expression is not valid: %error%.'
-    match: 'Expression match with this document: %data%.'
-    nivol: 'Enter a nivol to render its XML content and test your expression.'
-    notmatch: 'Expression does not match this document.'
-    title: 'Advanced nivols search in Pegass'
+  annuaire_national_started: 'Annuaire national synchronization launched.'
   title: Maintenance
 manage_structures:
   action:
@@ -659,7 +650,6 @@ manage_structures:
   title: 'Manage structures'
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
-  view_pegass_entry: 'Open DSI database entry'
   volunteer_list:
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
@@ -697,11 +687,47 @@ manage_volunteers:
     enable: Enable
     enable_volunteer: 'Enable volunteer'
     lock: Lock
-    reset_pegass_entry: 'Reset entry from DSI database'
     title: Actions
     unlock: Unlock
     update_manual: 'Update volunteer information'
-    view_pegass_entry: 'Open DSI database entry'
+    view_sync_log: 'Open last sync data'
+  sync_log:
+    subtitle: 'Last sync: %date%'
+    back: '← Back'
+    no_snapshot: 'No sync data captured yet for this volunteer.'
+    no_snapshot_explain: 'This volunteer has not been touched by any CSV sync yet. They might be a manually-created volunteer, their NIVOL is not present in the daily DSI export, or they are frozen (frozen volunteers are skipped by the sync).'
+    section:
+      identity: 'Identity'
+      contact: 'Contact'
+      activities: 'Activities'
+      trainings: 'Trainings'
+      skills: 'Skills'
+      nominations: 'Nominations'
+      raw: 'Raw payload (JSON)'
+    field:
+      minor: 'Minor'
+      last_name: 'Last name'
+      first_name: 'First name'
+      age: 'Age'
+      structure: 'Main structure ID'
+      email_personal: 'Personal email'
+      email_work: 'Red Cross email'
+      phone: 'Phone'
+      structure_id: 'Structure %id%'
+    training:
+      code: Code
+      label: Label
+      obtained: 'Obtained on'
+      renewed_until: 'Valid until'
+      none: 'No training in the latest export.'
+    activity:
+      none: 'No activity in the latest export.'
+    nomination:
+      code: Code
+      label: Label
+      structure: Structure
+      date: 'Validation date'
+    raw_toggle: 'Show / hide'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
@@ -811,6 +837,11 @@ management:
   no_other_users: "No other users have access to this structure"
   missing_volunteer: "User has no volunteer entity (likely removed)"
   external_id_label: "External ID: %external_id%"
+  tree:
+    level_title: "Level %depth% in the hierarchy"
+    peers: "{0}person can trigger|{1}other person can trigger|]1,Inf[other people can trigger"
+    structures: "{0}no structures in your scope|{1}structure in your scope|]1,Inf[structures in your scope"
+    peers_total: "{0}no peers identified|{1}peer identified in total|]1,Inf[peers identified in total"
 message:
   call:
     announcement: '%brand% at %hours% hours %mins%.'

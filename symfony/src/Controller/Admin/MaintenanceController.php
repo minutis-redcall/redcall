@@ -3,20 +3,15 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use App\Entity\Pegass;
-use App\Form\Type\VolunteerWidgetType;
 use App\Manager\MaintenanceManager;
-use App\Manager\PegassManager;
-use App\Manager\VolunteerManager;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -26,48 +21,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 #[IsGranted("ROLE_ROOT")]
 class MaintenanceController extends BaseController
 {
-    /**
-     * @var MaintenanceManager
-     */
-    private $maintenanceManager;
+    private MaintenanceManager $maintenanceManager;
+    private SettingManager $settingManager;
+    private TranslatorInterface $translator;
 
-    /**
-     * @var SettingManager
-     */
-    private $settingManager;
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @param MaintenanceManager  $maintenanceManager
-     * @param SettingManager      $settingManager
-     * @param VolunteerManager    $volunteerManager
-     * @param PegassManager       $pegassManager
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(MaintenanceManager $maintenanceManager,
+    public function __construct(
+        MaintenanceManager $maintenanceManager,
         SettingManager $settingManager,
-        VolunteerManager $volunteerManager,
-        PegassManager $pegassManager,
-        TranslatorInterface $translator)
-    {
+        TranslatorInterface $translator
+    ) {
         $this->maintenanceManager = $maintenanceManager;
         $this->settingManager     = $settingManager;
-        $this->volunteerManager   = $volunteerManager;
-        $this->pegassManager      = $pegassManager;
         $this->translator         = $translator;
     }
 
@@ -77,22 +41,12 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/index.html.twig');
     }
 
-    #[Route(name: "refresh", path: "/refresh")]
-    public function refresh()
+    #[Route(name: "data_sync", path: "/data-sync")]
+    public function dataSync()
     {
-        $this->maintenanceManager->refresh();
+        $this->maintenanceManager->dataSync();
 
-        $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
-
-        return $this->redirectToRoute('admin_maintenance_index');
-    }
-
-    #[Route(name: "pegass_files", path: "/pegass-files")]
-    public function pegassFiles()
-    {
-        $this->maintenanceManager->pegassFiles();
-
-        $this->addFlash('success', $this->translator->trans('maintenance.pegass_started'));
+        $this->addFlash('success', $this->translator->trans('maintenance.data_sync_started'));
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
@@ -102,89 +56,9 @@ class MaintenanceController extends BaseController
     {
         $this->maintenanceManager->annuaireNational();
 
-        $this->addFlash('success', $this->translator->trans('maintenance.pegass_started'));
+        $this->addFlash('success', $this->translator->trans('maintenance.annuaire_national_started'));
 
         return $this->redirectToRoute('admin_maintenance_index');
-    }
-
-    #[Route(name: "search", path: "/search")]
-    public function search(Request $request)
-    {
-        return $this->render('admin/maintenance/search.html.twig', [
-            'form' => $this->createSearchForm($request)->createView(),
-        ]);
-    }
-
-    private function createSearchForm(Request $request)
-    {
-        return $this->createFormBuilder()
-                    ->add('nivol', VolunteerWidgetType::class, [
-                        'label' => 'maintenance.search.nivol',
-                    ])
-                    ->add('expression', TextareaType::class, [
-                        'label' => 'maintenance.search.expression',
-                        'attr'  => [
-                            'rows'        => '10',
-                            'placeholder' => '/volunteer/nominations/libelleCourt[text()="DLUS"]',
-                        ],
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
-    }
-
-    #[Route(name: "search_change_nivol", path: "/search/change-nivol")]
-    public function searchChangeNivol(Request $request)
-    {
-        return new JsonResponse([
-            'content' => htmlentities($this->getPegassEntity($request)->getXml()),
-        ]);
-    }
-
-    private function getPegassEntity(Request $request) : Pegass
-    {
-        $nivol = $this->createSearchForm($request)->get('nivol')->getData();
-        if (!$nivol) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer = $this->volunteerManager->findOneByExternalId($nivol);
-        if (!$volunteer) {
-            throw $this->createNotFoundException();
-        }
-
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId());
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $entity;
-    }
-
-    #[Route(name: "search_change_expression", path: "/search/change-expression")]
-    public function searchChangeExpression(Request $request)
-    {
-        $entity     = $this->getPegassEntity($request);
-        $expression = $this->createSearchForm($request)->get('expression')->getData();
-
-        try {
-            if ($data = $entity->xpath($expression)) {
-                return new JsonResponse([
-                    'content' => $this->translator->trans('maintenance.search.match', [
-                        '%data%' => json_encode($data),
-                    ]),
-                ]);
-            } else {
-                return new JsonResponse([
-                    'content' => $this->translator->trans('maintenance.search.notmatch'),
-                ]);
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse([
-                'content' => $this->translator->trans('maintenance.search.invalid', [
-                    '%error%' => $e->getMessage(),
-                ]),
-            ]);
-        }
     }
 
     #[Route(name: "message", path: "/message")]

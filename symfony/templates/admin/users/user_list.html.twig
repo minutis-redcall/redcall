@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="rc-section">
+
+        <h3>{{ 'admin.users.list_users'|trans }}</h3>
+
+        <p>{{ 'admin.users.list_users_explain'|trans }}</p>
+
+        <div class="form-group">
+            <textarea class="form-control" rows="15">{{ list|join(', ') }}</textarea>
+        </div>
+
+        <div class="rc-back-link">
+            <a href="{{ path('admin_redcall_users_index') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
+
+    </div>
+
+{% endblock %}
