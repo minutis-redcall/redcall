@@ -247,4 +247,23 @@ class DataSyncOrchestratorTest extends KernelTestCase
 
         $this->assertSame(20, $count);
     }
+
+    public function testSnapshotsArePersistedThroughTheChunkPath()
+    {
+        // Regression: a missing snapshotWriter->flush() at the end of
+        // importVolunteerChunk (the GCT path) silently dropped every
+        // snapshot in production. Make sure the chunk path actually
+        // commits the buffered upserts.
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $count = (int) $this->em->getConnection()
+            ->executeQuery('SELECT COUNT(*) FROM volunteer_sync_snapshot')
+            ->fetchOne();
+
+        // Locked + missing-name volunteers don't get a snapshot, but the
+        // 20 fixture volunteers all have valid data so every one of them
+        // should have left a row behind.
+        $this->assertSame(20, $count);
+    }
 }

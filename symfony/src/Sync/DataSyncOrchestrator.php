@@ -398,6 +398,11 @@ class DataSyncOrchestrator
         foreach ($rows as $data) {
             $this->volunteerImporter->import(VolunteerRow::fromArray($data), $syncedAt);
         }
+        // VolunteerImporter only queues snapshots into the writer's buffer;
+        // we have to flush at the chunk boundary or the buffer dies with the
+        // task. Missing this is why volunteer_sync_snapshot stayed empty in
+        // production after the GCT path went live.
+        $this->snapshotWriter->flush();
     }
 
     /**
