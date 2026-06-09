@@ -105,6 +105,31 @@ class PhoneValidatorTest extends TestCase
         $this->validator->validate($phone, $constraint);
     }
 
+    /**
+     * When the volunteer form is submitted with an empty `e164` hidden
+     * field, Phone::getE164() returns null. PhoneNumberUtil::parse() is
+     * typed `string $numberToParse`, so passing null would raise a fresh
+     * TypeError that the catch block doesn't handle. The validator must
+     * short-circuit and add a violation instead.
+     */
+    public function testNullPhoneNumberAddsViolation()
+    {
+        $constraint = new Phone();
+
+        $phone = $this->createMock(PhoneInterface::class);
+        $phone->method('getE164')->willReturn(null);
+
+        $this->translator->method('trans')->willReturn('Invalid phone number');
+
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->method('atPath')->willReturnSelf();
+        $violationBuilder->expects($this->once())->method('addViolation');
+
+        $this->context->method('buildViolation')->willReturn($violationBuilder);
+
+        $this->validator->validate($phone, $constraint);
+    }
+
     public function testInternationalPhoneNumberPassesValidation()
     {
         $constraint = new Phone();

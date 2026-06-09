@@ -43,10 +43,25 @@ class PhoneValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, PhoneInterface::class);
         }
 
+        // An empty phone number is invalid (typically a row added in the
+        // form but never filled, or one whose e164 was never computed by
+        // the client-side validator).
+        $e164 = $value->getE164();
+        if (null === $e164 || '' === $e164) {
+            $this->context
+                ->buildViolation(
+                    $this->translator->trans('phone_card.error_invalid')
+                )
+                ->atPath('editor')
+                ->addViolation();
+
+            return;
+        }
+
         // This phone number is invalid
         $phoneUtil = PhoneNumberUtil::getInstance();
         try {
-            $phoneUtil->parse($value->getE164(), \App\Entity\Phone::DEFAULT_LANG);
+            $phoneUtil->parse($e164, \App\Entity\Phone::DEFAULT_LANG);
         } catch (NumberParseException $e) {
             $this->context
                 ->buildViolation(
