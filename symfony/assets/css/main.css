@@ -330,9 +330,9 @@ strong {
     border-bottom-color: #ccc;
 }
 
-#audience-tabs > li.active > a,
-#audience-tabs > li.active > a:hover,
-#audience-tabs > li.active > a:focus {
+#audience-tabs > li > a.active,
+#audience-tabs > li > a.active:hover,
+#audience-tabs > li > a.active:focus {
     color: var(--rc-red);
     background: transparent;
     border: none;

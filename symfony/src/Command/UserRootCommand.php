@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,11 +17,17 @@ class UserRootCommand extends Command
      */
     private $userManager;
 
-    public function __construct(UserManager $userManager)
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
+    public function __construct(UserManager $userManager, UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct();
 
-        $this->userManager = $userManager;
+        $this->userManager         = $userManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     protected function configure() : void
@@ -46,8 +53,10 @@ class UserRootCommand extends Command
             return 1;
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsRoot(1 - $user->isRoot());
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated(null, 'CLI: user:root', $user, $old);
 
         $status = $user->isRoot() ? '<question>root</question>' : '<error>not root</error>';
         $output->writeln("User <info>{$username}</info> is now: {$status}.");

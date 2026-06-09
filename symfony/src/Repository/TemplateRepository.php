@@ -73,7 +73,8 @@ class TemplateRepository extends ServiceEntityRepository
                     ->join('s.users', 'u')
                     ->andWhere('u.id = :user')
                     ->setParameter('user', $user)
-                    ->orderBy('t.priority', 'DESC')
+                    ->orderBy('s.shortcut', 'ASC')
+                    ->addOrderBy('t.name', 'ASC')
                     ->getQuery()
                     ->getResult();
     }

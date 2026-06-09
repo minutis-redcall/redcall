@@ -33,93 +33,19 @@ class AdminControllerTest extends BaseWebTestCase
         return $tokenManager->getToken('password_login')->getValue();
     }
 
-    public function testListAndSearch()
+    public function testListRedirectsToRedcallAdmin()
     {
+        // The legacy /admin/users/ list page now just redirects to the RedCall
+        // admin (the actual list / toggle / delete actions moved to
+        // admin_redcall_users_* in src/Controller/Admin/UserController.php).
         $client   = static::createClient();
         $fixtures = $this->getFixtures($client->getContainer());
 
         $admin = $fixtures->createRawUser('admin_list@example.com', 'password', true);
-        $user  = $fixtures->createRawUser('search_me@example.com', 'password');
-
         $this->login($client, $admin);
 
-        // 1. Test List
-        $crawler = $client->request('GET', '/admin/users/');
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('table', 'admin_list@example.com');
-        $this->assertSelectorTextContains('table', 'search_me@example.com');
-
-        // 2. Test Search
-        $form                   = $crawler->filter('form')->form();
-        $form['form[criteria]'] = 'search_me';
-        $crawler                = $client->submit($form);
-
-        $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('table', 'search_me@example.com');
-        $this->assertSelectorTextNotContains('table', 'admin_list@example.com');
-    }
-
-    public function testPermissionToggles()
-    {
-        $client = static::createClient();
-        $client->followRedirects();
-        $fixtures = $this->getFixtures($client->getContainer());
-
-        $admin  = $fixtures->createRawUser('admin_toggles@example.com', 'password', true);
-        $target = $fixtures->createRawUser('target@example.com', 'password', false);
-        $target->setIsVerified(false);
-        $target->setIsTrusted(false);
-        $target->setIsAdmin(false);
-        $client->getContainer()->get('doctrine')->getManager()->flush();
-
-        $this->login($client, $admin);
-        $csrf = $this->getCsrfToken($client->getContainer());
-
-        $em = $client->getContainer()->get('doctrine')->getManager();
-
-        // 1. Toggle Verify
-        $client->request('GET', sprintf('/admin/users/toggle-verify/target@example.com/%s', $csrf));
-        $this->assertResponseIsSuccessful();
-
-        $em->clear();
-        $userRepo   = $em->getRepository(User::class);
-        $targetUser = $userRepo->findOneBy(['username' => 'target@example.com']);
-        $this->assertTrue($targetUser->isVerified());
-
-        // 2. Toggle Trust
-        $client->request('GET', sprintf('/admin/users/toggle-trust/target@example.com/%s', $csrf));
-        $this->assertResponseIsSuccessful();
-
-        $em->clear();
-        $targetUser = $userRepo->findOneBy(['username' => 'target@example.com']);
-        $this->assertTrue($targetUser->isTrusted());
-
-        // 3. Toggle Admin
-        $client->request('GET', sprintf('/admin/users/toggle-admin/target@example.com/%s', $csrf));
-        $this->assertResponseIsSuccessful();
-
-        $em->clear();
-        $targetUser = $userRepo->findOneBy(['username' => 'target@example.com']);
-        $this->assertTrue($targetUser->isAdmin());
-    }
-
-    public function testDelete()
-    {
-        $client = static::createClient();
-        $client->followRedirects();
-        $fixtures = $this->getFixtures($client->getContainer());
-
-        $admin = $fixtures->createRawUser('admin_delete@example.com', 'password', true);
-        $user  = $fixtures->createRawUser('to_delete@example.com', 'password');
-
-        $this->login($client, $admin);
-        $csrf = $this->getCsrfToken($client->getContainer());
-
-        $client->request('GET', sprintf('/admin/users/delete/to_delete@example.com/%s', $csrf));
-        $this->assertResponseIsSuccessful();
-
-        $userRepo = $client->getContainer()->get('doctrine')->getRepository(User::class);
-        $this->assertNull($userRepo->findOneBy(['username' => 'to_delete@example.com']));
+        $client->request('GET', '/admin/users/');
+        $this->assertResponseRedirects('/admin/redcall-users');
     }
 
     public function testResetPassword()

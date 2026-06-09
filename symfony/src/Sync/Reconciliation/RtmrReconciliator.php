@@ -5,6 +5,7 @@ namespace App\Sync\Reconciliation;
 use App\Command\AnnuaireNationalCommand;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
+use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 
@@ -29,15 +30,18 @@ class RtmrReconciliator
     private VolunteerManager $volunteerManager;
     private UserManager $userManager;
     private StructureManager $structureManager;
+    private UserAuditLogManager $userAuditLogManager;
 
     public function __construct(
         VolunteerManager $volunteerManager,
         UserManager $userManager,
-        StructureManager $structureManager
+        StructureManager $structureManager,
+        UserAuditLogManager $userAuditLogManager
     ) {
-        $this->volunteerManager = $volunteerManager;
-        $this->userManager      = $userManager;
-        $this->structureManager = $structureManager;
+        $this->volunteerManager    = $volunteerManager;
+        $this->userManager         = $userManager;
+        $this->structureManager    = $structureManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     public function reconcile(Volunteer $volunteer) : void
@@ -61,6 +65,7 @@ class RtmrReconciliator
             return;
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsTrusted(false);
         $user->setIsAdmin(false);
         foreach ($user->getStructures() as $structure) {
@@ -70,6 +75,7 @@ class RtmrReconciliator
             $user->removeStructure($structure);
         }
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated(null, 'sync: rtmr (decommissioned)', $user, $old);
     }
 
     private function stripInvalidRtmrAdminRights(Volunteer $volunteer) : void
@@ -85,6 +91,7 @@ class RtmrReconciliator
             return;
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsAdmin(false);
         foreach ($user->getStructures() as $structure) {
             if (AnnuaireNationalCommand::STRUCTURE_NAME === $structure->getShortcut()) {
@@ -93,6 +100,7 @@ class RtmrReconciliator
             $user->removeStructure($structure);
         }
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated(null, 'sync: rtmr (invalid badge)', $user, $old);
     }
 
     private function ensureRtmrHasUser(Volunteer $volunteer) : void
@@ -104,18 +112,24 @@ class RtmrReconciliator
         $user = $volunteer->getUser();
         if (!$user) {
             $this->volunteerManager->save($volunteer);
+            // user:create logs its own "create" audit row with label 'CLI: user:create'
             $this->userManager->createUser($volunteer->getExternalId());
             $user = $this->userManager->findOneByExternalId($volunteer->getExternalId());
             if (!$user) {
                 return;
             }
+            $old        = $this->userAuditLogManager->buildSnapshot($user);
             $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
             $user->updateStructures($structures);
+            $this->userManager->save($user);
+            $this->userAuditLogManager->logUpdated(null, 'sync: rtmr (initial structures)', $user, $old);
         }
 
         if ($user->isAdmin()) {
+            $old = $this->userAuditLogManager->buildSnapshot($user);
             $user->setIsAdmin(false);
             $this->userManager->save($user);
+            $this->userAuditLogManager->logUpdated(null, 'sync: rtmr (clear admin)', $user, $old);
         }
     }
 }

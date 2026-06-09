@@ -3,6 +3,7 @@
 namespace Bundles\PasswordLoginBundle\Command;
 
 use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -22,12 +23,20 @@ class UserPasswordCommand extends Command
      */
     private $hasherFactory;
 
-    public function __construct(UserManager $userManager, PasswordHasherFactoryInterface $hasherFactory)
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
+    public function __construct(UserManager $userManager,
+        PasswordHasherFactoryInterface $hasherFactory,
+        UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct();
 
-        $this->userManager   = $userManager;
-        $this->hasherFactory = $hasherFactory;
+        $this->userManager         = $userManager;
+        $this->hasherFactory       = $hasherFactory;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     protected function configure(): void
@@ -53,9 +62,13 @@ class UserPasswordCommand extends Command
             return 1;
         }
 
+        $old = $user instanceof User ? $this->userAuditLogManager->buildSnapshot($user) : null;
         $hasher = $this->hasherFactory->getPasswordHasher(User::class);
         $user->setPassword($hasher->hash($password));
         $this->userManager->save($user);
+        if ($user instanceof User && null !== $old) {
+            $this->userAuditLogManager->logUpdated(null, 'CLI: user:password', $user, $old);
+        }
 
         $output->writeln("User <info>{$username}</info>'s password updated.");
 

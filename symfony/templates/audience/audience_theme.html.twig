@@ -41,9 +41,9 @@
 
 
             <ul class="nav nav-tabs" id="audience-tabs" role="tablist">
-                <li class="active"><a data-toggle="tab" href="#tab-filters" role="tab">{{ 'audience.accordion.filters'|trans }}</a></li>
-                <li><a data-toggle="tab" href="#tab-lists" role="tab">{{ 'audience.accordion.lists'|trans }}</a></li>
-                <li><a data-toggle="tab" href="#tab-search" role="tab">{{ 'audience.accordion.search'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#tab-filters" role="tab">{{ 'audience.accordion.filters'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-lists" role="tab">{{ 'audience.accordion.lists'|trans }}</a></li>
+                <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab-search" role="tab">{{ 'audience.accordion.search'|trans }}</a></li>
             </ul>
             <div class="tab-content" style="padding-top: 1rem;">
                 <div id="tab-filters" class="tab-pane active" role="tabpanel">
@@ -225,16 +225,6 @@
                                 }) }}
                             </div>
 
-                            {# -------------------------------------------------------------------------------- #}
-                            {# Allow minors #}
-                            {# -------------------------------------------------------------------------------- #}
-
-                            {{ form_row(form.allow_minors, {
-                                'attr': {
-                                    'class': 'numbers',
-                                }
-                            }) }}
-
                 </div>
                 <div id="tab-lists" class="tab-pane" role="tabpanel">
                             {# -------------------------------------------------------------------------------- #}
@@ -328,6 +318,16 @@
 
                 </div>
             </div>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Allow minors #}
+            {# -------------------------------------------------------------------------------- #}
+
+            {{ form_row(form.allow_minors, {
+                'attr': {
+                    'class': 'numbers',
+                }
+            }) }}
 
             {# -------------------------------------------------------------------------------- #}
             {# Volunteer lists (modal) #}

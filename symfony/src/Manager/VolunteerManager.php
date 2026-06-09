@@ -50,12 +50,18 @@ class VolunteerManager
      */
     private $security;
 
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
     public function __construct(VolunteerRepository $volunteerRepository,
         StructureManager $structureManager,
         DeletedVolunteerManager $deletedVolunteerManager,
         AnswerManager $answerManager,
         PhoneManager $phoneManager,
-        Security $security)
+        Security $security,
+        UserAuditLogManager $userAuditLogManager)
     {
         $this->volunteerRepository     = $volunteerRepository;
         $this->structureManager        = $structureManager;
@@ -63,6 +69,7 @@ class VolunteerManager
         $this->answerManager           = $answerManager;
         $this->phoneManager            = $phoneManager;
         $this->security                = $security;
+        $this->userAuditLogManager     = $userAuditLogManager;
     }
 
     #[\Symfony\Contracts\Service\Attribute\Required]
@@ -323,7 +330,9 @@ class VolunteerManager
         }
 
         if ($user = $volunteer->getUser()) {
+            $snapshot = $this->userAuditLogManager->buildSnapshot($user);
             $this->userManager->remove($user);
+            $this->userAuditLogManager->logDeleted(null, 'sync: anonymize', $snapshot);
         }
 
         foreach ($volunteer->getStructures(false) as $structure) {

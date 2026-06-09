@@ -2,6 +2,8 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
+use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
@@ -12,8 +14,6 @@ use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -48,97 +48,36 @@ class AdminController extends AbstractController
     private $translator;
 
     /**
-     * @var string
+     * @var UserAuditLogManager
      */
-    private $homeRoute;
+    private $userAuditLogManager;
 
     public function __construct(EmailVerificationManager $emailVerificationManager,
         PasswordRecoveryManager $passwordRecoveryManager,
         UserManager $userManager,
         EventDispatcherInterface $dispatcher,
         TranslatorInterface $translator,
-        string $homeRoute = 'home')
+        UserAuditLogManager $userAuditLogManager)
     {
         $this->emailVerificationManager = $emailVerificationManager;
         $this->passwordRecoveryManager  = $passwordRecoveryManager;
         $this->userManager              = $userManager;
         $this->dispatcher               = $dispatcher;
         $this->translator               = $translator;
-        $this->homeRoute                = $homeRoute;
+        $this->userAuditLogManager      = $userAuditLogManager;
     }
 
+    /**
+     * RedCall has its own admin UI under /admin/redcall-users which fully
+     * replaces the generic list shipped with this bundle. The old route
+     * name is kept as a redirect so any bookmark, link in PasswordLogin's
+     * shared `menu.html.twig`, or external doc still lands on a working
+     * page.
+     */
     #[Route("/", name: "list")]
-    #[Template("@PasswordLogin/admin/list.html.twig")]
-    public function listAction(Request $request)
+    public function listAction()
     {
-        $search = $this->createSearchForm($request);
-
-        $criteria = null;
-        if ($search->isSubmitted() && $search->isValid()) {
-            $criteria = $search->get('criteria')->getData();
-        }
-
-        return [
-            'search'    => $search->createView(),
-            'users'     => $this->userManager->searchAll($criteria),
-            'homeRoute' => $this->homeRoute,
-        ];
-    }
-
-    #[Route("/toggle-verify/{username}/{csrf}", name: "toggle_verify")]
-    public function toggleVerify($username, $csrf)
-    {
-        $user = $this->checkCsrfAndUser($username, $csrf);
-
-        $user->setIsVerified(1 - $user->isVerified());
-        $this->userManager->save($user);
-
-        $emailVerification = $this->emailVerificationManager->find($username);
-        if ($emailVerification) {
-            $this->emailVerificationManager->remove($emailVerification);
-        }
-
-        return $this->redirectToRoute('password_login_admin_list');
-    }
-
-    #[Route("/toggle-trust/{username}/{csrf}", name: "toggle_trust")]
-    public function toggleTrust($username, $csrf)
-    {
-        $user = $this->checkCsrfAndUser($username, $csrf);
-
-        $user->setIsTrusted(1 - $user->isTrusted());
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('password_login_admin_list');
-    }
-
-    #[Route("/toggle-admin/{username}/{csrf}", name: "toggle_admin")]
-    public function toggleAdmin($username, $csrf)
-    {
-        $user = $this->checkCsrfAndUser($username, $csrf);
-
-        $user->setIsAdmin(1 - $user->isAdmin());
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('password_login_admin_list');
-    }
-
-    #[Route("/delete/{username}/{csrf}", name: "delete")]
-    public function delete($username, $csrf)
-    {
-        $user = $this->checkCsrfAndUser($username, $csrf);
-
-        $this->userManager->remove($user);
-
-        if ($passwordRecovery = $this->passwordRecoveryManager->find($username)) {
-            $this->passwordRecoveryManager->remove($passwordRecovery);
-        }
-
-        if ($emailVerification = $this->emailVerificationManager->find($username)) {
-            $this->emailVerificationManager->remove($emailVerification);
-        }
-
-        return $this->redirectToRoute('password_login_admin_list');
+        return $this->redirectToRoute('admin_redcall_users_index');
     }
 
     #[Route("/profile/{username}", name: "profile")]
@@ -147,6 +86,7 @@ class AdminController extends AbstractController
     {
         $newUser = $this->checkUser($username);
         $oldUser = clone $newUser;
+        $oldSnapshot = $newUser instanceof User ? $this->userAuditLogManager->buildSnapshot($newUser) : null;
 
         $form = $this
             ->createForm(ProfileType::class, $newUser, [
@@ -161,6 +101,11 @@ class AdminController extends AbstractController
             $this->userManager->save($newUser);
 
             $this->dispatcher->dispatch(new PostEditProfileEvent($newUser, $oldUser), PasswordLoginEvents::POST_EDIT_PROFILE);
+
+            if ($newUser instanceof User && null !== $oldSnapshot) {
+                $actor = $this->getUser() instanceof User ? $this->getUser() : null;
+                $this->userAuditLogManager->logUpdated($actor, null, $newUser, $oldSnapshot);
+            }
 
             $this->addFlash('success', $this->translator->trans('password_login.profile.saved'));
 
@@ -212,18 +157,4 @@ class AdminController extends AbstractController
         return $user;
     }
 
-    private function createSearchForm(Request $request)
-    {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
-                    ->setMethod('GET')
-                    ->add('criteria', TextType::class, [
-                        'label'    => 'password_login.user_list.search.criteria',
-                        'required' => false,
-                    ])
-                    ->add('submit', SubmitType::class, [
-                        'label' => 'password_login.user_list.search.submit',
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
-    }
 }

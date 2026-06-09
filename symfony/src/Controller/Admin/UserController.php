@@ -9,6 +9,7 @@ use App\Form\Type\ManageUserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\BadgeManager;
 use App\Manager\StructureManager;
+use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -60,19 +61,26 @@ class UserController extends BaseController
      */
     private $requestStack;
 
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
     public function __construct(UserManager $userManager,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
         BadgeManager $badgeManager,
-        RequestStack $requestStack)
+        RequestStack $requestStack,
+        UserAuditLogManager $userAuditLogManager)
     {
-        $this->userManager       = $userManager;
-        $this->structureManager  = $structureManager;
-        $this->volunteerManager  = $volunteerManager;
-        $this->paginationManager = $paginationManager;
-        $this->badgeManager      = $badgeManager;
-        $this->requestStack      = $requestStack;
+        $this->userManager         = $userManager;
+        $this->structureManager    = $structureManager;
+        $this->volunteerManager    = $volunteerManager;
+        $this->paginationManager   = $paginationManager;
+        $this->badgeManager        = $badgeManager;
+        $this->requestStack        = $requestStack;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     #[Route(name: "index")]
@@ -117,7 +125,9 @@ class UserController extends BaseController
         $externalId = $request->request->get('externalId');
 
         if (!$user->isLocked()) {
+            $old = $this->userAuditLogManager->buildSnapshot($user);
             $this->userManager->changeVolunteer($user, $externalId);
+            $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -149,6 +159,8 @@ class UserController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $old = $this->userAuditLogManager->buildSnapshot($user);
+
             foreach ($clone->getStructures(false) as $structure) {
                 $user->removeStructure($structure);
             }
@@ -156,6 +168,8 @@ class UserController extends BaseController
             // Freeze user to keep prevent Pegass from overwriting the change
             $user->setLocked(true);
             $this->userManager->save($user);
+
+            $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
             return $this->redirectToRoute('admin_redcall_users_update_structures', [
                 'id' => $user->getId(),
@@ -185,6 +199,8 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
+
         $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
         foreach ($structures as $structure) {
             $user->addStructure($structure);
@@ -194,6 +210,8 @@ class UserController extends BaseController
         $user->setLocked(true);
 
         $this->userManager->save($user);
+
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_update_structures', [
             'id' => $user->getId(),
@@ -222,7 +240,8 @@ class UserController extends BaseController
                 throw $this->createNotFoundException();
             }
 
-            $this->userManager->createUser($volunteer->getExternalId());
+            $actor = $this->resolveActor();
+            $this->userManager->createUser($volunteer->getExternalId(), $actor ? $actor->getId() : null);
 
             return $this->redirectToRoute('admin_redcall_users_index', [
                 'form[criteria]' => $volunteer->getExternalId(),
@@ -244,8 +263,10 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsVerified(1 - $user->isVerified());
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
@@ -262,8 +283,10 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsTrusted(1 - $user->isTrusted());
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
@@ -280,8 +303,10 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
@@ -298,8 +323,10 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setLocked(1 - $user->isLocked());
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
@@ -317,12 +344,14 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsRoot(1 - $user->isRoot());
         if ($user->isRoot()) {
             $user->setIsAdmin(true);
         }
 
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_index', [
             'form[criteria]' => $user->getExternalId(),
@@ -339,7 +368,9 @@ class UserController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        $snapshot = $this->userAuditLogManager->buildSnapshot($user);
         $this->userManager->remove($user);
+        $this->userAuditLogManager->logDeleted($this->resolveActor(), null, $snapshot);
 
         return $this->redirectToRoute('admin_redcall_users_index');
     }
@@ -377,8 +408,10 @@ class UserController extends BaseController
             throw $this->createAccessDeniedException('Cannot revoke root admin');
         }
 
+        $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsAdmin(false);
         $this->userManager->save($user);
+        $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
 
         return $this->redirectToRoute('admin_redcall_users_administrators');
     }
@@ -401,6 +434,13 @@ class UserController extends BaseController
         return $this->render('admin/users/rtmr.html.twig', [
             'volunteers' => $volunteers,
         ]);
+    }
+
+    private function resolveActor() : ?User
+    {
+        $user = $this->getUser();
+
+        return $user instanceof User ? $user : null;
     }
 
     private function createSearchForm(Request $request)

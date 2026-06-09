@@ -15,6 +15,7 @@ use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\Template;
 use App\Entity\User;
+use App\Entity\UserAuditLog;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerList;
 use App\Entity\VolunteerSession;
@@ -554,6 +555,34 @@ class DataFixtures
         $session   = $this->createVolunteerSession($volunteer);
 
         return ['volunteer' => $volunteer, 'session' => $session];
+    }
+
+    /**
+     * Append a UserAuditLog row. Actor and target are optional — pass nulls
+     * for sync/CLI-style entries.
+     */
+    public function createUserAuditLog(
+        ?User $actor,
+        ?User $target,
+        string $action = 'update',
+        ?string $actorLabel = null,
+        array $snapshot = []
+    ) : UserAuditLog {
+        $log = new UserAuditLog();
+        $log->setCreatedAt(new \DateTime());
+        $log->setAction($action);
+        $log->setActor($actor);
+        $log->setActorLabel($actorLabel ?? ($actor ? (string) $actor->getDisplayName() : 'system'));
+        $log->setTargetUser($target);
+        $log->setTargetUsername($target ? $target->getUsername() : ($snapshot['username'] ?? null));
+        $log->setTargetExternalId($target ? $target->getExternalId() : ($snapshot['externalId'] ?? null));
+        $log->setTargetDisplayName($target ? $target->getDisplayName() : ($snapshot['displayName'] ?? null));
+        $log->setSnapshot($snapshot);
+
+        $this->entityManager->persist($log);
+        $this->entityManager->flush();
+
+        return $log;
     }
 
     // ──────────────────────────────────────────────

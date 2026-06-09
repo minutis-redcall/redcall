@@ -2,6 +2,8 @@
 
 namespace Bundles\PasswordLoginBundle\Command;
 
+use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use Bundles\PasswordLoginBundle\Base\BaseCommand;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
@@ -35,15 +37,15 @@ class UserCronCommand extends Command
     private $userManager;
 
     /**
-     * @param CaptchaManager           $captchaManager
-     * @param PasswordRecoveryManager  $passwordRecoveryManager
-     * @param EmailVerificationManager $emailVerificationManager
-     * @param UserManager              $userManager
+     * @var UserAuditLogManager
      */
+    private $userAuditLogManager;
+
     public function __construct(CaptchaManager $captchaManager,
         PasswordRecoveryManager $passwordRecoveryManager,
         EmailVerificationManager $emailVerificationManager,
-        UserManager $userManager)
+        UserManager $userManager,
+        UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct();
 
@@ -51,6 +53,7 @@ class UserCronCommand extends Command
         $this->passwordRecoveryManager  = $passwordRecoveryManager;
         $this->emailVerificationManager = $emailVerificationManager;
         $this->userManager              = $userManager;
+        $this->userAuditLogManager      = $userAuditLogManager;
     }
 
     protected function configure() : void
@@ -72,7 +75,11 @@ class UserCronCommand extends Command
             $user = $this->userManager->findOneByUsername($username);
 
             if ($user && !$user->isTrusted() && !$user->isAdmin()) {
+                $snapshot = $user instanceof User ? $this->userAuditLogManager->buildSnapshot($user) : null;
                 $this->userManager->remove($user);
+                if (null !== $snapshot) {
+                    $this->userAuditLogManager->logDeleted(null, 'CLI: user:cron (unverified expiry)', $snapshot);
+                }
             }
         }
 

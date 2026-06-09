@@ -2,6 +2,8 @@
 
 namespace Bundles\PasswordLoginBundle\Command;
 
+use App\Entity\User;
+use App\Manager\UserAuditLogManager;
 use Bundles\PasswordLoginBundle\Base\BaseCommand;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Symfony\Component\Console\Command\Command;
@@ -16,11 +18,17 @@ class UserVerifyCommand extends Command
      */
     private $userManager;
 
-    public function __construct(UserManager $userManager)
+    /**
+     * @var UserAuditLogManager
+     */
+    private $userAuditLogManager;
+
+    public function __construct(UserManager $userManager, UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct();
 
-        $this->userManager = $userManager;
+        $this->userManager         = $userManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     protected function configure() : void
@@ -44,8 +52,12 @@ class UserVerifyCommand extends Command
             return 1;
         }
 
+        $old = $user instanceof User ? $this->userAuditLogManager->buildSnapshot($user) : null;
         $user->setIsVerified(1 - $user->isVerified());
         $this->userManager->save($user);
+        if ($user instanceof User && null !== $old) {
+            $this->userAuditLogManager->logUpdated(null, 'CLI: user:verify', $user, $old);
+        }
 
         $status = $user->isVerified() ? '<question>verifed</question>' : '<error>unverified</error>';
         $output->writeln("User <info>{$username}</info> is now: {$status}.");
