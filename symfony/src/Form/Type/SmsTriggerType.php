@@ -37,6 +37,7 @@ class SmsTriggerType extends AbstractType
         /** @var User $user */
         $user      = $this->security->getUser();
         $shortcuts = array_combine($user->getStructuresShortcuts(), $user->getStructuresShortcuts());
+        ksort($shortcuts);
 
         $builder
             ->add('audience', AudienceType::class)

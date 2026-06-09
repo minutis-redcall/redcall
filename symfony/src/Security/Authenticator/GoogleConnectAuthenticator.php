@@ -16,6 +16,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -88,10 +89,16 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
             'username' => $user->getUserIdentifier(),
         ]);
 
+        // SSO flow has no _remember_me form field, so we pre-enable the badge
+        // to bypass CheckRememberMeConditionsListener's parameter check.
+        $rememberMe = new RememberMeBadge();
+        $rememberMe->enable();
+
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), function () use ($user) {
                 return $user;
-            })
+            }),
+            [$rememberMe]
         );
     }
 
