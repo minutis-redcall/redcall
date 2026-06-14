@@ -145,6 +145,33 @@ class RtmrReconciliatorTest extends KernelTestCase
         $this->assertFalse($user->isAdmin(), 'RTMR users must not be admins');
     }
 
+    public function testLockedUserIsLeftUntouchedEvenWhenVolunteerIsDisabled()
+    {
+        // user.locked = true means an admin manually pinned this user's
+        // privileges/structures. Sync must not strip them even when the
+        // bound volunteer would normally fire clearPrivilegesIfDecommissioned.
+        $data = $this->fixtures->createUserWithVolunteerAndStructure();
+        /** @var Volunteer $volunteer */
+        $volunteer = $data['volunteer'];
+        $volunteer->setEnabled(false); // would normally trigger the clear
+        $user = $data['user'];
+        $user->setIsTrusted(true);
+        $user->setIsAdmin(true);
+        $user->setLocked(true); // ← the new contract
+        $this->em->persist($volunteer);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->reconciliator->reconcile($volunteer);
+        $this->em->clear();
+
+        $reloaded = $this->userManager->findOneByExternalId($volunteer->getExternalId());
+        $this->assertNotNull($reloaded);
+        $this->assertTrue($reloaded->isTrusted(), 'Locked user must keep trust');
+        $this->assertTrue($reloaded->isAdmin(), 'Locked user must keep admin');
+        $this->assertGreaterThan(0, $reloaded->getStructures(false)->count(), 'Locked user must keep structures');
+    }
+
     public function testAnnuaireVolunteerIsLeftUntouched()
     {
         // Volunteer whose external_id carries the Annuaire National prefix

@@ -214,6 +214,43 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $this->assertFalse($reloaded->isEnabled(), 'Volunteer not in CSV must be anonymized/disabled by Finalize');
     }
 
+    public function testLockedUserShieldsItsVolunteerFromAnonymization()
+    {
+        // Volunteer is Pegass-managed, stale, and would normally match the
+        // anonymize sweep. But its bound user is admin-locked — sync must
+        // keep its hands off. 84 prod deletions on 2026-06-10/13 bypassed
+        // this contract before the fix.
+        $structure = $this->fixtures->createStructure('UL TEST', '980');
+        $this->em->persist($structure);
+
+        $stale = $this->fixtures->createStandaloneVolunteer('1234567A', 'stale-locked@example.test');
+        $stale->setFirstName('Jean');
+        $stale->setLastName('Test');
+        $stale->setEnabled(true);
+        $stale->setLastSyncedAt(new \DateTime('2020-01-01'));
+        $this->em->persist($stale);
+
+        $user = $this->fixtures->createRawUser('stale-locked@example.test', 'password', false);
+        $user->setVolunteer($stale);
+        $user->setIsTrusted(true);
+        $user->setLocked(true); // ← admin-locked
+        $this->em->persist($user);
+
+        $this->em->flush();
+        $volId   = $stale->getId();
+        $userId  = $user->getId();
+
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $reloadedV = $this->em->find(Volunteer::class, $volId);
+        $reloadedU = $this->em->getRepository(\App\Entity\User::class)->find($userId);
+
+        $this->assertTrue($reloadedV->isEnabled(), 'Locked-user volunteer must NOT be anonymized');
+        $this->assertNotNull($reloadedU, 'Locked user must survive');
+        $this->assertTrue($reloadedU->isTrusted(), 'Locked user must keep trust');
+    }
+
     public function testAnnuaireVolunteersAreNotAnonymizedByPegassSync()
     {
         // Regression: the Pegass sync used to anonymize volunteers created

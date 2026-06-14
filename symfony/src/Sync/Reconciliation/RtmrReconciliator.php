@@ -67,6 +67,13 @@ class RtmrReconciliator
             return;
         }
 
+        // user.locked = true means an admin manually set the user's
+        // privileges/structures and explicitly asked sync to keep its hands
+        // off. Bypassing it caused 84 prod deletions on 2026-06-10/13.
+        if ($user->isLocked()) {
+            return;
+        }
+
         $clear = !$volunteer->isEnabled()
             || 0 === strncmp((string) $volunteer->getExternalId(), 'deleted-', 8);
 
@@ -97,6 +104,10 @@ class RtmrReconciliator
         }
         $user = $volunteer->getUser();
         if (!$user) {
+            return;
+        }
+        // Same admin-lock contract: hands off when user.locked = true.
+        if ($user->isLocked()) {
             return;
         }
 

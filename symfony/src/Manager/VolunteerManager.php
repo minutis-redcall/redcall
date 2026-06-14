@@ -314,6 +314,15 @@ class VolunteerManager
 
     public function anonymize(Volunteer $volunteer)
     {
+        // Belt-and-braces guard: callers (DataSyncOrchestrator::anonymizeStaleVolunteers,
+        // PegassManager::removeMissingEntities, ...) already filter, but anonymize()
+        // is destructive enough that we never want to fall through here with an
+        // admin-locked bound user. user.locked = true means an admin manually
+        // owns this user's privileges and the sync must keep its hands off.
+        if (($user = $volunteer->getUser()) && $user->isLocked()) {
+            return;
+        }
+
         $volunteer->setEnabled(false);
 
         foreach ($volunteer->getMessages() as $message) {
@@ -335,7 +344,13 @@ class VolunteerManager
             $this->userAuditLogManager->logDeleted(null, 'sync: anonymize', $snapshot);
         }
 
-        foreach ($volunteer->getStructures(false) as $structure) {
+        // Iterate over a SNAPSHOT of the structures: $structure->removeVolunteer()
+        // calls $volunteer->removeStructure($this) under the hood, which mutates
+        // the very collection we're iterating. On prod that misbehavior left 95
+        // volunteers half-anonymized: bound user deleted (and audit-logged) but
+        // the volunteer itself never anonymized, then dragged through the next
+        // sync runs in an inconsistent state.
+        foreach ($volunteer->getStructures(false)->toArray() as $structure) {
             $structure->removeVolunteer($volunteer);
             $this->structureManager->save($structure);
         }

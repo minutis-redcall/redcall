@@ -679,14 +679,20 @@ class DataSyncOrchestrator
         // CSV. Without this guard the finalize phase treated them as stale
         // and cascaded into the deletion of their bound RedCall users.
         // See App\Sync\Ownership.
+        //
+        // Additionally: if a bound RedCall user has user.locked = true, an
+        // admin has explicitly asked the sync to keep its hands off. Skip.
+        // 84 prod deletions on 2026-06-10/13 bypassed that contract.
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(v.id)')
                             ->from(Volunteer::class, 'v')
+                            ->leftJoin('v.user', 'u')
                             ->where('v.locked = :unlocked')
                             ->andWhere('v.enabled = :enabled')
                             ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
                             ->andWhere('v.externalId NOT LIKE :annuPrefix')
                             ->andWhere('v.externalId NOT LIKE :annuairePrefix')
+                            ->andWhere('(u.id IS NULL OR u.locked = :unlocked)')
                             ->setParameter('enabled', true)
                             ->setParameter('unlocked', false)
                             ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
@@ -699,11 +705,13 @@ class DataSyncOrchestrator
         $qb = $this->em->createQueryBuilder()
                        ->select('v')
                        ->from(Volunteer::class, 'v')
+                       ->leftJoin('v.user', 'u')
                        ->where('v.locked = :unlocked')
                        ->andWhere('v.enabled = :enabled')
                        ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
                        ->andWhere('v.externalId NOT LIKE :annuPrefix')
                        ->andWhere('v.externalId NOT LIKE :annuairePrefix')
+                       ->andWhere('(u.id IS NULL OR u.locked = :unlocked)')
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
                        ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
