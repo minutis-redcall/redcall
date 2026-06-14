@@ -112,10 +112,10 @@ class RtmrReconciliator
         $user = $volunteer->getUser();
         if (!$user) {
             $this->volunteerManager->save($volunteer);
-            // user:create logs its own "create" audit row with label 'CLI: user:create'
-            $this->userManager->createUser($volunteer->getExternalId());
-            $user = $this->userManager->findOneByExternalId($volunteer->getExternalId());
-            if (!$user) {
+            try {
+                // createUser logs its own "create" audit row with the given label
+                $user = $this->userManager->createUser($volunteer->getExternalId(), null, 'sync: rtmr (create user)');
+            } catch (\LogicException $e) {
                 return;
             }
             $old        = $this->userAuditLogManager->buildSnapshot($user);

@@ -37,7 +37,7 @@ class FakeStorageProvider implements StorageProvider
         return sprintf('%s/%s', $directory, $filename);
     }
 
-    public function store(string $filename, string $content) : string
+    public function store(string $filename, string $content, ?string $contentType = null) : string
     {
         $dir = $this->kernel->getCacheDir();
 

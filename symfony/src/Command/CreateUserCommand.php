@@ -3,13 +3,9 @@
 namespace App\Command;
 
 use App\Base\BaseCommand;
-use App\Entity\User;
-use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
-use App\Manager\VolunteerManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserCommand extends BaseCommand
@@ -19,25 +15,11 @@ class CreateUserCommand extends BaseCommand
      */
     private $userManager;
 
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
-     * @var UserAuditLogManager
-     */
-    private $userAuditLogManager;
-
-    public function __construct(UserManager $userManager,
-        VolunteerManager $volunteerManager,
-        UserAuditLogManager $userAuditLogManager)
+    public function __construct(UserManager $userManager)
     {
         parent::__construct();
 
-        $this->userManager         = $userManager;
-        $this->volunteerManager    = $volunteerManager;
-        $this->userAuditLogManager = $userAuditLogManager;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -48,8 +30,7 @@ class CreateUserCommand extends BaseCommand
         $this
             ->setName('user:create')
             ->setDescription('Create users based on volunteer\'s external id')
-            ->addArgument('external-id', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'External IDs from which to create a new user')
-            ->addOption('actor-id', null, InputOption::VALUE_REQUIRED, 'User ID to attribute the audit-log entry to (set by the admin UI when shelling out)');
+            ->addArgument('external-id', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'External IDs from which to create a new user');
     }
 
     /**
@@ -57,50 +38,13 @@ class CreateUserCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output) : int
     {
-        $actor   = null;
-        $actorId = $input->getOption('actor-id');
-        if ($actorId) {
-            $actor = $this->userManager->find((string) $actorId);
-        }
-        $cliLabel = $actor ? null : 'CLI: user:create';
-
         foreach ($input->getArgument('external-id') as $externalId) {
-            $volunteer = $this->volunteerManager->findOneByExternalId($externalId);
-
-            if (!$volunteer) {
-                $output->writeln(sprintf('KO %s: external id do not exist', $externalId));
+            try {
+                $this->userManager->createUser($externalId, null, 'CLI: user:create');
+            } catch (\LogicException $e) {
+                $output->writeln(sprintf('KO %s: %s', $externalId, $e->getMessage()));
                 continue;
             }
-
-            if (!$volunteer->getEmail()) {
-                $output->writeln(sprintf('KO: %s: volunteer has no email', $externalId));
-                continue;
-            }
-
-            if ($this->userManager->findOneByUsername($volunteer->getEmail())) {
-                $output->writeln(sprintf('KO %s: user having this email already exist', $externalId));
-                continue;
-            }
-
-            if ($this->userManager->findOneByExternalId($externalId)) {
-                $output->writeln(sprintf('KO %s: external id already connected to a user', $externalId));
-                continue;
-            }
-
-            $user = new User();
-
-            $user->setLocale('fr');
-            $user->setTimezone('Europe/Paris');
-
-            $user->setUsername($volunteer->getEmail());
-            $user->setPassword('invalid hash');
-            $user->setIsVerified(true);
-            $user->setIsTrusted(true);
-            $this->userManager->save($user);
-
-            $this->userManager->changeVolunteer($user, $externalId);
-
-            $this->userAuditLogManager->logCreated($actor, $cliLabel, $user);
 
             $output->writeln(sprintf('OK %s: user created', $externalId));
         }

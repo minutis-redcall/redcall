@@ -13,7 +13,7 @@ class GoogleCloudStorage implements StorageProvider
      */
     private $client;
 
-    public function store(string $filename, string $content) : string
+    public function store(string $filename, string $content, ?string $contentType = null) : string
     {
         $bucket = $this->getClient()->bucket(
             getenv('GCP_STORAGE_BUCKET')
@@ -21,9 +21,14 @@ class GoogleCloudStorage implements StorageProvider
 
         $stream = fopen('data://text/plain;base64,'.base64_encode($content), 'r');
 
+        $options = ['name' => $filename];
+        if ($contentType) {
+            $options['metadata'] = ['contentType' => $contentType];
+        }
+
         $object = $bucket->upload(
             $stream,
-            ['name' => $filename]
+            $options
         );
 
         return $object->signedUrl(time() + self::RETENTION * 24 * 3600);

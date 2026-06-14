@@ -139,6 +139,7 @@ admin:
         delete: 'Delete'
       search:
         criteria: 'Search by name, e-mail, external ID or actor'
+        hide_technical: 'Hide technical logs'
         submit: 'Search'
       field:
         isVerified: 'Verified'

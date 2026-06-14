@@ -20,13 +20,18 @@ class UserAuditLogRepository extends BaseRepository
         parent::__construct($registry, UserAuditLog::class);
     }
 
-    public function searchQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, bool $hideTechnical = false) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('l')
                    ->leftJoin('l.actor', 'a')
                    ->leftJoin('l.targetUser', 't')
                    ->addOrderBy('l.createdAt', 'DESC')
                    ->addOrderBy('l.id', 'DESC');
+
+        if ($hideTechnical) {
+            // rows written by automations (sync, CLI...) carry no actor
+            $qb->andWhere('l.actor IS NOT NULL');
+        }
 
         if (null !== $criteria && '' !== trim($criteria)) {
             $qb->andWhere(

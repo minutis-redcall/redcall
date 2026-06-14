@@ -140,6 +140,7 @@ admin:
         delete: 'Suppression'
       search:
         criteria: 'Rechercher par nom, e-mail, NIVOL ou auteur'
+        hide_technical: 'Masquer les logs techniques'
         submit: 'Rechercher'
       field:
         isVerified: 'Vérifié'

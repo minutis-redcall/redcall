@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Manager\MailManager;
+use App\Provider\Storage\StorageProvider;
 use App\Services\InstancesNationales\LogService;
 use App\Services\InstancesNationales\UserService;
 use App\Services\InstancesNationales\VolunteerService;
@@ -36,13 +37,22 @@ class AnnuaireNationalCommand extends Command
      */
     private $emailManager;
 
-    public function __construct(VolunteerService $volunteerService, UserService $userService, MailManager $emailManager)
+    /**
+     * @var StorageProvider
+     */
+    private $storageProvider;
+
+    public function __construct(VolunteerService $volunteerService,
+        UserService $userService,
+        MailManager $emailManager,
+        StorageProvider $storageProvider)
     {
         parent::__construct();
 
         $this->volunteerService = $volunteerService;
         $this->userService      = $userService;
         $this->emailManager     = $emailManager;
+        $this->storageProvider  = $storageProvider;
     }
 
     protected function configure() : void
@@ -96,9 +106,22 @@ class AnnuaireNationalCommand extends Command
             $counts['errors']
         );
 
+        $reportUrl   = null;
+        $reportError = null;
+        try {
+            $reportUrl = $this->storageProvider->store(
+                sprintf('annuaire-national/rapport-%s.txt', date('Y-m-d-His')),
+                // BOM so that editors without charset detection open the file as UTF-8
+                "\xEF\xBB\xBF".$this->buildReport($summary, $counts),
+                'text/plain; charset=utf-8'
+            );
+        } catch (\Throwable $exception) {
+            $reportError = $exception->getMessage();
+        }
+
         $html = sprintf('<h1>Rapport de mise à jour de l\'annuaire national</h1>');
         $html .= '<p>La synchronisation avec les Google Sheets a été effectuée.</p>';
-        
+
         // Summary Table
         $html .= '<h2>Résumé</h2>';
         $html .= '<ul>';
@@ -110,44 +133,25 @@ class AnnuaireNationalCommand extends Command
         }
         $html .= '</ul>';
 
-        // Details
-        $sections = [
-            'errors'  => ['title' => 'Erreurs', 'color' => 'darkred'],
-            'new'     => ['title' => 'Créations', 'color' => 'green'],
-            'updated' => ['title' => 'Modifications', 'color' => 'orange'],
-            'deleted' => ['title' => 'Suppressions', 'color' => 'red'],
-        ];
-
-        foreach ($sections as $key => $config) {
-            if (empty($summary[$key])) {
-                continue;
-            }
-
-            $html .= sprintf('<h2 style="color:%s">%s</h2>', $config['color'], $config['title']);
-            $html .= '<table border="1" style="border-collapse: collapse; width: 100%;">';
-            $html .= '<tr><th style="padding: 8px; text-align: left;">Message</th><th style="padding: 8px; text-align: left;">Détails</th></tr>';
-
-            foreach ($summary[$key] as $entry) {
-                $details = '';
-                foreach ($entry['parameters'] as $k => $v) {
-                    $details .= sprintf('<strong>%s</strong>: %s<br/>', $k, $v);
-                }
-
-                $html .= sprintf(
-                    '<tr><td style="padding: 8px;">%s</td><td style="padding: 8px;">%s</td></tr>',
-                    $entry['message'],
-                    $details
-                );
-            }
-            $html .= '</table>';
+        // Link to the detailed report (changes are too numerous to be inlined in the email)
+        if ($reportUrl) {
+            $html .= sprintf(
+                '<p>Le détail des modifications est disponible dans <a href="%s">le rapport complet</a> (fichier texte, lien valable %d jours).</p>',
+                $reportUrl,
+                $this->storageProvider->getRetentionDays()
+            );
+        } else {
+            $html .= sprintf(
+                '<p style="color:darkred">Le rapport détaillé n\'a pas pu être déposé sur le stockage : %s</p>',
+                $reportError
+            );
         }
 
-        // Full Log Dump (collapsed or at bottom)
-        $html .= '<h2>Log complet technique</h2>';
-        $html .= sprintf('<pre>%s</pre>', LogService::dump(true));
-
         // Text version (fallback)
-        $text = strip_tags(str_replace(['<br/>', '</tr>', '</h1>', '</h2>'], "\n", $html));
+        $text = strip_tags(str_replace(['<br/>', '</li>', '</p>', '</h1>', '</h2>'], "\n", $html));
+        if ($reportUrl) {
+            $text .= sprintf("\nRapport complet : %s\n", $reportUrl);
+        }
 
         foreach (explode(';', getenv('ANNUAIRE_NATIONAL_MAIL_ALERTING')) as $to) {
             $this->emailManager->simple(
@@ -158,5 +162,47 @@ class AnnuaireNationalCommand extends Command
                 'fr'
             );
         }
+    }
+
+    private function buildReport(array $summary, array $counts) : string
+    {
+        $lines   = [];
+        $lines[] = 'RAPPORT DE MISE À JOUR DE L\'ANNUAIRE NATIONAL';
+        $lines[] = sprintf('Généré le %s', date('d/m/Y à H:i:s'));
+        $lines[] = '';
+        $lines[] = 'RÉSUMÉ';
+        $lines[] = sprintf('- Créations : %d', $counts['new']);
+        $lines[] = sprintf('- Modifications : %d', $counts['updated']);
+        $lines[] = sprintf('- Suppressions : %d', $counts['deleted']);
+        $lines[] = sprintf('- Erreurs : %d', $counts['errors']);
+
+        $sections = [
+            'errors'  => 'ERREURS',
+            'new'     => 'CRÉATIONS',
+            'updated' => 'MODIFICATIONS',
+            'deleted' => 'SUPPRESSIONS',
+        ];
+
+        foreach ($sections as $key => $title) {
+            if (empty($summary[$key])) {
+                continue;
+            }
+
+            $lines[] = '';
+            $lines[] = sprintf('======== %s (%d) ========', $title, count($summary[$key]));
+
+            foreach ($summary[$key] as $entry) {
+                $lines[] = sprintf('- %s', $entry['message']);
+                foreach ($entry['parameters'] as $k => $v) {
+                    $lines[] = sprintf('    %s: %s', $k, $v);
+                }
+            }
+        }
+
+        $lines[] = '';
+        $lines[] = '======== LOG COMPLET TECHNIQUE ========';
+        $lines[] = LogService::dump(true);
+
+        return implode(PHP_EOL, $lines);
     }
 }

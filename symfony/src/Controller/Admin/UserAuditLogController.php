@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Manager\UserAuditLogManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,15 +37,20 @@ class UserAuditLogController extends BaseController
         $search   = $this->createSearchForm($request);
         $criteria = null;
 
+        // automation rows (actor = null) are noise for most lookups, hide them
+        // unless the "hide technical logs" checkbox gets explicitly unchecked
+        $hideTechnical = true;
+
         if ($search->isSubmitted() && $search->isValid()) {
-            $criteria = $search->get('criteria')->getData();
+            $criteria      = $search->get('criteria')->getData();
+            $hideTechnical = (bool) $search->get('hideTechnical')->getData();
         }
 
         return $this->render('admin/users/audit_log/index.html.twig', [
             'search'   => $search->createView(),
             'criteria' => $criteria,
             'entries'  => $this->paginationManager->getPager(
-                $this->userAuditLogManager->searchQueryBuilder($criteria),
+                $this->userAuditLogManager->searchQueryBuilder($criteria, $hideTechnical),
                 '',
                 true
             ),
@@ -59,6 +65,11 @@ class UserAuditLogController extends BaseController
             ->add('criteria', TextType::class, [
                 'label'    => 'admin.users.history.search.criteria',
                 'required' => false,
+            ])
+            ->add('hideTechnical', CheckboxType::class, [
+                'label'    => 'admin.users.history.search.hide_technical',
+                'required' => false,
+                'data'     => true,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'admin.users.history.search.submit',

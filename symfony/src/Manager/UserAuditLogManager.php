@@ -28,9 +28,9 @@ class UserAuditLogManager
         $this->userAuditLogRepository = $userAuditLogRepository;
     }
 
-    public function searchQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, bool $hideTechnical = false) : QueryBuilder
     {
-        return $this->userAuditLogRepository->searchQueryBuilder($criteria);
+        return $this->userAuditLogRepository->searchQueryBuilder($criteria, $hideTechnical);
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace App\Tests\Manager;
 
 use App\Entity\User;
+use App\Entity\UserAuditLog;
 use App\Manager\UserManager;
 use App\Tests\Fixtures\DataFixtures;
 use Doctrine\ORM\EntityManagerInterface;
@@ -206,19 +207,25 @@ class UserManagerTest extends KernelTestCase
     // createUser
     // ──────────────────────────────────────────────
 
-    public function testCreateUserRunsCommand(): void
+    public function testCreateUserCreatesUserAndAttributesActor(): void
     {
-        // createUser() runs the 'user:create' console command.
-        // We verify it doesn't throw an exception.
+        $actor     = $this->fixtures->createRawUser('um_create_actor@test.com');
         $volunteer = $this->fixtures->createStandaloneVolunteer('UM-VOL-CREATE-001', 'um_create@test.com');
 
-        try {
-            $this->manager->createUser($volunteer->getExternalId());
-            $ran = true;
-        } catch (\Throwable $e) {
-            $ran = false;
-        }
+        $user = $this->manager->createUser($volunteer->getExternalId(), $actor);
 
-        $this->assertTrue($ran, 'createUser should run without throwing');
+        $this->assertSame('um_create@test.com', $user->getUsername());
+
+        $logs = $this->em->getRepository(UserAuditLog::class)->findBy(['targetUser' => $user]);
+        $this->assertNotEmpty($logs);
+        $this->assertNotNull($logs[0]->getActor());
+        $this->assertSame($actor->getId(), $logs[0]->getActor()->getId());
+    }
+
+    public function testCreateUserRefusesUnknownExternalId(): void
+    {
+        $this->expectException(\LogicException::class);
+
+        $this->manager->createUser('UM-VOL-DOES-NOT-EXIST');
     }
 }
