@@ -258,7 +258,10 @@ class SpaceController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid() && $form->get('confirm')->isClicked()) {
-            $this->volunteerManager->anonymize($session->getVolunteer());
+            // The actor here is the volunteer themself acting through the
+            // personal-space session — there is no logged-in App\Entity\User,
+            // so the cliLabel carries the attribution.
+            $this->volunteerManager->anonymize($session->getVolunteer(), null, 'space: self-delete');
 
             return $this->redirectToRoute('home');
         }

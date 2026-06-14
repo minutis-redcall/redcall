@@ -721,7 +721,7 @@ class DataSyncOrchestrator
         $count = 0;
         foreach ($qb->getQuery()->toIterable() as $volunteer) {
             /** @var Volunteer $volunteer */
-            $this->volunteerManager->anonymize($volunteer);
+            $this->volunteerManager->anonymize($volunteer, null, 'sync: stale');
             $count++;
             $this->progress->advanceBar();
             if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {

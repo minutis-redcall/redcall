@@ -3,9 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use App\Form\Type\RecaptchaType;
 use App\Manager\DeletedVolunteerManager;
-use App\Validator\Constraints\RecaptchaTrue;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -36,7 +34,7 @@ class GdprController extends BaseController
     }
 
     #[Route(name: "index")]
-#[Template("admin/gdpr/index.html.twig")]
+    #[Template("admin/gdpr/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this
@@ -52,12 +50,6 @@ class GdprController extends BaseController
                             );
                         }
                     }),
-                ],
-            ])
-            ->add('recaptcha', RecaptchaType::class, [
-                'label'       => 'admin.gdpr.form.captcha',
-                'constraints' => [
-                    new RecaptchaTrue(),
                 ],
             ])
             ->add('submit', SubmitType::class, [
