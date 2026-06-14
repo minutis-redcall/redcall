@@ -340,16 +340,20 @@ tests/
 ```
 
 ### Running Tests
-```bash
-# Full test cycle (drops/recreates test DB + runs all tests)
-cd symfony && make test
+The Makefile lives at the **repo root** (one level above `symfony/`), not inside `symfony/`.
 
-# Individual commands
-php vendor/bin/phpunit                        # All tests
-php vendor/bin/phpunit tests/Controller/      # Integration tests only
-php vendor/bin/phpunit tests/Manager/         # Manager tests only
-php vendor/bin/phpunit --filter=testName      # Single test by name
+```bash
+# Full test cycle (drops/recreates test DB + runs all tests inside the PHP container)
+make test
+
+# Individual commands — run them inside the PHP container
+docker compose exec php php vendor/bin/phpunit                        # All tests
+docker compose exec php php vendor/bin/phpunit tests/Controller/      # Integration tests only
+docker compose exec php php vendor/bin/phpunit tests/Manager/         # Manager tests only
+docker compose exec php php vendor/bin/phpunit --filter=testName      # Single test by name
 ```
+
+Running phpunit on the host directly is possible but error-prone: `symfony/.env` may point at a remote DB and `.env.local` only partially overrides it (port but not host/credentials), which produces silent connection timeouts. Stick to the container.
 
 ### Test Database
 - Test DB is created from scratch via `doctrine:schema:create` (NOT migrations)
@@ -575,5 +579,19 @@ Some services have explicit wiring in `services.yaml`:
 ### Bundle Registration
 The `pegass-crawler-bundle` is registered in `composer.json` autoload but the directory does NOT exist in the current codebase. Ignore references to it.
 
-### Docker Development (likely broken)
-A `docker-compose.yml` exists at the project root with PHP-FPM (9000), Nginx (81→80), MySQL 5.7 (3308→3306), but it has not been maintained for a long time and is likely broken. **Development is done directly on the host system** using the Symfony local server (`symfony serve` or `php bin/console server:start` via `make run`). MySQL runs natively on the host.
+### Docker Development
+The dev stack runs in Docker via `compose.yaml` at the repo root (one level above `symfony/`). Three services:
+- **mysql** — MySQL 8.x, exposed on host port `3309` → container `3306`. Data persists in `docker/mysql/data/`. DB name defaults to `redcall_prod`.
+- **php** — PHP-FPM, autowired with `DATABASE_HOST=mysql`, `DATABASE_PORT=3306` so `symfony/.env` doesn't need to know whether it's running native or containerised.
+- **caddy** — HTTP frontend on host port `83` → container `80`. `WEBSITE_URL=http://127.0.0.1:83` in `.env` for the dev mode.
+
+Standard workflow via `Makefile` at the repo root (NOT inside `symfony/`):
+```bash
+make up              # start stack
+make shell           # shell into the PHP container
+make test            # drop+recreate test DB, run full suite inside PHP container
+make db-import       # copy host MySQL into the containerised one
+make db-migrate      # run pending Doctrine migrations
+```
+
+`make test` runs `docker compose exec php sh -c 'APP_ENV=test php bin/console doctrine:database:drop ...'` — the test DB lives in the containerised MySQL, not on the host. Running `php vendor/bin/phpunit` directly on the host only works if your `.env`/`.env.local` points at a reachable MySQL with the right credentials. Prefer `make test` to avoid env drift.

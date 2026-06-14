@@ -85,6 +85,27 @@ admin:
     violations:
       cannot_import: 'Ce bénévole a été supprimé suite à une demande de suppression de données (RGPD). Son identifiant ne peut pas être réutilisé. Contactez le support si vous devez le réintégrer.'
       not_exists: 'Cet identifiant n''existe pas.'
+    history:
+      button: 'Journal des suppressions'
+      title: 'Journal des suppressions de bénévoles'
+      help: 'Historique des anonymisations (sync, action admin, auto-suppression depuis l''espace personnel). Aucune donnée personnelle n''est conservée : seul le NIVOL, l''auteur et le contexte structurel sont stockés.'
+      empty: 'Aucune suppression enregistrée pour le moment.'
+      no_results_for: 'Aucun résultat pour « %criteria% ».'
+      actor: 'Par'
+      unknown_target: 'Bénévole inconnu'
+      view_raw: 'Voir la donnée brute'
+      action:
+        anonymize: 'Anonymisation'
+      search:
+        criteria: 'Rechercher par NIVOL, UUID utilisateur lié ou auteur'
+        hide_technical: 'Masquer les suppressions automatiques (sync)'
+        submit: 'Rechercher'
+      field:
+        bound_user: 'utilisateur lié'
+        flags: 'Indicateurs'
+        structures: 'Structures'
+        badges: 'Badges'
+        last_synced_at: 'Dernière sync'
   home:
     link: Administration
   users:

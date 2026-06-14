@@ -1,0 +1,86 @@
+{% set snapshot = entry.snapshot %}
+{% set action = entry.action %}
+{% set jsonFlags = constant('JSON_PRETTY_PRINT') b-or constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') %}
+
+{% set action_class = {
+    'anonymize': 'badge-danger',
+}[action] | default('badge-secondary') %}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+                <span class="badge {{ action_class }} mr-2">
+                    {{ ('admin.gdpr.history.action.' ~ action)|trans }}
+                </span>
+                <strong>
+                    {% if entry.targetExternalId %}
+                        <code>{{ entry.targetExternalId }}</code>
+                    {% else %}
+                        <em class="text-muted">{{ 'admin.gdpr.history.unknown_target'|trans }}</em>
+                    {% endif %}
+                </strong>
+                {% if entry.targetBoundUserId %}
+                    <small class="text-muted">
+                        &middot; {{ 'admin.gdpr.history.field.bound_user'|trans }}
+                        <code>{{ entry.targetBoundUserId }}</code>
+                    </small>
+                {% endif %}
+            </div>
+            <div class="text-right">
+                <div>{{ entry.createdAt|date('d/m/Y H:i:s') }}</div>
+                <small class="text-muted">
+                    {{ 'admin.gdpr.history.actor'|trans }}:
+                    {% if entry.actor %}
+                        {{ entry.actor.displayName }}
+                    {% else %}
+                        <em>{{ entry.actorLabel }}</em>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+
+        <div class="audit-detail small">
+            <div>
+                {% set flags = [] %}
+                {% if snapshot.isEnabled is defined and snapshot.isEnabled %}{% set flags = flags|merge(['E']) %}{% endif %}
+                {% if snapshot.isLocked is defined and snapshot.isLocked %}{% set flags = flags|merge(['L']) %}{% endif %}
+                {% if snapshot.isMinor is defined and snapshot.isMinor %}{% set flags = flags|merge(['M']) %}{% endif %}
+                {% if snapshot.hadBoundUser is defined and snapshot.hadBoundUser %}{% set flags = flags|merge(['U']) %}{% endif %}
+                {% if flags|length %}
+                    {{ 'admin.gdpr.history.field.flags'|trans }}:
+                    {% for f in flags %}<span class="badge badge-light">{{ f }}</span>{% endfor %}
+                {% endif %}
+            </div>
+            {% if snapshot.structures is defined %}
+                <div>
+                    {{ 'admin.gdpr.history.field.structures'|trans }}:
+                    {{ snapshot.structures|length }}
+                    {% if snapshot.structures|length > 0 %}
+                        ({% for s in snapshot.structures|slice(0, 8) %}<code>{{ s }}</code>{% if not loop.last %}, {% endif %}{% endfor %}{% if snapshot.structures|length > 8 %}…{% endif %})
+                    {% endif %}
+                </div>
+            {% endif %}
+            {% if snapshot.badges is defined and snapshot.badges|length > 0 %}
+                <div>
+                    {{ 'admin.gdpr.history.field.badges'|trans }}: {{ snapshot.badges|length }}
+                </div>
+            {% endif %}
+            {% if snapshot.lastSyncedAt is defined and snapshot.lastSyncedAt %}
+                <div>
+                    {{ 'admin.gdpr.history.field.last_synced_at'|trans }}:
+                    <code>{{ snapshot.lastSyncedAt }}</code>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="mt-2">
+            <a class="small" data-toggle="collapse" href="#raw-{{ entry.id }}" role="button" aria-expanded="false" aria-controls="raw-{{ entry.id }}">
+                {{ 'admin.gdpr.history.view_raw'|trans }}
+            </a>
+            <div class="collapse mt-2" id="raw-{{ entry.id }}">
+                <pre class="small bg-light p-2 rounded" style="max-height: 320px; overflow: auto;">{{ snapshot|json_encode(jsonFlags) }}</pre>
+            </div>
+        </div>
+    </div>
+</div>

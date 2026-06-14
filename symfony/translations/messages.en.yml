@@ -85,6 +85,27 @@ admin:
     violations:
       cannot_import: 'This volunteer has been deleted (GDPR). Their identifier cannot be reused. Contact support if you need to restore them.'
       not_exists: 'This identifier does not exist.'
+    history:
+      button: 'Deletion log'
+      title: 'Volunteer deletion log'
+      help: 'History of every volunteer anonymize (sync, admin action, self-delete from personal space). No PII is kept: only the NIVOL, the actor, and structural context.'
+      empty: 'No deletion recorded yet.'
+      no_results_for: 'No result for "%criteria%".'
+      actor: 'By'
+      unknown_target: 'Unknown volunteer'
+      view_raw: 'View raw data'
+      action:
+        anonymize: 'Anonymize'
+      search:
+        criteria: 'Search by NIVOL, bound user UUID, or actor'
+        hide_technical: 'Hide automatic deletions (sync)'
+        submit: 'Search'
+      field:
+        bound_user: 'bound user'
+        flags: 'Flags'
+        structures: 'Structures'
+        badges: 'Badges'
+        last_synced_at: 'Last sync'
   home:
     link: Administration
   users:
