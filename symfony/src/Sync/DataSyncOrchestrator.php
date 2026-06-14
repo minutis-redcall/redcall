@@ -6,6 +6,8 @@ use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
+use App\Model\InstancesNationales\UserExtract;
+use App\Model\InstancesNationales\VolunteerExtract;
 use App\Queues;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
@@ -386,6 +388,7 @@ class DataSyncOrchestrator
         foreach ($rows as $data) {
             $this->structureImporter->import(StructureRow::fromArray($data), $syncedAt);
         }
+        $this->resetMemoryFootprint();
     }
 
     /**
@@ -403,6 +406,7 @@ class DataSyncOrchestrator
         // task. Missing this is why volunteer_sync_snapshot stayed empty in
         // production after the GCT path went live.
         $this->snapshotWriter->flush();
+        $this->resetMemoryFootprint();
     }
 
     /**
@@ -630,15 +634,21 @@ class DataSyncOrchestrator
     {
         // Single UPDATE statement, no per-row work — show the count up-front
         // (so it's visible even though the actual query is near-instant).
+        //
+        // The ANNUAIRE NATIONAL / DEMO / etc. structures use UUID external_ids
+        // and are not in the Pegass CSV by design — `externalId NOT LIKE '%-%'`
+        // keeps the sweep to numeric Pegass IDs only.
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(s.id)')
                             ->from(Structure::class, 's')
                             ->where('s.locked = :unlocked')
                             ->andWhere('s.enabled = :enabled')
                             ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
+                            ->andWhere('s.externalId NOT LIKE :uuidPattern')
                             ->setParameter('enabled', true)
                             ->setParameter('unlocked', false)
-                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                            ->setParameter('uuidPattern', '%-%');
         $total = (int) $countQb->getQuery()->getSingleScalarResult();
 
         $this->progress->startBar(sprintf('Disabling %d stale structures', $total), max(1, $total));
@@ -649,10 +659,12 @@ class DataSyncOrchestrator
                        ->where('s.locked = :unlocked')
                        ->andWhere('s.enabled = :enabled')
                        ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
+                       ->andWhere('s.externalId NOT LIKE :uuidPattern')
                        ->setParameter('disabled', false)
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
-                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                       ->setParameter('uuidPattern', '%-%');
 
         $count = $qb->getQuery()->execute();
         $this->progress->advanceBar(max(1, (int) $count));
@@ -662,15 +674,24 @@ class DataSyncOrchestrator
 
     private function anonymizeStaleVolunteers(\DateTimeImmutable $syncedAt) : void
     {
+        // Annuaire-managed volunteers (synthetic external_id with the
+        // user-annu- / annuaire- prefix) are by design never in the Pegass
+        // CSV. Without this guard the finalize phase treated them as stale
+        // and cascaded into the deletion of their bound RedCall users.
+        // See App\Sync\Ownership.
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(v.id)')
                             ->from(Volunteer::class, 'v')
                             ->where('v.locked = :unlocked')
                             ->andWhere('v.enabled = :enabled')
                             ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
+                            ->andWhere('v.externalId NOT LIKE :annuPrefix')
+                            ->andWhere('v.externalId NOT LIKE :annuairePrefix')
                             ->setParameter('enabled', true)
                             ->setParameter('unlocked', false)
-                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                            ->setParameter('annuPrefix', UserExtract::NIVOL_PREFIX.'%')
+                            ->setParameter('annuairePrefix', VolunteerExtract::NIVOL_PREFIX.'%');
         $total = (int) $countQb->getQuery()->getSingleScalarResult();
 
         $this->progress->startBar(sprintf('Anonymizing %d stale volunteers', $total), max(1, $total));
@@ -681,9 +702,13 @@ class DataSyncOrchestrator
                        ->where('v.locked = :unlocked')
                        ->andWhere('v.enabled = :enabled')
                        ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
+                       ->andWhere('v.externalId NOT LIKE :annuPrefix')
+                       ->andWhere('v.externalId NOT LIKE :annuairePrefix')
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
-                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                       ->setParameter('annuPrefix', UserExtract::NIVOL_PREFIX.'%')
+                       ->setParameter('annuairePrefix', VolunteerExtract::NIVOL_PREFIX.'%');
 
         $count = 0;
         foreach ($qb->getQuery()->toIterable() as $volunteer) {

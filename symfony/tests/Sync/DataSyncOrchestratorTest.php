@@ -214,6 +214,60 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $this->assertFalse($reloaded->isEnabled(), 'Volunteer not in CSV must be anonymized/disabled by Finalize');
     }
 
+    public function testAnnuaireVolunteersAreNotAnonymizedByPegassSync()
+    {
+        // Regression: the Pegass sync used to anonymize volunteers created
+        // by the Annuaire National flow because their synthetic external_id
+        // (user-annu-*, annuaire-*) was never updated by sync:data — their
+        // lastSyncedAt stayed old → Finalize saw "stale" → hard-removed the
+        // bound RedCall user. See App\Sync\Ownership.
+        $annuUser = $this->fixtures->createStandaloneVolunteer('user-annu-jean-test', 'annu1@example.test');
+        $annuUser->setFirstName('Jean');
+        $annuUser->setLastName('Annu');
+        $annuUser->setEnabled(true);
+        $annuUser->setLastSyncedAt(new \DateTime('2020-01-01'));
+        $this->em->persist($annuUser);
+
+        $annuVol = $this->fixtures->createStandaloneVolunteer('annuaire-abc123def', 'annu2@example.test');
+        $annuVol->setFirstName('Marie');
+        $annuVol->setLastName('Annu');
+        $annuVol->setEnabled(true);
+        $annuVol->setLastSyncedAt(new \DateTime('2020-01-01'));
+        $this->em->persist($annuVol);
+
+        $this->em->flush();
+        $annuUserId = $annuUser->getId();
+        $annuVolId  = $annuVol->getId();
+
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $reloadedUserAnnu = $this->em->find(Volunteer::class, $annuUserId);
+        $reloadedAnnu     = $this->em->find(Volunteer::class, $annuVolId);
+
+        $this->assertTrue($reloadedUserAnnu->isEnabled(), 'user-annu- volunteers must NOT be anonymized by the Pegass sync');
+        $this->assertTrue($reloadedAnnu->isEnabled(), 'annuaire- volunteers must NOT be anonymized by the Pegass sync');
+    }
+
+    public function testNonNumericStructureIsNotDisabledByPegassSync()
+    {
+        // The ANNUAIRE NATIONAL / demo structures use UUID external_ids
+        // and are not in the Pegass CSV. The Pegass sync must leave them
+        // alone even when their lastSyncedAt is ancient.
+        $annu = $this->fixtures->createStructure('ANNUAIRE NATIONAL', '792319a4-2e05-4509-bc61-a407d4b70e23');
+        $annu->setEnabled(true);
+        $annu->setLastSyncedAt(new \DateTime('2020-01-01'));
+        $this->em->persist($annu);
+        $this->em->flush();
+
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $reloaded = $this->structureManager->findOneByExternalId('792319a4-2e05-4509-bc61-a407d4b70e23');
+        $this->assertNotNull($reloaded);
+        $this->assertTrue($reloaded->isEnabled(), 'UUID-style structure (non-Pegass) must survive Finalize');
+    }
+
     public function testLockedStructureIsNotDisabledEvenIfMissingFromCsv()
     {
         // Pre-create a LOCKED structure NOT in the fixture set

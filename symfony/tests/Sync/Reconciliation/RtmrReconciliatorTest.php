@@ -145,6 +145,33 @@ class RtmrReconciliatorTest extends KernelTestCase
         $this->assertFalse($user->isAdmin(), 'RTMR users must not be admins');
     }
 
+    public function testAnnuaireVolunteerIsLeftUntouched()
+    {
+        // Volunteer whose external_id carries the Annuaire National prefix
+        // is owned by another sync path. RtmrReconciliator must early-return
+        // even if the volunteer is disabled / has a bound user / etc.
+        $data = $this->fixtures->createUserWithVolunteerAndStructure();
+        /** @var Volunteer $volunteer */
+        $volunteer = $data['volunteer'];
+        $volunteer->setExternalId('user-annu-jean-doe-croix-rouge-fr');
+        $volunteer->setEnabled(false); // would normally trigger clearPrivilegesIfDecommissioned
+        $user = $data['user'];
+        $user->setIsTrusted(true);
+        $user->setIsAdmin(true);
+        $this->em->persist($volunteer);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $this->reconciliator->reconcile($volunteer);
+        $this->em->clear();
+
+        $reloaded = $this->userManager->findOneByExternalId($volunteer->getExternalId());
+        $this->assertNotNull($reloaded);
+        $this->assertTrue($reloaded->isTrusted(), 'Annuaire-managed volunteer must not have its bound user touched');
+        $this->assertTrue($reloaded->isAdmin(), 'Annuaire-managed volunteer must not have its bound user touched');
+        $this->assertGreaterThan(0, $reloaded->getStructures(false)->count(), 'Annuaire user structures untouched');
+    }
+
     public function testValidRtmrUserLosesAdminFlag()
     {
         $data = $this->fixtures->createUserWithVolunteerAndStructure();

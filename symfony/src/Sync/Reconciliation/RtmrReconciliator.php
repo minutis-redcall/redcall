@@ -8,6 +8,7 @@ use App\Manager\StructureManager;
 use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Sync\Ownership;
 
 /**
  * Post-sync reconciliation of RedCall user privileges based on the RTMR badge.
@@ -46,6 +47,14 @@ class RtmrReconciliator
 
     public function reconcile(Volunteer $volunteer) : void
     {
+        // The Pegass RTMR rules only apply to Pegass-managed volunteers.
+        // Volunteers created by the Annuaire National sync (user-annu-*,
+        // annuaire-*) and already-anonymized ones (deleted-*) are owned by
+        // other code paths and must stay untouched here.
+        if (!Ownership::isPegassVolunteerEntity($volunteer)) {
+            return;
+        }
+
         $this->clearPrivilegesIfDecommissioned($volunteer);
         $this->stripInvalidRtmrAdminRights($volunteer);
         $this->ensureRtmrHasUser($volunteer);
