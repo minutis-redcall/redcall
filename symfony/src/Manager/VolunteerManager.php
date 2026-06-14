@@ -55,21 +55,28 @@ class VolunteerManager
      */
     private $userAuditLogManager;
 
+    /**
+     * @var VolunteerAuditLogManager
+     */
+    private $volunteerAuditLogManager;
+
     public function __construct(VolunteerRepository $volunteerRepository,
         StructureManager $structureManager,
         DeletedVolunteerManager $deletedVolunteerManager,
         AnswerManager $answerManager,
         PhoneManager $phoneManager,
         Security $security,
-        UserAuditLogManager $userAuditLogManager)
+        UserAuditLogManager $userAuditLogManager,
+        VolunteerAuditLogManager $volunteerAuditLogManager)
     {
-        $this->volunteerRepository     = $volunteerRepository;
-        $this->structureManager        = $structureManager;
-        $this->deletedVolunteerManager = $deletedVolunteerManager;
-        $this->answerManager           = $answerManager;
-        $this->phoneManager            = $phoneManager;
-        $this->security                = $security;
-        $this->userAuditLogManager     = $userAuditLogManager;
+        $this->volunteerRepository      = $volunteerRepository;
+        $this->structureManager         = $structureManager;
+        $this->deletedVolunteerManager  = $deletedVolunteerManager;
+        $this->answerManager            = $answerManager;
+        $this->phoneManager             = $phoneManager;
+        $this->security                 = $security;
+        $this->userAuditLogManager      = $userAuditLogManager;
+        $this->volunteerAuditLogManager = $volunteerAuditLogManager;
     }
 
     #[\Symfony\Contracts\Service\Attribute\Required]
@@ -312,8 +319,24 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterMinors($volunteerIds), 'id');
     }
 
-    public function anonymize(Volunteer $volunteer)
+    public function anonymize(Volunteer $volunteer, ?\App\Entity\User $actor = null, ?string $cliLabel = null)
     {
+        // Belt-and-braces guard: callers (DataSyncOrchestrator::anonymizeStaleVolunteers,
+        // PegassManager::removeMissingEntities, ...) already filter, but anonymize()
+        // is destructive enough that we never want to fall through here with an
+        // admin-locked bound user. user.locked = true means an admin manually
+        // owns this user's privileges and the sync must keep its hands off.
+        if (($user = $volunteer->getUser()) && $user->isLocked()) {
+            return;
+        }
+
+        // Snapshot the volunteer BEFORE we start mutating it. The PII-free
+        // structural snapshot + bound user UUID let us reason about
+        // "who anonymized which volunteer and why" in the audit UI without
+        // re-introducing the PII that this very method is about to wipe.
+        $auditSnapshot  = $this->volunteerAuditLogManager->buildSnapshot($volunteer);
+        $auditBoundUser = $volunteer->getUser();
+
         $volunteer->setEnabled(false);
 
         foreach ($volunteer->getMessages() as $message) {
@@ -332,10 +355,16 @@ class VolunteerManager
         if ($user = $volunteer->getUser()) {
             $snapshot = $this->userAuditLogManager->buildSnapshot($user);
             $this->userManager->remove($user);
-            $this->userAuditLogManager->logDeleted(null, 'sync: anonymize', $snapshot);
+            $this->userAuditLogManager->logDeleted($actor, $cliLabel ?? 'sync: anonymize', $snapshot);
         }
 
-        foreach ($volunteer->getStructures(false) as $structure) {
+        // Iterate over a SNAPSHOT of the structures: $structure->removeVolunteer()
+        // calls $volunteer->removeStructure($this) under the hood, which mutates
+        // the very collection we're iterating. On prod that misbehavior left 95
+        // volunteers half-anonymized: bound user deleted (and audit-logged) but
+        // the volunteer itself never anonymized, then dragged through the next
+        // sync runs in an inconsistent state.
+        foreach ($volunteer->getStructures(false)->toArray() as $structure) {
             $structure->removeVolunteer($volunteer);
             $this->structureManager->save($structure);
         }
@@ -361,6 +390,14 @@ class VolunteerManager
         $this->save($volunteer);
 
         $this->deletedVolunteerManager->anonymize($volunteer);
+
+        $this->volunteerAuditLogManager->logAnonymized(
+            $actor,
+            $cliLabel,
+            $volunteer,
+            $auditSnapshot,
+            $auditBoundUser
+        );
     }
 
     public function save(Volunteer $volunteer)

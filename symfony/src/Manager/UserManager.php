@@ -8,10 +8,6 @@ use App\Enum\Resource;
 use App\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Manager\UserManager as BaseUserManager;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class UserManager extends BaseUserManager
 {
@@ -26,20 +22,20 @@ class UserManager extends BaseUserManager
     private $structureManager;
 
     /**
-     * @var KernelInterface
+     * @var UserAuditLogManager
      */
-    private $kernel;
+    private $userAuditLogManager;
 
     public function __construct(UserRepository $userRepository,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        KernelInterface $kernel)
+        UserAuditLogManager $userAuditLogManager)
     {
         parent::__construct($userRepository);
 
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->kernel           = $kernel;
+        $this->volunteerManager    = $volunteerManager;
+        $this->structureManager    = $structureManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     /**
@@ -140,20 +136,45 @@ class UserManager extends BaseUserManager
         return array_unique($users, SORT_REGULAR);
     }
 
-    public function createUser(string $externalId, ?string $actorId = null)
+    /**
+     * @throws \LogicException when the volunteer cannot be turned into a user
+     */
+    public function createUser(string $externalId, ?User $actor = null, ?string $cliLabel = null) : User
     {
-        $application = new Application($this->kernel);
-        $application->setAutoExit(false);
+        $volunteer = $this->volunteerManager->findOneByExternalId($externalId);
 
-        $parameters = [
-            'command'      => 'user:create',
-            'external-id'  => [$externalId],
-        ];
-        if (null !== $actorId) {
-            $parameters['--actor-id'] = $actorId;
+        if (!$volunteer) {
+            throw new \LogicException('external id do not exist');
         }
 
-        $application->run(new ArrayInput($parameters), new NullOutput());
+        if (!$volunteer->getEmail()) {
+            throw new \LogicException('volunteer has no email');
+        }
+
+        if ($this->findOneByUsername($volunteer->getEmail())) {
+            throw new \LogicException('user having this email already exist');
+        }
+
+        if ($this->findOneByExternalId($externalId)) {
+            throw new \LogicException('external id already connected to a user');
+        }
+
+        $user = new User();
+
+        $user->setLocale('fr');
+        $user->setTimezone('Europe/Paris');
+
+        $user->setUsername($volunteer->getEmail());
+        $user->setPassword('invalid hash');
+        $user->setIsVerified(true);
+        $user->setIsTrusted(true);
+        $this->save($user);
+
+        $this->changeVolunteer($user, $externalId);
+
+        $this->userAuditLogManager->logCreated($actor, $cliLabel, $user);
+
+        return $user;
     }
 
     /**

@@ -41,6 +41,13 @@ class DataSyncCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
     {
+        // In prod the process here just dispatches StartDataSyncTask to GCT
+        // and exits — the workhorse runs inside each Cloud Task with its own
+        // memory budget. In dev TaskSender inlines, so the orchestrator's
+        // 80k volunteer DTOs + every chunk import end up in this same PHP
+        // process and would easily blow past 128 MB. Lift the cap.
+        ini_set('memory_limit', '-1');
+
         $syncedAt = new \DateTimeImmutable();
         $dir      = $input->getOption('dir');
 

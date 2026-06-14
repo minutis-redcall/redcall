@@ -7,12 +7,14 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
+use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\SheetExtract;
 use App\Model\InstancesNationales\SheetsExtract;
 use App\Model\InstancesNationales\UserExtract;
 use App\Model\InstancesNationales\UsersExtract;
+use App\Sync\Ownership;
 
 class UserService
 {
@@ -38,13 +40,17 @@ class UserService
      */
     private $userManager;
 
+    private UserAuditLogManager $userAuditLogManager;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        UserManager $userManager)
+        UserManager $userManager,
+        UserAuditLogManager $userAuditLogManager)
     {
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->userManager      = $userManager;
+        $this->volunteerManager    = $volunteerManager;
+        $this->structureManager    = $structureManager;
+        $this->userManager         = $userManager;
+        $this->userAuditLogManager = $userAuditLogManager;
     }
 
     public function extractUsers() : void
@@ -168,6 +174,7 @@ class UserService
                 'email' => $toDelete,
             ]);
 
+            $oldSnapshot = $this->userAuditLogManager->buildSnapshot($user);
             $user->removeStructure($structure);
 
             if ($volunteer = $user->getVolunteer()) {
@@ -178,9 +185,38 @@ class UserService
             }
 
             if ($user->getStructures()->count() === 0) {
+                // Safety net: never hard-delete a user whose underlying
+                // volunteer is Pegass-managed. The Annuaire sync owns the
+                // ANNUAIRE NATIONAL roster, not the lifecycle of Pegass
+                // people who happened to have been added to that structure.
+                $volunteer = $user->getVolunteer();
+                $isPegass  = $volunteer && Ownership::isPegassVolunteerEntity($volunteer);
+
+                if ($isPegass) {
+                    $this->userManager->save($user);
+                    $this->userAuditLogManager->logUpdated(
+                        null,
+                        sprintf('annuaire: kept pegass user despite empty structures (structure %s)', $structure->getExternalId()),
+                        $user,
+                        $oldSnapshot
+                    );
+                    continue;
+                }
+
                 $this->userManager->remove($user);
+                $this->userAuditLogManager->logDeleted(
+                    null,
+                    sprintf('annuaire: delete missing user (structure %s)', $structure->getExternalId()),
+                    $oldSnapshot
+                );
             } else {
                 $this->userManager->save($user);
+                $this->userAuditLogManager->logUpdated(
+                    null,
+                    sprintf('annuaire: remove structure %s', $structure->getExternalId()),
+                    $user,
+                    $oldSnapshot
+                );
             }
         }
     }
@@ -194,6 +230,8 @@ class UserService
                 LogService::success('new', 'Create a user', [
                     'email' => $userExtract->getEmail(),
                 ]);
+
+                $wasCreated = false;
 
                 if (!$user) {
                     $volunteer = $this->volunteerManager->findOneByExternalId($userExtract->getNivol());
@@ -221,10 +259,28 @@ class UserService
                     $user->setIsVerified(true);
                     $user->setIsTrusted(true);
                     $user->setVolunteer($volunteer);
+
+                    $wasCreated = true;
                 }
 
+                $oldSnapshot = $wasCreated ? null : $this->userAuditLogManager->buildSnapshot($user);
                 $user->addStructure($structure);
                 $this->userManager->save($user);
+
+                if ($wasCreated) {
+                    $this->userAuditLogManager->logCreated(
+                        null,
+                        sprintf('annuaire: create user (structure %s)', $structure->getExternalId()),
+                        $user
+                    );
+                } else {
+                    $this->userAuditLogManager->logUpdated(
+                        null,
+                        sprintf('annuaire: add structure %s', $structure->getExternalId()),
+                        $user,
+                        $oldSnapshot
+                    );
+                }
             }
         }
     }

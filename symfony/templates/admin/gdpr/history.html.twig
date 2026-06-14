@@ -1,14 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'admin.users.history.title'|trans }}{% endblock %}
+{% block title %}{{ 'admin.gdpr.history.title'|trans }}{% endblock %}
 
 {% import 'macros.html.twig' as macros %}
 
 {% block body %}
     <div class="col-md-12 rc-section">
-        <h3>{{ 'admin.users.history.title'|trans }}</h3>
+        <h3>{{ 'admin.gdpr.history.title'|trans }}</h3>
 
-        <p class="text-muted">{{ 'admin.users.history.help'|trans }}</p>
+        <p class="text-muted">{{ 'admin.gdpr.history.help'|trans }}</p>
 
         {{ form_start(search) }}
         <div class="mb-3">
@@ -26,14 +26,14 @@
             {% if entries.nbResults == 0 %}
                 <div class="alert alert-info">
                     {% if criteria %}
-                        {{ 'admin.users.history.no_results_for'|trans({'%criteria%': criteria}) }}
+                        {{ 'admin.gdpr.history.no_results_for'|trans({'%criteria%': criteria}) }}
                     {% else %}
-                        {{ 'admin.users.history.empty'|trans }}
+                        {{ 'admin.gdpr.history.empty'|trans }}
                     {% endif %}
                 </div>
             {% else %}
                 {% for entry in entries %}
-                    {% include 'admin/users/audit_log/_card.html.twig' with {entry: entry} only %}
+                    {% include 'admin/gdpr/_card.html.twig' with {entry: entry} only %}
                 {% endfor %}
 
                 {{ macros.pager(entries) }}
@@ -41,7 +41,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('admin_redcall_users_index') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+            <a href="{{ path('admin_gdpr_index') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
         </div>
     </div>
 {% endblock %}

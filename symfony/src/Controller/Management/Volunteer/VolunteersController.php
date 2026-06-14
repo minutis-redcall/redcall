@@ -516,7 +516,12 @@ class VolunteersController extends BaseController
             $this->communicationManager->launchNewCommunication($trigger, $communication);
         }
 
-        $this->volunteerManager->anonymize($volunteer);
+        $actor = $this->getUser();
+        $this->volunteerManager->anonymize(
+            $volunteer,
+            $actor instanceof \App\Entity\User ? $actor : null,
+            'admin: manual'
+        );
 
         return $trigger;
     }

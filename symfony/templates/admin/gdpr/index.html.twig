@@ -9,6 +9,12 @@
 
         {{ form(search) }}
 
+        <div class="mt-3">
+            <a href="{{ path('admin_gdpr_history') }}" class="btn btn-outline-dark">
+                <i class="fas fa-history mr-2"></i>{{ 'admin.gdpr.history.button'|trans }}
+            </a>
+        </div>
+
     </div>
 
 {% endblock %}

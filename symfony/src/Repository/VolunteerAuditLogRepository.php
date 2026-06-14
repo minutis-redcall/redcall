@@ -3,33 +3,33 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\UserAuditLog;
+use App\Entity\VolunteerAuditLog;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method UserAuditLog|null find($id, $lockMode = null, $lockVersion = null)
- * @method UserAuditLog|null findOneBy(array $criteria, array $orderBy = null)
- * @method UserAuditLog[]    findAll()
- * @method UserAuditLog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method VolunteerAuditLog|null find($id, $lockMode = null, $lockVersion = null)
+ * @method VolunteerAuditLog|null findOneBy(array $criteria, array $orderBy = null)
+ * @method VolunteerAuditLog[]    findAll()
+ * @method VolunteerAuditLog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserAuditLogRepository extends BaseRepository
+class VolunteerAuditLogRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, UserAuditLog::class);
+        parent::__construct($registry, VolunteerAuditLog::class);
     }
 
     public function searchQueryBuilder(?string $criteria, bool $hideTechnical = false) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('l')
                    ->leftJoin('l.actor', 'a')
-                   ->leftJoin('l.targetUser', 't')
                    ->addOrderBy('l.createdAt', 'DESC')
                    ->addOrderBy('l.id', 'DESC');
 
         if ($hideTechnical) {
-            // rows written by automations (sync, CLI...) carry no actor
+            // rows written by the automated sync carry no actor; hiding them
+            // surfaces only manual anonymizes (admin UI, volunteer self-delete via space)
             $qb->andWhere('l.actor IS NOT NULL');
         }
 
@@ -37,11 +37,9 @@ class UserAuditLogRepository extends BaseRepository
             $qb->andWhere(
                 $qb->expr()->orX(
                     'l.actorLabel LIKE :criteria',
-                    'l.targetUsername LIKE :criteria',
                     'l.targetExternalId LIKE :criteria',
-                    'l.targetDisplayName LIKE :criteria',
-                    'a.username LIKE :criteria',
-                    't.username LIKE :criteria'
+                    'l.targetBoundUserId LIKE :criteria',
+                    'a.username LIKE :criteria'
                 )
             )->setParameter('criteria', sprintf('%%%s%%', trim($criteria)));
         }

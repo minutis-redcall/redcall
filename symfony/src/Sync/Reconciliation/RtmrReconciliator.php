@@ -8,6 +8,7 @@ use App\Manager\StructureManager;
 use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Sync\Ownership;
 
 /**
  * Post-sync reconciliation of RedCall user privileges based on the RTMR badge.
@@ -46,6 +47,14 @@ class RtmrReconciliator
 
     public function reconcile(Volunteer $volunteer) : void
     {
+        // The Pegass RTMR rules only apply to Pegass-managed volunteers.
+        // Volunteers created by the Annuaire National sync (user-annu-*,
+        // annuaire-*) and already-anonymized ones (deleted-*) are owned by
+        // other code paths and must stay untouched here.
+        if (!Ownership::isPegassVolunteerEntity($volunteer)) {
+            return;
+        }
+
         $this->clearPrivilegesIfDecommissioned($volunteer);
         $this->stripInvalidRtmrAdminRights($volunteer);
         $this->ensureRtmrHasUser($volunteer);
@@ -55,6 +64,13 @@ class RtmrReconciliator
     {
         $user = $volunteer->getUser();
         if (!$user) {
+            return;
+        }
+
+        // user.locked = true means an admin manually set the user's
+        // privileges/structures and explicitly asked sync to keep its hands
+        // off. Bypassing it caused 84 prod deletions on 2026-06-10/13.
+        if ($user->isLocked()) {
             return;
         }
 
@@ -90,6 +106,10 @@ class RtmrReconciliator
         if (!$user) {
             return;
         }
+        // Same admin-lock contract: hands off when user.locked = true.
+        if ($user->isLocked()) {
+            return;
+        }
 
         $old = $this->userAuditLogManager->buildSnapshot($user);
         $user->setIsAdmin(false);
@@ -112,10 +132,10 @@ class RtmrReconciliator
         $user = $volunteer->getUser();
         if (!$user) {
             $this->volunteerManager->save($volunteer);
-            // user:create logs its own "create" audit row with label 'CLI: user:create'
-            $this->userManager->createUser($volunteer->getExternalId());
-            $user = $this->userManager->findOneByExternalId($volunteer->getExternalId());
-            if (!$user) {
+            try {
+                // createUser logs its own "create" audit row with the given label
+                $user = $this->userManager->createUser($volunteer->getExternalId(), null, 'sync: rtmr (create user)');
+            } catch (\LogicException $e) {
                 return;
             }
             $old        = $this->userAuditLogManager->buildSnapshot($user);

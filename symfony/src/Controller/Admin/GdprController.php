@@ -3,10 +3,11 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use App\Form\Type\RecaptchaType;
 use App\Manager\DeletedVolunteerManager;
-use App\Validator\Constraints\RecaptchaTrue;
+use App\Manager\VolunteerAuditLogManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,18 +26,33 @@ class GdprController extends BaseController
     private $deletedVolunteerManager;
 
     /**
+     * @var VolunteerAuditLogManager
+     */
+    private $volunteerAuditLogManager;
+
+    /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    public function __construct(DeletedVolunteerManager $deletedVolunteerManager, TranslatorInterface $translator)
+    public function __construct(DeletedVolunteerManager $deletedVolunteerManager,
+        VolunteerAuditLogManager $volunteerAuditLogManager,
+        PaginationManager $paginationManager,
+        TranslatorInterface $translator)
     {
-        $this->deletedVolunteerManager = $deletedVolunteerManager;
-        $this->translator              = $translator;
+        $this->deletedVolunteerManager  = $deletedVolunteerManager;
+        $this->volunteerAuditLogManager = $volunteerAuditLogManager;
+        $this->paginationManager        = $paginationManager;
+        $this->translator               = $translator;
     }
 
     #[Route(name: "index")]
-#[Template("admin/gdpr/index.html.twig")]
+    #[Template("admin/gdpr/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this
@@ -52,12 +68,6 @@ class GdprController extends BaseController
                             );
                         }
                     }),
-                ],
-            ])
-            ->add('recaptcha', RecaptchaType::class, [
-                'label'       => 'admin.gdpr.form.captcha',
-                'constraints' => [
-                    new RecaptchaTrue(),
                 ],
             ])
             ->add('submit', SubmitType::class, [
@@ -77,5 +87,54 @@ class GdprController extends BaseController
         return [
             'search' => $form->createView(),
         ];
+    }
+
+    #[Route("/history", name: "history")]
+    #[Template("admin/gdpr/history.html.twig")]
+    public function history(Request $request) : array
+    {
+        $search   = $this->createHistorySearchForm($request);
+        $criteria = null;
+
+        // Sync-driven anonymizes are the loudest signal of "did production
+        // eat my volunteer?" — show them by default, give admins a checkbox
+        // to drop them and focus on human-driven anonymizes only.
+        $hideTechnical = false;
+
+        if ($search->isSubmitted() && $search->isValid()) {
+            $criteria      = $search->get('criteria')->getData();
+            $hideTechnical = (bool) $search->get('hideTechnical')->getData();
+        }
+
+        return [
+            'search'   => $search->createView(),
+            'criteria' => $criteria,
+            'entries'  => $this->paginationManager->getPager(
+                $this->volunteerAuditLogManager->searchQueryBuilder($criteria, $hideTechnical),
+                '',
+                true
+            ),
+        ];
+    }
+
+    private function createHistorySearchForm(Request $request)
+    {
+        return $this
+            ->createFormBuilder(null, ['csrf_protection' => false])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'admin.gdpr.history.search.criteria',
+                'required' => false,
+            ])
+            ->add('hideTechnical', CheckboxType::class, [
+                'label'    => 'admin.gdpr.history.search.hide_technical',
+                'required' => false,
+                'data'     => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'admin.gdpr.history.search.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 }

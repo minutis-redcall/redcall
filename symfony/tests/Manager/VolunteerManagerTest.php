@@ -527,4 +527,77 @@ class VolunteerManagerTest extends KernelTestCase
         $this->assertContains($volAlice->getId(), $ids);
         $this->assertNotContains($volBob->getId(), $ids);
     }
+
+    // ──────────────────────────────────────────────
+    // anonymize
+    // ──────────────────────────────────────────────
+
+    public function testAnonymizeClearsEveryStructureEvenWithMultipleMemberships(): void
+    {
+        // Regression: the previous foreach iterated $volunteer->getStructures(false)
+        // while $structure->removeVolunteer($volunteer) mutated it via
+        // $volunteer->removeStructure($this). The iterator skipped elements,
+        // anonymize() threw, and 95 prod volunteers ended up "half-anonymized"
+        // (user deleted, audit row written, volunteer left intact).
+        $s1 = $this->fixtures->createStructure('VMA STR1', 'VMA-S1');
+        $s2 = $this->fixtures->createStructure('VMA STR2', 'VMA-S2');
+        $s3 = $this->fixtures->createStructure('VMA STR3', 'VMA-S3');
+        $s4 = $this->fixtures->createStructure('VMA STR4', 'VMA-S4');
+
+        $vol = $this->fixtures->createStandaloneVolunteer('VMA-VOL-001', 'vma_anon@test.com');
+        $vol->setFirstName('Foo');
+        $vol->setLastName('Bar');
+        $this->em->persist($vol);
+        $this->em->flush();
+
+        $this->fixtures->assignVolunteerToStructure($vol, $s1);
+        $this->fixtures->assignVolunteerToStructure($vol, $s2);
+        $this->fixtures->assignVolunteerToStructure($vol, $s3);
+        $this->fixtures->assignVolunteerToStructure($vol, $s4);
+
+        $volId = $vol->getId();
+        $this->assertSame(4, $vol->getStructures(false)->count(), 'precondition: 4 structures attached');
+
+        $this->manager->anonymize($vol);
+        $this->em->clear();
+
+        $reloaded = $this->em->find(Volunteer::class, $volId);
+        $this->assertNotNull($reloaded);
+        $this->assertSame(0, $reloaded->getStructures(false)->count(), 'every structure should be detached');
+        $this->assertStringStartsWith('deleted-', (string) $reloaded->getExternalId(), 'external_id should be rewritten');
+        $this->assertFalse($reloaded->isEnabled());
+    }
+
+    public function testAnonymizeNoOpsWhenBoundUserIsLocked(): void
+    {
+        // Belt-and-braces guard inside anonymize(): if the bound RedCall user
+        // is admin-locked, the destructive path must not run. Without this
+        // any caller bypassing the orchestrator's predicate would still wipe
+        // a locked user.
+        $vol = $this->fixtures->createStandaloneVolunteer('VMA-VOL-002', 'vma_locked@test.com');
+        $vol->setFirstName('Foo');
+        $vol->setLastName('Bar');
+        $vol->setEnabled(true);
+        $this->em->persist($vol);
+
+        $user = $this->fixtures->createRawUser('vma_locked@test.com', 'password', false);
+        $user->setVolunteer($vol);
+        $user->setIsTrusted(true);
+        $user->setLocked(true);
+        $this->em->persist($user);
+        $this->em->flush();
+
+        $volId  = $vol->getId();
+        $userId = $user->getId();
+
+        $this->manager->anonymize($vol);
+        $this->em->clear();
+
+        $reloadedV = $this->em->find(Volunteer::class, $volId);
+        $reloadedU = $this->em->getRepository(\App\Entity\User::class)->find($userId);
+
+        $this->assertTrue($reloadedV->isEnabled(), 'volunteer kept intact');
+        $this->assertSame('VMA-VOL-002', $reloadedV->getExternalId(), 'external_id NOT rewritten to deleted-');
+        $this->assertNotNull($reloadedU, 'bound user not removed');
+    }
 }

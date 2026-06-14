@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -219,7 +218,7 @@ class UserController extends BaseController
     }
 
     #[Route(name: "create_user", path: "/create-user")]
-    public function createUser(Request $request, KernelInterface $kernel)
+    public function createUser(Request $request)
     {
         $form = $this->createFormBuilder()
                      ->add('externalId', VolunteerWidgetType::class, [
@@ -240,8 +239,12 @@ class UserController extends BaseController
                 throw $this->createNotFoundException();
             }
 
-            $actor = $this->resolveActor();
-            $this->userManager->createUser($volunteer->getExternalId(), $actor ? $actor->getId() : null);
+            try {
+                $this->userManager->createUser($volunteer->getExternalId(), $this->resolveActor());
+            } catch (\LogicException $e) {
+                // creation failures (no email, user already exists...) were
+                // already silent before, keep redirecting to the filtered list
+            }
 
             return $this->redirectToRoute('admin_redcall_users_index', [
                 'form[criteria]' => $volunteer->getExternalId(),

@@ -17,6 +17,7 @@ use App\Entity\Template;
 use App\Entity\User;
 use App\Entity\UserAuditLog;
 use App\Entity\Volunteer;
+use App\Entity\VolunteerAuditLog;
 use App\Entity\VolunteerList;
 use App\Entity\VolunteerSession;
 use Doctrine\ORM\EntityManagerInterface;
@@ -577,6 +578,34 @@ class DataFixtures
         $log->setTargetUsername($target ? $target->getUsername() : ($snapshot['username'] ?? null));
         $log->setTargetExternalId($target ? $target->getExternalId() : ($snapshot['externalId'] ?? null));
         $log->setTargetDisplayName($target ? $target->getDisplayName() : ($snapshot['displayName'] ?? null));
+        $log->setSnapshot($snapshot);
+
+        $this->entityManager->persist($log);
+        $this->entityManager->flush();
+
+        return $log;
+    }
+
+    /**
+     * Append a VolunteerAuditLog row. Mirrors {@see createUserAuditLog}
+     * but stays PII-free: target is identified by NIVOL only.
+     */
+    public function createVolunteerAuditLog(
+        ?User $actor,
+        ?Volunteer $target,
+        string $action = 'anonymize',
+        ?string $actorLabel = null,
+        array $snapshot = [],
+        ?string $boundUserId = null
+    ) : VolunteerAuditLog {
+        $log = new VolunteerAuditLog();
+        $log->setCreatedAt(new \DateTime());
+        $log->setAction($action);
+        $log->setActor($actor);
+        $log->setActorLabel($actorLabel ?? ($actor ? (string) $actor->getDisplayName() : 'system'));
+        $log->setTargetVolunteer($target);
+        $log->setTargetExternalId($target ? $target->getExternalId() : ($snapshot['externalId'] ?? null));
+        $log->setTargetBoundUserId($boundUserId);
         $log->setSnapshot($snapshot);
 
         $this->entityManager->persist($log);

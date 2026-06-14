@@ -59,10 +59,10 @@ class LogService
     static private function colorize(?bool $value) : string
     {
         if (null === $value) {
-            return '⚫';
+            return '[INFO]';
         }
 
-        return $value ? '🟢' : '🔴';
+        return $value ? '[OK]' : '[KO]';
     }
 
     static public function pass(string $message, array $parameters = [], bool $impactful = false) : int
