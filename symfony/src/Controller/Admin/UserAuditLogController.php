@@ -46,10 +46,18 @@ class UserAuditLogController extends BaseController
             $hideTechnical = (bool) $search->get('hideTechnical')->getData();
         }
 
+        // The pager macro needs the form's GET payload to forward into every
+        // page link — otherwise jumping to page 2 drops the search criteria
+        // and (worse) re-enables `hideTechnical` because an unchecked checkbox
+        // sends nothing, which becomes the "default = true" state again.
+        $queryParams = $request->query->all();
+        unset($queryParams['page']);
+
         return $this->render('admin/users/audit_log/index.html.twig', [
-            'search'   => $search->createView(),
-            'criteria' => $criteria,
-            'entries'  => $this->paginationManager->getPager(
+            'search'      => $search->createView(),
+            'criteria'    => $criteria,
+            'queryParams' => $queryParams,
+            'entries'     => $this->paginationManager->getPager(
                 $this->userAuditLogManager->searchQueryBuilder($criteria, $hideTechnical),
                 '',
                 true

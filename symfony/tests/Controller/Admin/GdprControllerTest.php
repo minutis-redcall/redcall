@@ -109,6 +109,50 @@ class GdprControllerTest extends BaseWebTestCase
         $this->assertSelectorTextNotContains('body', 'SYNC-FILTER-2');
     }
 
+    public function testHistoryPagerLinksCarryFormQueryParamsAcrossPages()
+    {
+        // Same bug as UserAuditLogController: unchecked hideTechnical is
+        // indistinguishable from "form not submitted" in the GET payload, so
+        // dropping the form params on pager links re-applied the default state.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin = $fixtures->createRawUser('gdpr_pager_admin@test.com', 'password', true);
+
+        for ($i = 0; $i < 25; $i++) {
+            $data = $fixtures->createUserWithVolunteerAndStructure(
+                sprintf('gdpr_pager_%02d@test.com', $i), false,
+                sprintf('GDPR-PAGER-%02d', $i),
+                sprintf('GDPR PAGER STR %02d', $i),
+                sprintf('GDPR-PAGER-STR-%02d', $i)
+            );
+            $fixtures->createVolunteerAuditLog(
+                $admin, $data['volunteer'], 'anonymize', 'admin: manual',
+                ['externalId' => $data['volunteer']->getExternalId()]
+            );
+        }
+
+        $this->login($client, $admin);
+
+        $crawler = $client->request(
+            'GET',
+            '/admin/gdpr/history?form%5Bcriteria%5D=GDPR-PAGER&form%5BhideTechnical%5D=&form%5Bsubmit%5D='
+        );
+        $this->assertResponseIsSuccessful();
+
+        $page2Links = $crawler->filter('a[href*="page=2"]');
+        $this->assertGreaterThan(0, $page2Links->count(),
+            'Pager must render a page 2 link when there are > 20 matches'
+        );
+
+        $href = $page2Links->first()->attr('href');
+        $this->assertMatchesRegularExpression(
+            '#form(?:%5B|\[)criteria(?:%5D|\])=GDPR-PAGER#',
+            $href,
+            'Page 2 URL must carry the form criteria so the filter state survives navigation'
+        );
+    }
+
     public function testHistoryButtonOnGdprIndex()
     {
         $client   = static::createClient();

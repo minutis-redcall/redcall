@@ -389,7 +389,18 @@ class VolunteerManager
 
         $this->save($volunteer);
 
-        $this->deletedVolunteerManager->anonymize($volunteer);
+        // The GDPR registry (`deleted_volunteer`) is a legal artefact — a NIVOL
+        // lands there ONLY when a human asked to be forgotten (admin manual
+        // delete, volunteer's own /space self-delete). Sync-driven anonymize
+        // happens for operational reasons (volunteer gone from the CSV for
+        // STALE_GRACE_DAYS+), never legal — keep it out of the registry.
+        // Either way we must release the original NIVOL so a future re-import
+        // can re-create the volunteer with the real id rather than a duplicate.
+        if ('sync: stale' === $cliLabel) {
+            $this->deletedVolunteerManager->releaseExternalId($volunteer);
+        } else {
+            $this->deletedVolunteerManager->markGdprDeleted($volunteer);
+        }
 
         $this->volunteerAuditLogManager->logAnonymized(
             $actor,
