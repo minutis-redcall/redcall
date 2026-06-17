@@ -52,7 +52,7 @@ class CampaignControllerTest extends BaseWebTestCase
         $fixtures->assignVolunteerToStructure($volunteer, $structure);
 
         $campaign = $fixtures->createCampaign($label, Campaign::TYPE_GREEN, $active);
-        $campaign->setVolunteer($volunteer);
+        $campaign->setUser($user);
         $fixtures->getEntityManager()->flush();
 
         $communication = $fixtures->createCommunication($campaign);

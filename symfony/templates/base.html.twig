@@ -159,7 +159,7 @@
                         <a href="{{ path('sandbox_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'sandbox.home.link'|trans }}</a>
                     {% endif %}
 
-                    {% if app.user|default(false) and app.user.volunteer %}
+                    {% if app.user|default(false) and app.user.externalId %}
                         <a href="{{ path('go_to_space') }}" class="btn btn-secondary btn-sm m-1">{{ 'space.home.link'|trans }}</a>
                     {% endif %}
 

@@ -61,7 +61,7 @@ class VolunteerAuditLogManagerTest extends KernelTestCase
 
         $snapshot = $this->manager->buildSnapshot($volunteer);
 
-        $log = $this->manager->logAnonymized($admin, 'admin: manual', $volunteer, $snapshot, $volunteer->getUser());
+        $log = $this->manager->logAnonymized($admin, 'admin: manual', $volunteer, $snapshot, $data['user']);
 
         $this->assertInstanceOf(VolunteerAuditLog::class, $log);
         $this->assertNotNull($log->getId());

@@ -76,20 +76,20 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function changeVolunteer(User $user, ?string $volunteerExternalId = null)
+    /**
+     * Assigns (or clears) the directory id (NIVOL) that identifies this
+     * operator. The User no longer links to a Volunteer entity — the two are
+     * related only by sharing this value. Display name is copied, best-effort,
+     * from the matching directory record when one exists.
+     */
+    public function changeExternalId(User $user, ?string $externalId = null)
     {
         if ($user->isLocked()) {
             return;
         }
 
-        $volunteer = null;
-
-        if ($volunteerExternalId) {
-            $volunteer = $this->volunteerManager->findOneByExternalId($volunteerExternalId);
-        }
-
-        if (!$volunteer) {
-            $user->setVolunteer(null);
+        if (!$externalId) {
+            $user->setExternalId(null);
             $user->getStructures()->clear();
 
             $this->save($user);
@@ -97,11 +97,15 @@ class UserManager extends BaseUserManager
             return;
         }
 
-        $user->setVolunteer($volunteer);
+        $user->setExternalId($externalId);
+
+        if ($volunteer = $this->volunteerManager->findOneByExternalId($externalId)) {
+            $user->setFirstName($volunteer->getFirstName());
+            $user->setLastName($volunteer->getLastName());
+        }
 
         // https://minutis-support.atlassian.net/browse/SUPPORT-1421
-        // $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
-        // $user->updateStructures($structures);
+        // structures are no longer derived from the volunteer's structures.
 
         $this->save($user);
     }
@@ -109,6 +113,21 @@ class UserManager extends BaseUserManager
     public function findOneByExternalId(string $externalId) : ?User
     {
         return $this->userRepository->findOneByExternalId($externalId);
+    }
+
+    public function findOneTrustedByExternalId(?string $externalId) : ?User
+    {
+        return $this->userRepository->findOneTrustedByExternalId($externalId);
+    }
+
+    /**
+     * @param string[] $externalIds
+     *
+     * @return array<string, User>
+     */
+    public function findTrustedByExternalIds(array $externalIds) : array
+    {
+        return $this->userRepository->findTrustedByExternalIds($externalIds);
     }
 
     public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
@@ -168,9 +187,10 @@ class UserManager extends BaseUserManager
         $user->setPassword('invalid hash');
         $user->setIsVerified(true);
         $user->setIsTrusted(true);
+        $user->setExternalId($externalId);
+        $user->setFirstName($volunteer->getFirstName());
+        $user->setLastName($volunteer->getLastName());
         $this->save($user);
-
-        $this->changeVolunteer($user, $externalId);
 
         $this->userAuditLogManager->logCreated($actor, $cliLabel, $user);
 

@@ -163,6 +163,54 @@ class UserAuditLogControllerTest extends BaseWebTestCase
         $this->assertSelectorTextNotContains('body', 'audit_searchactor_t2@test.com');
     }
 
+    public function testPagerLinksCarryFormQueryParamsAcrossPages()
+    {
+        // Regression: pager links used to drop the form payload, so jumping to
+        // page 2 silently re-enabled `hideTechnical` (an unchecked GET checkbox
+        // is indistinguishable from "form not submitted at all", which falls
+        // back to the default = true). The pager macro now receives queryParams
+        // from the controller — every page link should include the current
+        // form fields so the filter state survives pagination.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin = $fixtures->createRawUser('pager_admin@test.com', 'password', true);
+
+        // Need > 20 (PaginationManager::perPage default) rows whose criteria
+        // matches the search marker so the pager actually renders.
+        for ($i = 0; $i < 25; $i++) {
+            $target = $fixtures->createRawUser(sprintf('PAGER_MARKER_777_%02d@test.com', $i), 'password', false);
+            $fixtures->createUserAuditLog($admin, $target, 'update', null, ['note' => 'marker']);
+        }
+
+        $this->login($client, $admin);
+
+        $crawler = $client->request(
+            'GET',
+            '/admin/redcall-users/history?form%5Bcriteria%5D=PAGER_MARKER_777&form%5BhideTechnical%5D=0&form%5Bsubmit%5D='
+        );
+        $this->assertResponseIsSuccessful();
+
+        // Page 2 anchor must carry the form's criteria forward — otherwise
+        // the next request sees no form payload and re-enables hideTechnical.
+        $page2Links = $crawler->filter('a[href*="page=2"]');
+        $this->assertGreaterThan(0, $page2Links->count(),
+            'Pager must render a page 2 link when there are > 20 matches'
+        );
+
+        $href = $page2Links->first()->attr('href');
+        $this->assertMatchesRegularExpression(
+            '#form(?:%5B|\[)criteria(?:%5D|\])=PAGER_MARKER_777#',
+            $href,
+            'Page 2 URL must carry the form criteria so the filter state survives navigation'
+        );
+        $this->assertMatchesRegularExpression(
+            '#form(?:%5B|\[)hideTechnical(?:%5D|\])=#',
+            $href,
+            'Page 2 URL must include hideTechnical (even empty/"0") so the unchecked state survives'
+        );
+    }
+
     public function testHistoryButtonOnAdminIndex()
     {
         $client   = static::createClient();

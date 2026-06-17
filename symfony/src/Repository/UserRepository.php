@@ -41,13 +41,61 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function findOneByExternalId(string $externalId) : ?User
     {
+        return $this->findOneBy([
+            'externalId' => $externalId,
+        ]);
+    }
+
+    /**
+     * Resolves the RedCall operator for a NIVOL, but only if trusted. This
+     * preserves the semantics of the old Volunteer::getUser(), which silently
+     * filtered out non-trusted users.
+     */
+    public function findOneTrustedByExternalId(?string $externalId) : ?User
+    {
+        if (!$externalId) {
+            return null;
+        }
+
         return $this
             ->createQueryBuilder('u')
-            ->join('u.volunteer', 'v')
-            ->where('v.externalId = :externalId')
+            ->where('u.externalId = :externalId')
+            ->andWhere('u.isTrusted = true')
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * Batch variant of findOneTrustedByExternalId for list views: returns a
+     * map [externalId => User] so callers can avoid an N+1 of per-row lookups.
+     *
+     * @param string[] $externalIds
+     *
+     * @return array<string, User>
+     */
+    public function findTrustedByExternalIds(array $externalIds) : array
+    {
+        $externalIds = array_values(array_unique(array_filter($externalIds)));
+        if (!$externalIds) {
+            return [];
+        }
+
+        $users = $this
+            ->createQueryBuilder('u')
+            ->where('u.externalId IN (:externalIds)')
+            ->andWhere('u.isTrusted = true')
+            ->setParameter('externalIds', $externalIds)
+            ->getQuery()
+            ->getResult();
+
+        $map = [];
+        foreach ($users as $user) {
+            /** @var User $user */
+            $map[$user->getExternalId()] = $user;
+        }
+
+        return $map;
     }
 
     public function findOneByUsername(string $username) : ?User
@@ -62,20 +110,14 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         $qb = $this->createQueryBuilder('u');
 
         $qb
-            ->leftJoin('u.volunteer', 'v')
-            ->leftJoin('v.phones', 'p')
             ->where(
                 $qb->expr()->orX(
                     'u.username LIKE :criteria',
-                    'v.externalId LIKE :criteria',
-                    'v.firstName LIKE :criteria',
-                    'v.lastName LIKE :criteria',
-                    'v.email LIKE :criteria',
-                    'p.e164 LIKE :criteria',
-                    'p.national LIKE :criteria',
-                    'p.international LIKE :criteria',
-                    'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
-                    'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
+                    'u.externalId LIKE :criteria',
+                    'u.firstName LIKE :criteria',
+                    'u.lastName LIKE :criteria',
+                    'CONCAT(u.firstName, \' \', u.lastName) LIKE :criteria',
+                    'CONCAT(u.lastName, \' \', u.firstName) LIKE :criteria'
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))

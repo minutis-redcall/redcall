@@ -106,10 +106,16 @@ class GdprController extends BaseController
             $hideTechnical = (bool) $search->get('hideTechnical')->getData();
         }
 
+        // Forward the form's GET payload into every page link — otherwise
+        // jumping to page 2 drops the criteria and the checkbox state.
+        $queryParams = $request->query->all();
+        unset($queryParams['page']);
+
         return [
-            'search'   => $search->createView(),
-            'criteria' => $criteria,
-            'entries'  => $this->paginationManager->getPager(
+            'search'      => $search->createView(),
+            'criteria'    => $criteria,
+            'queryParams' => $queryParams,
+            'entries'     => $this->paginationManager->getPager(
                 $this->volunteerAuditLogManager->searchQueryBuilder($criteria, $hideTechnical),
                 '',
                 true

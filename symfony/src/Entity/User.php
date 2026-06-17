@@ -23,10 +23,26 @@ class User extends AbstractUser implements LockableInterface
     private $isRoot = false;
 
     /**
-     * @var Volunteer|null
+     * The Red Cross directory id (NIVOL) identifying this operator. Nullable:
+     * pure email / Google / Annuaire users have no NIVOL. A User and a Volunteer
+     * are related ONLY by sharing this value — there is no entity link.
+     *
+     * @var string|null
      */
-    #[ORM\OneToOne(targetEntity: \App\Entity\Volunteer::class, inversedBy: 'user')]
-    private $volunteer;
+    #[ORM\Column(type: 'string', length: 64, nullable: true, unique: true)]
+    private $externalId;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    private $firstName;
+
+    /**
+     * @var string|null
+     */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    private $lastName;
 
     #[ORM\ManyToMany(targetEntity: \App\Entity\Structure::class, inversedBy: 'users')]
     #[ORM\OrderBy(['enabled' => 'DESC', 'externalId' => 'ASC'])]
@@ -86,18 +102,26 @@ class User extends AbstractUser implements LockableInterface
         return $this;
     }
 
-    public function getVolunteer() : ?Volunteer
+    public function getFirstName() : ?string
     {
-        return $this->volunteer;
+        return $this->firstName;
     }
 
-    public function setVolunteer(?Volunteer $volunteer) : self
+    public function setFirstName(?string $firstName) : self
     {
-        $this->volunteer = $volunteer;
+        $this->firstName = $firstName;
 
-        if ($volunteer) {
-            $volunteer->setUser($this);
-        }
+        return $this;
+    }
+
+    public function getLastName() : ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(?string $lastName) : self
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -124,7 +148,16 @@ class User extends AbstractUser implements LockableInterface
 
     public function getExternalId() : ?string
     {
-        return $this->volunteer ? $this->volunteer->getExternalId() : null;
+        return $this->externalId;
+    }
+
+    public function setExternalId(?string $externalId) : self
+    {
+        // Never store an empty string: a UNIQUE column allows many NULLs but
+        // only one ''. Pure email/Annuaire users must collapse to NULL.
+        $this->externalId = $externalId ?: null;
+
+        return $this;
     }
 
     public function getEnabledStructures() : Collection
@@ -256,8 +289,8 @@ class User extends AbstractUser implements LockableInterface
 
     public function getDisplayName() : string
     {
-        if ($this->volunteer && $this->volunteer->getFirstName()) {
-            return sprintf('%s %s', $this->volunteer->getFirstName(), $this->volunteer->getLastName());
+        if ($this->firstName) {
+            return sprintf('%s %s', $this->firstName, $this->lastName);
         }
 
         return $this->getUserIdentifier();

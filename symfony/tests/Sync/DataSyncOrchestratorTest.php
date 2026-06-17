@@ -231,7 +231,7 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $this->em->persist($stale);
 
         $user = $this->fixtures->createRawUser('stale-locked@example.test', 'password', false);
-        $user->setVolunteer($stale);
+        $user->setExternalId($stale->getExternalId());
         $user->setIsTrusted(true);
         $user->setLocked(true); // ← admin-locked
         $this->em->persist($user);
@@ -303,6 +303,54 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $reloaded = $this->structureManager->findOneByExternalId('792319a4-2e05-4509-bc61-a407d4b70e23');
         $this->assertNotNull($reloaded);
         $this->assertTrue($reloaded->isEnabled(), 'UUID-style structure (non-Pegass) must survive Finalize');
+    }
+
+    public function testVolunteerWithinGraceWindowSurvivesEvenIfMissingFromCsv()
+    {
+        // The race between chunks (sync-chunk, 30 concurrent) and finalize
+        // (sync-finalize, fires immediately on its own queue) used to wrongly
+        // anonymize volunteers whose chunks hadn't drained yet. On 2026-06-14
+        // this hit 591 active Pegass volunteers in one night. The grace window
+        // turns "stale" from "missed this run" into "missed every daily run
+        // for STALE_GRACE_DAYS straight" — wide enough to absorb the race
+        // and one-day CSV hiccups, narrow enough to still catch real departures.
+        $vol = $this->fixtures->createStandaloneVolunteer('GRACE-1', 'grace@example.test');
+        $vol->setFirstName('Grace');
+        $vol->setLastName('Recent');
+        $vol->setEnabled(true);
+        // Yesterday — well inside the 7-day grace window
+        $vol->setLastSyncedAt(new \DateTime('-1 day'));
+        $this->em->persist($vol);
+        $this->em->flush();
+        $volId = $vol->getId();
+
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $reloaded = $this->em->find(Volunteer::class, $volId);
+        $this->assertTrue($reloaded->isEnabled(),
+            'Volunteer last synced yesterday must NOT be anonymized — they are within the grace window'
+        );
+        $this->assertSame('GRACE-1', $reloaded->getExternalId(),
+            'External id must be preserved (no rename to deleted-*)'
+        );
+    }
+
+    public function testStructureWithinGraceWindowSurvivesEvenIfMissingFromCsv()
+    {
+        $struct = $this->fixtures->createStructure('RECENT STRUCT', '77777');
+        $struct->setEnabled(true);
+        $struct->setLastSyncedAt(new \DateTime('-2 days'));
+        $this->em->persist($struct);
+        $this->em->flush();
+
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $reloaded = $this->structureManager->findOneByExternalId('77777');
+        $this->assertTrue($reloaded->isEnabled(),
+            'Structure last synced 2 days ago must NOT be disabled — within the grace window'
+        );
     }
 
     public function testLockedStructureIsNotDisabledEvenIfMissingFromCsv()

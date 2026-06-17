@@ -36,7 +36,7 @@
                     {% include 'admin/gdpr/_card.html.twig' with {entry: entry} only %}
                 {% endfor %}
 
-                {{ macros.pager(entries) }}
+                {{ macros.pager(entries, '', queryParams|default({})) }}
             {% endif %}
         </div>
 

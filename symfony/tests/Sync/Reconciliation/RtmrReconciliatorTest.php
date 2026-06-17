@@ -124,7 +124,7 @@ class RtmrReconciliatorTest extends KernelTestCase
         /** @var Volunteer $volunteer */
         $volunteer = $data['volunteer'];
         // Detach the existing user
-        $existingUser = $volunteer->getUser();
+        $existingUser = $this->userManager->findOneByExternalId($volunteer->getExternalId());
         if ($existingUser) {
             $this->em->remove($existingUser);
             $this->em->flush();
@@ -183,6 +183,8 @@ class RtmrReconciliatorTest extends KernelTestCase
         $volunteer->setExternalId('user-annu-jean-doe-croix-rouge-fr');
         $volunteer->setEnabled(false); // would normally trigger clearPrivilegesIfDecommissioned
         $user = $data['user'];
+        // Keep the user the "same person" as the volunteer (shared NIVOL).
+        $user->setExternalId('user-annu-jean-doe-croix-rouge-fr');
         $user->setIsTrusted(true);
         $user->setIsAdmin(true);
         $this->em->persist($volunteer);

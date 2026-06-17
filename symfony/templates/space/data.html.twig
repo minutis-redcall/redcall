@@ -222,7 +222,7 @@
             <strong>{{ 'space.consult_data.identity_user_access'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.user ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
+            {{ redcall_user(session.volunteer) ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -231,8 +231,8 @@
             <strong>{{ 'space.consult_data.identity_user_admin'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {% if session.volunteer.user %}
-                {{ session.volunteer.user.admin ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
+            {% if redcall_user(session.volunteer) %}
+                {{ redcall_user(session.volunteer).admin ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
             {% else %}
                 -
             {% endif %}
@@ -244,8 +244,8 @@
             <strong>{{ 'space.consult_data.identity_user_locale'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {% if session.volunteer.user %}
-                {{ session.volunteer.user.locale }}
+            {% if redcall_user(session.volunteer) %}
+                {{ redcall_user(session.volunteer).locale }}
             {% else %}
                 -
             {% endif %}
@@ -257,8 +257,8 @@
             <strong>{{ 'space.consult_data.identity_user_structures'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {% if session.volunteer.user %}
-                {% for structure in session.volunteer.user.structures %}
+            {% if redcall_user(session.volunteer) %}
+                {% for structure in redcall_user(session.volunteer).structures %}
                     {{ structure.name }}<br/>
                 {% endfor %}
             {% else %}

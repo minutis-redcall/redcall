@@ -5,16 +5,13 @@ namespace App\Services\InstancesNationales;
 use App\Command\AnnuaireNationalCommand;
 use App\Entity\Structure;
 use App\Entity\User;
-use App\Entity\Volunteer;
 use App\Manager\StructureManager;
 use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
-use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\SheetExtract;
 use App\Model\InstancesNationales\SheetsExtract;
 use App\Model\InstancesNationales\UserExtract;
 use App\Model\InstancesNationales\UsersExtract;
-use App\Sync\Ownership;
 
 class UserService
 {
@@ -24,11 +21,6 @@ class UserService
         self::WRITERS,
         self::READERS,
     ];
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
 
     /**
      * @var StructureManager
@@ -42,12 +34,10 @@ class UserService
 
     private UserAuditLogManager $userAuditLogManager;
 
-    public function __construct(VolunteerManager $volunteerManager,
-        StructureManager $structureManager,
+    public function __construct(StructureManager $structureManager,
         UserManager $userManager,
         UserAuditLogManager $userAuditLogManager)
     {
-        $this->volunteerManager    = $volunteerManager;
         $this->structureManager    = $structureManager;
         $this->userManager         = $userManager;
         $this->userAuditLogManager = $userAuditLogManager;
@@ -175,34 +165,33 @@ class UserService
             ]);
 
             $oldSnapshot = $this->userAuditLogManager->buildSnapshot($user);
+
+            // The ONLY thing this sync may remove is the ANNUAIRE NATIONAL
+            // structure itself. A user's NIVOL (external_id) and any other
+            // (Pegass) structures are never touched here.
             $user->removeStructure($structure);
 
-            if ($volunteer = $user->getVolunteer()) {
-                if (substr($volunteer->getExternalId(), 0, strlen(UserExtract::NIVOL_PREFIX)) === UserExtract::NIVOL_PREFIX) {
-                    $volunteer->setEnabled(false);
-                    $this->volunteerManager->save($volunteer);
-                }
+            // Hard discriminator for the dual-identity case (the same email
+            // exists both in Pegass and in the Annuaire roster): the Annuaire
+            // sync OWNS only pure email-keyed accounts, i.e. those with no
+            // NIVOL. A user carrying an external_id is a Pegass / directory
+            // operator — keep it, do NOT delete it, even if removing the
+            // Annuaire structure left it with zero structures. Deleting such a
+            // user (or, previously, relying on a volunteer lookup that could be
+            // transiently empty) was a source of permission loss.
+            if ($user->getExternalId()) {
+                $this->userManager->save($user);
+                $this->userAuditLogManager->logUpdated(
+                    null,
+                    sprintf('annuaire: kept directory user (NIVOL %s), removed only structure %s', $user->getExternalId(), $structure->getExternalId()),
+                    $user,
+                    $oldSnapshot
+                );
+
+                continue;
             }
 
             if ($user->getStructures()->count() === 0) {
-                // Safety net: never hard-delete a user whose underlying
-                // volunteer is Pegass-managed. The Annuaire sync owns the
-                // ANNUAIRE NATIONAL roster, not the lifecycle of Pegass
-                // people who happened to have been added to that structure.
-                $volunteer = $user->getVolunteer();
-                $isPegass  = $volunteer && Ownership::isPegassVolunteerEntity($volunteer);
-
-                if ($isPegass) {
-                    $this->userManager->save($user);
-                    $this->userAuditLogManager->logUpdated(
-                        null,
-                        sprintf('annuaire: kept pegass user despite empty structures (structure %s)', $structure->getExternalId()),
-                        $user,
-                        $oldSnapshot
-                    );
-                    continue;
-                }
-
                 $this->userManager->remove($user);
                 $this->userAuditLogManager->logDeleted(
                     null,
@@ -234,23 +223,9 @@ class UserService
                 $wasCreated = false;
 
                 if (!$user) {
-                    $volunteer = $this->volunteerManager->findOneByExternalId($userExtract->getNivol());
-                    if ($volunteer) {
-                        $volunteer->setEnabled(true);
-                    } else {
-                        $volunteer = new Volunteer();
-                        $volunteer->setExternalId($userExtract->getNivol());
-                        $volunteer->setEmail($userExtract->getEmail());
-                        $volunteer->setInternalEmail(strtolower($userExtract->getEmail()));
-
-                        if (@preg_match('/(.*)\.(.*)@/', $userExtract->getEmail(), $matches)) {
-                            $volunteer->setFirstName(ucfirst($matches[1]));
-                            $volunteer->setLastName(ucfirst($matches[2]));
-                        }
-
-                        $this->volunteerManager->save($volunteer);
-                    }
-
+                    // Annuaire users are identified by their email. They are
+                    // operators, not contactable directory people — no synthetic
+                    // volunteer, and a NULL external id (no real NIVOL).
                     $user = new User();
                     $user->setLocale('fr');
                     $user->setTimezone('Europe/Paris');
@@ -258,7 +233,11 @@ class UserService
                     $user->setPassword('invalid hash');
                     $user->setIsVerified(true);
                     $user->setIsTrusted(true);
-                    $user->setVolunteer($volunteer);
+
+                    if (@preg_match('/(.*)\.(.*)@/', $userExtract->getEmail(), $matches)) {
+                        $user->setFirstName(ucfirst($matches[1]));
+                        $user->setLastName(ucfirst($matches[2]));
+                    }
 
                     $wasCreated = true;
                 }

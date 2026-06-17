@@ -83,8 +83,8 @@ class CampaignRepository extends BaseRepository
             ->createQueryBuilder('c')
             ->distinct()
             ->innerJoin('c.communications', 'co')
-            ->innerJoin('co.volunteer', 'v')
-            ->innerJoin('v.structures', 's')
+            ->innerJoin('co.user', 'author')
+            ->innerJoin('author.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
@@ -109,8 +109,8 @@ class CampaignRepository extends BaseRepository
             ->andWhere('c.id NOT IN (
                 SELECT c2.id FROM App\Entity\Campaign c2
                 JOIN c2.communications co2
-                JOIN co2.volunteer v2
-                JOIN v2.structures s2
+                JOIN co2.user author2
+                JOIN author2.structures s2
                 JOIN s2.users u2
                 WHERE u2.id = :user AND s2.enabled = true AND c2.active = true
             )');

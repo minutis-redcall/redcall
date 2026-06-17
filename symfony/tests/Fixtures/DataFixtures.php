@@ -68,13 +68,14 @@ class DataFixtures
         $volunteer = new Volunteer();
         $volunteer->setExternalId($externalId);
         $volunteer->setEmail($email);
-        $volunteer->setUser($user);
         $volunteer->setEnabled(true);
         $volunteer->setLocked(false);
         $volunteer->setPhoneNumberOptin(true);
         $volunteer->setEmailOptin(true);
 
-        $user->setVolunteer($volunteer);
+        // The user and the volunteer are the "same person": there is no entity
+        // link anymore, they are related only by sharing the NIVOL (external id).
+        $user->setExternalId($externalId);
 
         $this->entityManager->persist($volunteer);
         $this->entityManager->persist($user);
@@ -474,6 +475,9 @@ class DataFixtures
         );
         $campaign  = $this->createCampaign();
         $comm      = $this->createCommunication($campaign, $communicationType);
+
+        // Note: the campaign/communication author (User) is left unset here —
+        // tests that exercise authorship set it explicitly via setUser().
 
         $choices = [];
         foreach ($choiceLabels as $i => $label) {

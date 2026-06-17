@@ -2,9 +2,6 @@
 
 namespace App\Provider\OAuth\GoogleConnect;
 
-use App\Entity\Volunteer;
-use App\Manager\UserManager;
-use App\Manager\VolunteerManager;
 use App\Model\OAuthUser;
 use App\Tools\Url;
 use App\Validator\Constraints\WhitelistedRedirectUrl;
@@ -41,11 +38,6 @@ class GoogleConnect implements GoogleConnectInterface
     private $validator;
 
     /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -70,32 +62,23 @@ class GoogleConnect implements GoogleConnectInterface
      */
     private $clientSecret;
 
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
     public function __construct(RouterInterface $router,
         HttpClientInterface $client,
         ValidatorInterface $validator,
-        VolunteerManager $volunteerManager,
         LoggerInterface $logger,
         CsrfTokenManagerInterface $csrfTokenManager,
         ParameterBagInterface $parameters,
-        UserManager $userManager,
         string $clientId,
         string $clientSecret)
     {
         $this->router           = $router;
         $this->client           = $client;
         $this->validator        = $validator;
-        $this->volunteerManager = $volunteerManager;
         $this->logger           = $logger;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->parameters       = $parameters;
         $this->clientId         = $clientId;
         $this->clientSecret     = $clientSecret;
-        $this->userManager      = $userManager;
     }
 
     public function getAuthorizationUri(string $redirectUri)
@@ -112,7 +95,7 @@ class GoogleConnect implements GoogleConnectInterface
         ]));
     }
 
-    public function verify(Request $request) : ?Volunteer
+    public function verify(Request $request) : ?OAuthUser
     {
         // Checking that mandatory parameters exist
         if (!$this->isQueryStringValid($request)) {
@@ -134,27 +117,10 @@ class GoogleConnect implements GoogleConnectInterface
             return null;
         }
 
-        // Using the token to get the oauth user
-        if (null === ($oAuthUser = $this->getOauthUser($token))) {
-            return null;
-        }
-
-        $user = $this->userManager->findOneByUsername($oAuthUser->getEmail());
-
-        if (null === $user) {
-            return $this->volunteerManager->getVolunteerFromOauth($oAuthUser);
-        }
-
-        if ($user && $volunteer = $user->getVolunteer()) {
-            if (!$volunteer->isEnabled()) {
-                $volunteer->setEnabled(true);
-                $this->volunteerManager->save($volunteer);
-            }
-
-            return $user->getVolunteer();
-        }
-
-        return null;
+        // Using the token to get the oauth user. Mapping the identity to a
+        // RedCall user / volunteer is now done by the authenticator, which can
+        // resolve a user with no directory record (NULL external id).
+        return $this->getOauthUser($token);
     }
 
     public function getRedirectAfterAuthenticationUri(Request $request) : ?string

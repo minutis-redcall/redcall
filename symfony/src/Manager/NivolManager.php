@@ -10,18 +10,21 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class NivolManager
 {
     private VolunteerManager    $volunteerManager;
+    private UserManager         $userManager;
     private ExpirableManager    $expirableManager;
     private MailManager         $mailManager;
     private TranslatorInterface $translator;
     private RequestStack        $requestStack;
 
     public function __construct(VolunteerManager $volunteerManager,
+        UserManager $userManager,
         ExpirableManager $expirableManager,
         MailManager $mailManager,
         TranslatorInterface $translator,
         RequestStack $requestStack)
     {
         $this->volunteerManager = $volunteerManager;
+        $this->userManager      = $userManager;
         $this->expirableManager = $expirableManager;
         $this->mailManager      = $mailManager;
         $this->translator       = $translator;
@@ -41,13 +44,9 @@ class NivolManager
             return null;
         }
 
-        // Seek for a RedCall user attached to that volunteer
-        $user = $volunteer->getUser();
-        if (null === $user) {
-            return null;
-        }
-
-        return $user;
+        // Seek for a RedCall user sharing that volunteer's NIVOL. The enabled
+        // volunteer gate above is what makes the OTP-email destination known.
+        return $this->userManager->findOneTrustedByExternalId($externalId);
     }
 
     public function sendEmail(string $nivol) : ?string

@@ -85,7 +85,7 @@ class VolunteerImporter
             $volunteer->addReport('import_report.update_locked');
             $volunteer->removeExpiredBadges();
             $this->volunteerManager->save($volunteer);
-            $this->updateBoundUserStructures($volunteer);
+            $this->refreshBoundUserIdentity($volunteer);
 
             return;
         }
@@ -96,7 +96,7 @@ class VolunteerImporter
         $volunteer->setExternalBadges($this->buildBadges($row));
 
         $this->volunteerManager->save($volunteer);
-        $this->updateBoundUserStructures($volunteer);
+        $this->refreshBoundUserIdentity($volunteer);
         $this->writeSnapshot($externalId, $row, $syncedAt ?? new \DateTimeImmutable());
     }
 
@@ -248,14 +248,20 @@ class VolunteerImporter
         return $badges;
     }
 
-    private function updateBoundUserStructures(Volunteer $volunteer) : void
+    /**
+     * The operator account is no longer linked to the volunteer — there is no
+     * structure or lifecycle coupling anymore. We only mirror the directory
+     * display name onto the matching user (one-way, by NIVOL) so the UI keeps
+     * showing an up-to-date name.
+     */
+    private function refreshBoundUserIdentity(Volunteer $volunteer) : void
     {
         $user = $this->userManager->findOneByExternalId($volunteer->getExternalId());
         if (!$user) {
             return;
         }
         $old = $this->userAuditLogManager->buildSnapshot($user);
-        $this->userManager->changeVolunteer($user, $volunteer->getExternalId());
+        $this->userManager->changeExternalId($user, $volunteer->getExternalId());
         $this->userAuditLogManager->logUpdated(null, 'sync: pegass', $user, $old);
     }
 

@@ -240,27 +240,11 @@ class CampaignManagerTest extends KernelTestCase
     // ──────────────────────────────────────────────
     // launchNewCampaign (partial: testing is limited because
     // it requires CommunicationManager, processors, etc.)
-    // We test the basic guard: null volunteer returns null
+    //
+    // (removed testLaunchNewCampaignReturnsNullWhenNoVolunteer: an operator no
+    // longer needs to be a volunteer to launch a campaign — the author is the
+    // User directly, so that early-return guard was dropped.)
     // ──────────────────────────────────────────────
-
-    public function testLaunchNewCampaignReturnsNullWhenNoVolunteer()
-    {
-        $user = $this->fixtures->createRawUser('novolunteer@test.com');
-
-        // Set up the token storage with a user that has NO volunteer
-        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($user, 'main', $user->getRoles()
-        );
-        self::getContainer()->get('security.token_storage')->setToken($token);
-
-        $trigger = new \App\Form\Model\SmsTrigger();
-        $campaignModel = new \App\Form\Model\Campaign($trigger);
-        $campaignModel->label = 'Test';
-        $campaignModel->type = Campaign::TYPE_GREEN;
-
-        $result = $this->campaignManager->launchNewCampaign($campaignModel);
-
-        $this->assertNull($result);
-    }
 
     /**
      * Happy-path smoke test for the full campaign-creation pipeline.

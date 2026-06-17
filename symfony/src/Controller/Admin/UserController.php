@@ -125,7 +125,7 @@ class UserController extends BaseController
 
         if (!$user->isLocked()) {
             $old = $this->userAuditLogManager->buildSnapshot($user);
-            $this->userManager->changeVolunteer($user, $externalId);
+            $this->userManager->changeExternalId($user, $externalId);
             $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $user, $old);
         }
 

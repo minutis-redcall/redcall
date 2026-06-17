@@ -25,6 +25,7 @@ use App\Manager\LanguageConfigManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\StructureManager;
+use App\Manager\VolunteerManager;
 use App\Provider\Minutis\MinutisProvider;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
@@ -107,6 +108,11 @@ class CommunicationController extends BaseController
      */
     private $volunteerGroupRepository;
 
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
@@ -117,7 +123,8 @@ class CommunicationController extends BaseController
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
         LanguageConfigManager $languageManager,
-        \App\Repository\VolunteerGroupRepository $volunteerGroupRepository)
+        \App\Repository\VolunteerGroupRepository $volunteerGroupRepository,
+        VolunteerManager $volunteerManager)
     {
         $this->campaignManager          = $campaignManager;
         $this->communicationManager     = $communicationManager;
@@ -130,6 +137,22 @@ class CommunicationController extends BaseController
         $this->expirableManager         = $expirableManager;
         $this->languageManager          = $languageManager;
         $this->volunteerGroupRepository = $volunteerGroupRepository;
+        $this->volunteerManager         = $volunteerManager;
+    }
+
+    /**
+     * Resolves the Volunteer record sharing the current operator's NIVOL, so
+     * the operator can preview/test a message addressed to themselves. There
+     * is no entity link between User and Volunteer anymore.
+     */
+    private function getOperatorVolunteer() : ?\App\Entity\Volunteer
+    {
+        /** @var \App\Entity\User|null $user */
+        $user = $this->getUser();
+
+        return $user && $user->getExternalId()
+            ? $this->volunteerManager->findOneByExternalId($user->getExternalId())
+            : null;
     }
 
     #[Route(path: "campaign/{id}", name: "index", requirements: ["id" => "\d+"])]
@@ -221,7 +244,7 @@ class CommunicationController extends BaseController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
+        if (!$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 
@@ -260,7 +283,7 @@ class CommunicationController extends BaseController
         /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
-        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
+        if (!$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 
@@ -315,8 +338,10 @@ class CommunicationController extends BaseController
         $user    = $this->getUser();
         $trigger = $this->getCommunicationFromRequest($request, $type);
 
+        $operatorVolunteer = $this->getOperatorVolunteer();
+
         if (!strip_tags($trigger->getMessage() ?? '')
-            || !$user->getVolunteer() || !$user->getVolunteer()->getPhone()) {
+            || !$operatorVolunteer || !$operatorVolunteer->getPhone()) {
             return new JsonResponse([
                 'success' => false,
             ]);
@@ -328,9 +353,7 @@ class CommunicationController extends BaseController
         $message->setCommunication($communicationEntity);
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
-        $message->setVolunteer(
-            $user->getVolunteer()
-        );
+        $message->setVolunteer($operatorVolunteer);
 
         $content   = $this->formatter->formatMessageContent($message);
         $parts     = GSM::getSMSParts($content);
@@ -353,7 +376,9 @@ class CommunicationController extends BaseController
         $user    = $this->getUser();
         $trigger = $this->getCommunicationFromRequest($request, Type::CALL());
 
-        if (!$trigger->getMessage()) {
+        $operatorVolunteer = $this->getOperatorVolunteer();
+
+        if (!$trigger->getMessage() || !$operatorVolunteer) {
             return new JsonResponse(['success' => false]);
         }
 
@@ -364,9 +389,7 @@ class CommunicationController extends BaseController
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
 
-        $message->setVolunteer(
-            $user->getVolunteer()
-        );
+        $message->setVolunteer($operatorVolunteer);
 
         $media = $this->mediaManager->createMp3(
             $this->languageManager->getLanguageConfigForCommunication($communicationEntity)->getTextToSpeech(),

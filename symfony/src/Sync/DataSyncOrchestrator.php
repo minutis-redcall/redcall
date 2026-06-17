@@ -3,12 +3,12 @@
 namespace App\Sync;
 
 use App\Entity\Structure;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\UserExtract;
 use App\Model\InstancesNationales\VolunteerExtract;
-use App\Queues;
 use App\Sync\Dto\ActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
@@ -30,6 +30,7 @@ use App\Task\SyncStructuresChunkTask;
 use App\Task\SyncVolunteersChunkTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\Doctrine\Middleware\Debug\DebugDataHolder;
@@ -55,21 +56,37 @@ class DataSyncOrchestrator
     public const VOLUNTEER_CHUNK_SIZE = 50;
     public const MIN_CSV_FILES        = 10;
 
-    private CsvSourceInterface $source;
-    private CsvReader $csvReader;
-    private ReferenceTables $referenceTables;
-    private StructureImporter $structureImporter;
-    private VolunteerImporter $volunteerImporter;
-    private BadgeFactory $badgeFactory;
-    private RtmrReconciliator $rtmrReconciliator;
-    private StructureManager $structureManager;
-    private VolunteerManager $volunteerManager;
-    private EntityManagerInterface $em;
-    private TaskSender $async;
+    /**
+     * "Stale" volunteers/structures are those not seen in the CSV for the last
+     * STALE_GRACE_DAYS days, not just the current run. The grace window absorbs:
+     *   - the race between chunks (sync-chunk, 30 concurrent) and finalize
+     *     (sync-finalize, fires immediately on its own queue) — a chunk that
+     *     hasn't drained yet leaves the volunteer with yesterday's lastSyncedAt;
+     *   - one-day Pegass DSI CSV hiccups (incomplete export, dropped rows);
+     *   - multi-day infra outages, deploy freezes, queue backlogs.
+     *
+     * A real departure shows up as 7+ consecutive missed daily syncs, which is
+     * still detected. The cost of waiting one extra week before anonymizing a
+     * truly-gone volunteer is nothing; the cost of wrongly anonymizing 591 active
+     * volunteers in one night (see 2026-06-14) is everything.
+     */
+    public const STALE_GRACE_DAYS = 7;
+
+    private CsvSourceInterface          $source;
+    private CsvReader                   $csvReader;
+    private ReferenceTables             $referenceTables;
+    private StructureImporter           $structureImporter;
+    private VolunteerImporter           $volunteerImporter;
+    private BadgeFactory                $badgeFactory;
+    private RtmrReconciliator           $rtmrReconciliator;
+    private StructureManager            $structureManager;
+    private VolunteerManager            $volunteerManager;
+    private EntityManagerInterface      $em;
+    private TaskSender                  $async;
     private VolunteerSyncSnapshotWriter $snapshotWriter;
-    private LoggerInterface $logger;
-    private SyncProgressReporter $progress;
-    private ?DebugDataHolder $debugDataHolder = null;
+    private LoggerInterface             $logger;
+    private SyncProgressReporter        $progress;
+    private ?DebugDataHolder            $debugDataHolder = null;
 
     public function __construct(
         CsvSourceInterface $source,
@@ -601,7 +618,7 @@ class DataSyncOrchestrator
         foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
             $this->async->fire(SyncStructuresChunkTask::class, [
                 'syncedAt' => $syncedAt->format(\DateTimeInterface::ATOM),
-                'rows'     => array_map(fn (StructureRow $r) => $r->toArray(), $chunk),
+                'rows'     => array_map(fn(StructureRow $r) => $r->toArray(), $chunk),
             ]);
         }
     }
@@ -618,7 +635,7 @@ class DataSyncOrchestrator
         foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
             $this->async->fire(SyncVolunteersChunkTask::class, [
                 'syncedAt' => $syncedAt->format(\DateTimeInterface::ATOM),
-                'rows'     => array_map(fn (VolunteerRow $r) => $r->toArray(), $chunk),
+                'rows'     => array_map(fn(VolunteerRow $r) => $r->toArray(), $chunk),
             ]);
         }
     }
@@ -638,18 +655,21 @@ class DataSyncOrchestrator
         // The ANNUAIRE NATIONAL / DEMO / etc. structures use UUID external_ids
         // and are not in the Pegass CSV by design — `externalId NOT LIKE '%-%'`
         // keeps the sweep to numeric Pegass IDs only.
+        $staleThreshold = \DateTime::createFromImmutable($syncedAt)
+            ->sub(new \DateInterval(sprintf('P%dD', self::STALE_GRACE_DAYS)));
+
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(s.id)')
                             ->from(Structure::class, 's')
                             ->where('s.locked = :unlocked')
                             ->andWhere('s.enabled = :enabled')
-                            ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
+                            ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :staleThreshold)')
                             ->andWhere('s.externalId NOT LIKE :uuidPattern')
                             ->setParameter('enabled', true)
                             ->setParameter('unlocked', false)
-                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                            ->setParameter('staleThreshold', $staleThreshold)
                             ->setParameter('uuidPattern', '%-%');
-        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+        $total   = (int) $countQb->getQuery()->getSingleScalarResult();
 
         $this->progress->startBar(sprintf('Disabling %d stale structures', $total), max(1, $total));
 
@@ -658,12 +678,12 @@ class DataSyncOrchestrator
                        ->set('s.enabled', ':disabled')
                        ->where('s.locked = :unlocked')
                        ->andWhere('s.enabled = :enabled')
-                       ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
+                       ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :staleThreshold)')
                        ->andWhere('s.externalId NOT LIKE :uuidPattern')
                        ->setParameter('disabled', false)
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
-                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                       ->setParameter('staleThreshold', $staleThreshold)
                        ->setParameter('uuidPattern', '%-%');
 
         $count = $qb->getQuery()->execute();
@@ -683,38 +703,48 @@ class DataSyncOrchestrator
         // Additionally: if a bound RedCall user has user.locked = true, an
         // admin has explicitly asked the sync to keep its hands off. Skip.
         // 84 prod deletions on 2026-06-10/13 bypassed that contract.
+        //
+        // The stale threshold is `syncedAt - STALE_GRACE_DAYS` (not just
+        // `syncedAt`): finalize runs on its own queue with no barrier on
+        // the chunk fan-out, so a volunteer whose chunk hasn't drained yet
+        // still has yesterday's lastSyncedAt. On 2026-06-14, 591 active
+        // Pegass volunteers were wrongly anonymized this way. A real
+        // departure still shows up as 7+ consecutive missed daily syncs.
+        $staleThreshold = \DateTime::createFromImmutable($syncedAt)
+            ->sub(new \DateInterval(sprintf('P%dD', self::STALE_GRACE_DAYS)));
+
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(v.id)')
                             ->from(Volunteer::class, 'v')
-                            ->leftJoin('v.user', 'u')
+                            ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                             ->where('v.locked = :unlocked')
                             ->andWhere('v.enabled = :enabled')
-                            ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
+                            ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :staleThreshold)')
                             ->andWhere('v.externalId NOT LIKE :annuPrefix')
                             ->andWhere('v.externalId NOT LIKE :annuairePrefix')
                             ->andWhere('(u.id IS NULL OR u.locked = :unlocked)')
                             ->setParameter('enabled', true)
                             ->setParameter('unlocked', false)
-                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                            ->setParameter('staleThreshold', $staleThreshold)
                             ->setParameter('annuPrefix', UserExtract::NIVOL_PREFIX.'%')
                             ->setParameter('annuairePrefix', VolunteerExtract::NIVOL_PREFIX.'%');
-        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+        $total   = (int) $countQb->getQuery()->getSingleScalarResult();
 
         $this->progress->startBar(sprintf('Anonymizing %d stale volunteers', $total), max(1, $total));
 
         $qb = $this->em->createQueryBuilder()
                        ->select('v')
                        ->from(Volunteer::class, 'v')
-                       ->leftJoin('v.user', 'u')
+                       ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                        ->where('v.locked = :unlocked')
                        ->andWhere('v.enabled = :enabled')
-                       ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
+                       ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :staleThreshold)')
                        ->andWhere('v.externalId NOT LIKE :annuPrefix')
                        ->andWhere('v.externalId NOT LIKE :annuairePrefix')
                        ->andWhere('(u.id IS NULL OR u.locked = :unlocked)')
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
-                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt))
+                       ->setParameter('staleThreshold', $staleThreshold)
                        ->setParameter('annuPrefix', UserExtract::NIVOL_PREFIX.'%')
                        ->setParameter('annuairePrefix', VolunteerExtract::NIVOL_PREFIX.'%');
 
@@ -742,7 +772,7 @@ class DataSyncOrchestrator
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(DISTINCT v.id)')
                             ->from(Volunteer::class, 'v')
-                            ->leftJoin('v.user', 'u')
+                            ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                             ->leftJoin('v.badges', 'b')
                             ->where('u.id IS NOT NULL')
                             ->orWhere('b.name IN (:rtmrBadges)')
@@ -750,14 +780,14 @@ class DataSyncOrchestrator
                                 RtmrReconciliator::RTMR_BADGE,
                                 RtmrReconciliator::INVALID_RTMR_BADGE,
                             ]);
-        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+        $total   = (int) $countQb->getQuery()->getSingleScalarResult();
 
         $this->progress->startBar(sprintf('Reconciling %d RTMR / RedCall users', $total), max(1, $total));
 
         $qb = $this->em->createQueryBuilder()
                        ->select('DISTINCT v')
                        ->from(Volunteer::class, 'v')
-                       ->leftJoin('v.user', 'u')
+                       ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                        ->leftJoin('v.badges', 'b')
                        ->where('u.id IS NOT NULL')
                        ->orWhere('b.name IN (:rtmrBadges)')

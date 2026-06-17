@@ -321,12 +321,17 @@ class VolunteerManager
 
     public function anonymize(Volunteer $volunteer, ?\App\Entity\User $actor = null, ?string $cliLabel = null)
     {
+        // The operator account that shares this volunteer's NIVOL, if any.
+        // Resolved up-front while the external id is still the real one (the
+        // GDPR registry rewrites it to a "deleted-*" id later in this method).
+        $boundUser = $this->userManager->findOneByExternalId($volunteer->getExternalId());
+
         // Belt-and-braces guard: callers (DataSyncOrchestrator::anonymizeStaleVolunteers,
         // PegassManager::removeMissingEntities, ...) already filter, but anonymize()
         // is destructive enough that we never want to fall through here with an
-        // admin-locked bound user. user.locked = true means an admin manually
+        // admin-locked operator. user.locked = true means an admin manually
         // owns this user's privileges and the sync must keep its hands off.
-        if (($user = $volunteer->getUser()) && $user->isLocked()) {
+        if ($boundUser && $boundUser->isLocked()) {
             return;
         }
 
@@ -335,7 +340,7 @@ class VolunteerManager
         // "who anonymized which volunteer and why" in the audit UI without
         // re-introducing the PII that this very method is about to wipe.
         $auditSnapshot  = $this->volunteerAuditLogManager->buildSnapshot($volunteer);
-        $auditBoundUser = $volunteer->getUser();
+        $auditBoundUser = $boundUser;
 
         $volunteer->setEnabled(false);
 
@@ -352,11 +357,10 @@ class VolunteerManager
             }
         }
 
-        if ($user = $volunteer->getUser()) {
-            $snapshot = $this->userAuditLogManager->buildSnapshot($user);
-            $this->userManager->remove($user);
-            $this->userAuditLogManager->logDeleted($actor, $cliLabel ?? 'sync: anonymize', $snapshot);
-        }
+        // Note: the operator account is deliberately NOT touched here for the
+        // operational (sync: stale) path — that decoupling is the whole point
+        // of this refactor. Legal "forget me" still removes it, in the GDPR
+        // branch below.
 
         // Iterate over a SNAPSHOT of the structures: $structure->removeVolunteer()
         // calls $volunteer->removeStructure($this) under the hood, which mutates
@@ -381,7 +385,6 @@ class VolunteerManager
         $volunteer->setLastSyncedAt(new \DateTime('2000-01-01'));
         $volunteer->setReport([]);
         $volunteer->getStructures()->clear();
-        $volunteer->setUser(null);
         $volunteer->setPhoneNumberOptin(true);
         $volunteer->setPhoneNumberLocked(false);
         $volunteer->setEmailOptin(true);
@@ -389,7 +392,28 @@ class VolunteerManager
 
         $this->save($volunteer);
 
-        $this->deletedVolunteerManager->anonymize($volunteer);
+        // The GDPR registry (`deleted_volunteer`) is a legal artefact — a NIVOL
+        // lands there ONLY when a human asked to be forgotten (admin manual
+        // delete, volunteer's own /space self-delete). Sync-driven anonymize
+        // happens for operational reasons (volunteer gone from the CSV for
+        // STALE_GRACE_DAYS+), never legal — keep it out of the registry.
+        // Either way we must release the original NIVOL so a future re-import
+        // can re-create the volunteer with the real id rather than a duplicate.
+        if ('sync: stale' === $cliLabel) {
+            $this->deletedVolunteerManager->releaseExternalId($volunteer);
+        } else {
+            $this->deletedVolunteerManager->markGdprDeleted($volunteer);
+
+            // Legal "forget me" (admin manual delete / /space self-delete): the
+            // operator account carries the person's email + name as PII, so it
+            // must be removed too. This is the ONLY path that deletes a user
+            // from the volunteer side now.
+            if ($boundUser) {
+                $snapshot = $this->userAuditLogManager->buildSnapshot($boundUser);
+                $this->userManager->remove($boundUser);
+                $this->userAuditLogManager->logDeleted($actor, $cliLabel ?? 'gdpr: anonymize', $snapshot);
+            }
+        }
 
         $this->volunteerAuditLogManager->logAnonymized(
             $actor,

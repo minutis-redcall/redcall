@@ -105,7 +105,7 @@ class DeletedVolunteerManagerTest extends KernelTestCase
 
         $originalExternalId = $volunteer->getExternalId();
 
-        $this->manager->anonymize($volunteer);
+        $this->manager->markGdprDeleted($volunteer);
 
         // The volunteer's external ID should be hashed in the deleted table
         $deletedEntry = $this->repository->findOneByHashedExternalId(
@@ -137,8 +137,84 @@ class DeletedVolunteerManagerTest extends KernelTestCase
         $this->repository->add($deleted);
 
         // Anonymize should still work without creating a duplicate
-        $this->manager->anonymize($volunteer);
+        $this->manager->markGdprDeleted($volunteer);
 
         $this->assertStringStartsWith('deleted-', $volunteer->getExternalId());
+    }
+
+    public function testReleaseExternalIdRenamesButDoesNotPolluteGdprRegistry()
+    {
+        // Sync-driven anonymize (operational drop, not a legal erase request)
+        // must release the original NIVOL so the same person re-imports cleanly
+        // next time, but it must NOT mark the NIVOL as GDPR-deleted — otherwise
+        // the admin "undelete" UI fills with thousands of false entries every
+        // time a Pegass volunteer falls off the export for a week.
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'release_test@example.com',
+            false,
+            'REL_VOL_001',
+            'REL STRUCT 1',
+            'REL-EXT-001'
+        );
+        $volunteer          = $setup['volunteer'];
+        $originalExternalId = $volunteer->getExternalId();
+
+        $this->manager->releaseExternalId($volunteer);
+
+        $this->assertStringStartsWith('deleted-', $volunteer->getExternalId());
+        $this->assertNotSame($originalExternalId, $volunteer->getExternalId());
+
+        $this->assertNull(
+            $this->repository->findOneByHashedExternalId(Hash::hash($originalExternalId)),
+            'releaseExternalId must NOT write to the GDPR registry'
+        );
+        $this->assertFalse($this->manager->isDeleted($originalExternalId),
+            'The NIVOL must remain re-importable after releaseExternalId'
+        );
+    }
+
+    public function testSyncDrivenAnonymizeDoesNotPolluteGdprRegistry()
+    {
+        // End-to-end: VolunteerManager::anonymize($vol, null, 'sync: stale')
+        // must use the release path, not the GDPR-mark path.
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'sync_stale_anon@example.com',
+            false,
+            'SYNC_STALE_001',
+            'SYNC STR 1',
+            'SYNC-EXT-1'
+        );
+        $volunteer          = $setup['volunteer'];
+        $originalExternalId = $volunteer->getExternalId();
+
+        $volunteerManager = self::getContainer()->get(\App\Manager\VolunteerManager::class);
+        $volunteerManager->anonymize($volunteer, null, 'sync: stale');
+
+        $this->assertFalse($this->manager->isDeleted($originalExternalId),
+            'sync-stale anonymize must not flag the NIVOL as GDPR-deleted'
+        );
+    }
+
+    public function testAdminManualAnonymizeFlagsNivolAsGdprDeleted()
+    {
+        // A human (admin or volunteer themselves via /space) DID ask for
+        // erasure — the NIVOL must land in the GDPR registry so the admin
+        // "undelete" workflow can find and restore it later if needed.
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'admin_manual_anon@example.com',
+            false,
+            'ADMIN_MANUAL_001',
+            'AM STR 1',
+            'AM-EXT-1'
+        );
+        $volunteer          = $setup['volunteer'];
+        $originalExternalId = $volunteer->getExternalId();
+
+        $volunteerManager = self::getContainer()->get(\App\Manager\VolunteerManager::class);
+        $volunteerManager->anonymize($volunteer, null, 'admin: manual');
+
+        $this->assertTrue($this->manager->isDeleted($originalExternalId),
+            'admin-driven anonymize must flag the NIVOL as GDPR-deleted'
+        );
     }
 }

@@ -67,68 +67,51 @@ class UserManagerTest extends KernelTestCase
     }
 
     // ──────────────────────────────────────────────
-    // changeVolunteer
+    // changeExternalId
     // ──────────────────────────────────────────────
 
-    public function testChangeVolunteerLinksVolunteerToUser(): void
+    public function testChangeExternalIdAssignsNivolToUser(): void
     {
         $user = $this->fixtures->createRawUser('um_chgvol1@test.com');
         $volunteer = $this->fixtures->createStandaloneVolunteer('UM-VOL-001', 'um_vol1@test.com');
 
-        $this->manager->changeVolunteer($user, $volunteer->getExternalId());
+        $this->manager->changeExternalId($user, $volunteer->getExternalId());
 
         $this->em->clear();
         $reloaded = $this->em->getRepository(User::class)->find($user->getId());
 
-        $this->assertNotNull($reloaded->getVolunteer());
-        $this->assertSame($volunteer->getId(), $reloaded->getVolunteer()->getId());
+        $this->assertSame('UM-VOL-001', $reloaded->getExternalId());
     }
 
-    public function testChangeVolunteerClearsVolunteerWhenExternalIdNotFound(): void
-    {
-        $user = $this->fixtures->createRawUser('um_chgvol2@test.com');
-        $volunteer = $this->fixtures->createVolunteer($user, 'UM-VOL-002', 'um_chgvol2_v@test.com');
-
-        $this->manager->changeVolunteer($user, 'NONEXISTENT-EXTERNAL-ID');
-
-        $this->em->clear();
-        $reloaded = $this->em->getRepository(User::class)->find($user->getId());
-
-        $this->assertNull($reloaded->getVolunteer());
-    }
-
-    public function testChangeVolunteerClearsVolunteerWhenNullPassed(): void
+    public function testChangeExternalIdClearsWhenNullPassed(): void
     {
         $user = $this->fixtures->createRawUser('um_chgvol3@test.com');
-        $volunteer = $this->fixtures->createVolunteer($user, 'UM-VOL-003', 'um_chgvol3_v@test.com');
+        $user->setExternalId('UM-VOL-003');
+        $this->em->persist($user);
+        $this->em->flush();
 
-        $this->manager->changeVolunteer($user, null);
+        $this->manager->changeExternalId($user, null);
 
         $this->em->clear();
         $reloaded = $this->em->getRepository(User::class)->find($user->getId());
 
-        // Volunteer should be cleared
-        $this->assertNull($reloaded->getVolunteer());
+        $this->assertNull($reloaded->getExternalId());
     }
 
-    public function testChangeVolunteerDoesNothingWhenUserIsLocked(): void
+    public function testChangeExternalIdDoesNothingWhenUserIsLocked(): void
     {
         $user = $this->fixtures->createRawUser('um_chgvol4@test.com');
-        $volunteer = $this->fixtures->createVolunteer($user, 'UM-VOL-004', 'um_vol4@test.com');
+        $user->setExternalId('UM-VOL-004');
         $user->setLocked(true);
         $this->em->persist($user);
         $this->em->flush();
 
-        // Try to change to a different volunteer
-        $otherVolunteer = $this->fixtures->createStandaloneVolunteer('UM-VOL-005', 'um_vol5@test.com');
+        $this->manager->changeExternalId($user, 'UM-VOL-005');
 
-        $this->manager->changeVolunteer($user, $otherVolunteer->getExternalId());
-
-        // Original volunteer should still be linked because user is locked
+        // External id is unchanged because the user is locked.
         $this->em->clear();
         $reloaded = $this->em->getRepository(User::class)->find($user->getId());
-        $this->assertNotNull($reloaded->getVolunteer());
-        $this->assertSame($volunteer->getId(), $reloaded->getVolunteer()->getId());
+        $this->assertSame('UM-VOL-004', $reloaded->getExternalId());
     }
 
     // ──────────────────────────────────────────────
