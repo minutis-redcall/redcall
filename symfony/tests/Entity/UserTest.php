@@ -79,41 +79,47 @@ class UserTest extends TestCase
         return $category;
     }
 
-    // --- setVolunteer ---
+    // --- own identity (externalId / first / last name) ---
 
-    public function testSetVolunteerSetsVolunteer(): void
+    public function testSetExternalIdSetsExternalId(): void
     {
         $user = $this->createUser();
-        $volunteer = $this->createVolunteer();
 
-        $result = $user->setVolunteer($volunteer);
+        $result = $user->setExternalId('123456789');
 
         $this->assertSame($user, $result);
-        $this->assertSame($volunteer, $user->getVolunteer());
+        $this->assertSame('123456789', $user->getExternalId());
     }
 
-    public function testSetVolunteerSyncsVolunteerUser(): void
+    public function testSetExternalIdCollapsesEmptyStringToNull(): void
     {
         $user = $this->createUser();
-        $volunteer = $this->createVolunteer();
 
-        $user->setVolunteer($volunteer);
+        $user->setExternalId('');
 
-        // setVolunteer calls volunteer->setUser($this) internally
-        // We need to test the internal user reference on volunteer
-        $ref = new \ReflectionProperty(Volunteer::class, 'user');
-        $this->assertSame($user, $ref->getValue($volunteer));
+        // A UNIQUE column allows many NULLs but only one '' — empty must be NULL.
+        $this->assertNull($user->getExternalId());
     }
 
-    public function testSetVolunteerToNull(): void
+    public function testSetExternalIdToNull(): void
     {
         $user = $this->createUser();
-        $volunteer = $this->createVolunteer();
-        $user->setVolunteer($volunteer);
+        $user->setExternalId('123456789');
 
-        $user->setVolunteer(null);
+        $user->setExternalId(null);
 
-        $this->assertNull($user->getVolunteer());
+        $this->assertNull($user->getExternalId());
+    }
+
+    public function testSetFirstAndLastName(): void
+    {
+        $user = $this->createUser();
+
+        $user->setFirstName('Jean');
+        $user->setLastName('Dupont');
+
+        $this->assertSame('Jean', $user->getFirstName());
+        $this->assertSame('Dupont', $user->getLastName());
     }
 
     // --- getStructuresAsList ---
@@ -465,30 +471,27 @@ class UserTest extends TestCase
 
     // --- getDisplayName ---
 
-    public function testGetDisplayNameWithVolunteer(): void
+    public function testGetDisplayNameWithNames(): void
     {
         $user = $this->createUser();
-        $volunteer = $this->createVolunteer('Jean', 'Dupont');
-        $user->setVolunteer($volunteer);
+        $user->setFirstName('Jean');
+        $user->setLastName('Dupont');
 
         $this->assertSame('Jean Dupont', $user->getDisplayName());
     }
 
-    public function testGetDisplayNameWithoutVolunteer(): void
+    public function testGetDisplayNameWithoutNames(): void
     {
         $user = $this->createUser('user@example.com');
 
         $this->assertSame('user@example.com', $user->getDisplayName());
     }
 
-    public function testGetDisplayNameWithVolunteerWithoutFirstName(): void
+    public function testGetDisplayNameWithoutFirstNameFallsBackToUsername(): void
     {
         $user = $this->createUser('user@example.com');
-        $volunteer = new Volunteer();
-        $volunteer->setExternalId('VOL-001');
-        $volunteer->setLastName('Dupont');
+        $user->setLastName('Dupont');
         // No first name
-        $user->setVolunteer($volunteer);
 
         // Falls back to username since firstName is null
         $this->assertSame('user@example.com', $user->getDisplayName());

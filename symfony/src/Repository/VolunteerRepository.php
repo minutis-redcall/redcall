@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerList;
 use Doctrine\DBAL\Connection;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -132,8 +133,10 @@ class VolunteerRepository extends BaseRepository
 
     private function addUserCriteria(QueryBuilder $qb)
     {
+        // "only volunteers who are also RedCall operators": there is no FK
+        // anymore, the two are related by sharing the NIVOL (external id).
         $qb
-            ->join('v.user', 'vu');
+            ->innerJoin(User::class, 'vu', Join::WITH, 'vu.externalId = v.externalId AND vu.isTrusted = true');
     }
 
     private function addLockedCriteria(QueryBuilder $qb)

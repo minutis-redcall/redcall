@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
+use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,10 +36,15 @@ class HomeController extends AbstractController
     }
 
     #[Route("/go-to-space", name: "go_to_space")]
-    public function space(VolunteerSessionManager $volunteerSessionManager)
+    public function space(VolunteerSessionManager $volunteerSessionManager, VolunteerManager $volunteerManager)
     {
+        /** @var \App\Entity\User $user */
+        $user = $this->getUser();
+
         /** @var Volunteer|null $volunteer */
-        $volunteer = $this->getUser()->getVolunteer();
+        $volunteer = $user->getExternalId()
+            ? $volunteerManager->findOneByExternalId($user->getExternalId())
+            : null;
         if (!$volunteer) {
             throw $this->createNotFoundException();
         }

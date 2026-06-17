@@ -244,7 +244,7 @@ class CampaignRepositoryTest extends KernelTestCase
     {
         $fullCampaign = $this->fixtures->createFullCampaign('crew@test.com');
         // The communication needs a volunteer for the join
-        $fullCampaign['communication']->setVolunteer($fullCampaign['volunteer']);
+        $fullCampaign['communication']->setUser($fullCampaign['user']);
         $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($fullCampaign['communication']);
         $em->flush();
@@ -273,7 +273,7 @@ class CampaignRepositoryTest extends KernelTestCase
     {
         $fullCampaign = $this->fixtures->createFullCampaign('crewexcl@test.com');
         // Set communication volunteer to the same volunteer in the user's structure
-        $fullCampaign['communication']->setVolunteer($fullCampaign['volunteer']);
+        $fullCampaign['communication']->setUser($fullCampaign['user']);
         $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($fullCampaign['communication']);
         $em->flush();

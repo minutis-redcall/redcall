@@ -13,7 +13,7 @@
     </h1>
 
     <div id="form-container">
-        {% set has_gdpr = (not volunteer.user or not volunteer.user.trusted) and delete %}
+        {% set has_gdpr = not redcall_user(volunteer) and delete %}
 
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">

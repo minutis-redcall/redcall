@@ -2,9 +2,10 @@
 
 <div class="row text-left">
     {% for user in users %}
-        {% if user.volunteer %}
+        {% set user_volunteer = volunteer_of(user) %}
+        {% if user_volunteer %}
             <div class="col-md-6">
-                {{ macros.volunteer(user.volunteer) }}
+                {{ macros.volunteer(user_volunteer) }}
                 <hr/>
             </div>
         {% endif %}

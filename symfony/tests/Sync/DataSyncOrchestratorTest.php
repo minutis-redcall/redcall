@@ -231,7 +231,7 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $this->em->persist($stale);
 
         $user = $this->fixtures->createRawUser('stale-locked@example.test', 'password', false);
-        $user->setVolunteer($stale);
+        $user->setExternalId($stale->getExternalId());
         $user->setIsTrusted(true);
         $user->setLocked(true); // ← admin-locked
         $this->em->persist($user);

@@ -2,7 +2,7 @@
 
 namespace App\Provider\OAuth;
 
-use App\Entity\Volunteer;
+use App\Model\OAuthUser;
 use Symfony\Component\HttpFoundation\Request;
 
 interface OAuthConnectInterface
@@ -20,8 +20,12 @@ interface OAuthConnectInterface
      * information given in the query string (most importantly,
      * an authorization code that can be exchanged for an access
      * token).
+     *
+     * Returns the authenticated OAuth identity (verified email + profile), or
+     * null if verification failed. Resolving the matching RedCall user /
+     * volunteer is the caller's responsibility.
      */
-    public function verify(Request $request) : ?Volunteer;
+    public function verify(Request $request) : ?OAuthUser;
 
     /**
      * This method is not required by the OAuth2 flow, but more

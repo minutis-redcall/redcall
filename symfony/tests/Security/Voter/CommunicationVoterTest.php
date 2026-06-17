@@ -176,7 +176,7 @@ class CommunicationVoterTest extends KernelTestCase
 
         // Campaign linked to creator's volunteer
         $campaign = $this->fixtures->createCampaign('Owner Comm Campaign');
-        $campaign->setVolunteer($creatorSetup['volunteer']);
+        $campaign->setUser($creatorSetup['user']);
         $this->em()->persist($campaign);
         $this->em()->flush();
 

@@ -62,7 +62,7 @@ class RtmrReconciliator
 
     private function clearPrivilegesIfDecommissioned(Volunteer $volunteer) : void
     {
-        $user = $volunteer->getUser();
+        $user = $this->userManager->findOneTrustedByExternalId($volunteer->getExternalId());
         if (!$user) {
             return;
         }
@@ -102,7 +102,7 @@ class RtmrReconciliator
         if (!$volunteer->hasBadge(self::INVALID_RTMR_BADGE)) {
             return;
         }
-        $user = $volunteer->getUser();
+        $user = $this->userManager->findOneTrustedByExternalId($volunteer->getExternalId());
         if (!$user) {
             return;
         }
@@ -129,7 +129,7 @@ class RtmrReconciliator
             return;
         }
 
-        $user = $volunteer->getUser();
+        $user = $this->userManager->findOneTrustedByExternalId($volunteer->getExternalId());
         if (!$user) {
             $this->volunteerManager->save($volunteer);
             try {

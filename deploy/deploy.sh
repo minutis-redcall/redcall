@@ -84,6 +84,15 @@ cp "$SYMFONY_DIR/.env" "$ROOT_DIR/.deploy-backup/.env"
 cp "$SYMFONY_DIR/config/keys/google-service-account.json" "$ROOT_DIR/.deploy-backup/google-service-account.json"
 NEEDS_RESTORE=true
 
+# ─── Reset the prod container cache ──────────────────────────────────────────
+# The prod kernel compiles its container into sys_temp (see Kernel::getCacheDir),
+# NOT into var/cache. A container left there by a previous deploy can carry an
+# out-of-date service signature and make the commands below fail to boot
+# (e.g. "Too few arguments to ...::__construct()"). Rebuild it from scratch.
+
+log "Clearing stale prod container cache..."
+rm -rf "$(php -r 'echo sys_get_temp_dir();')/redcall/cache"
+
 # ─── Generate MJML templates ─────────────────────────────────────────────────
 
 log "Generating MJML email templates..."

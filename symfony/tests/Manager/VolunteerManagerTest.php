@@ -382,8 +382,9 @@ class VolunteerManagerTest extends KernelTestCase
         $this->assertTrue($reloaded->isLocked());
     }
 
-    public function testAnonymizeRemovesUserLink(): void
+    public function testAnonymizeDeletesMatchingUserOnGdprPath(): void
     {
+        // The user and volunteer share a NIVOL (createVolunteer sets it).
         $user = $this->fixtures->createRawUser('vm_anonu@test.com');
         $vol = $this->fixtures->createVolunteer($user, 'VM-VOL-020', 'vm_anonu2@test.com');
         $vol->setFirstName('Jane');
@@ -391,14 +392,33 @@ class VolunteerManagerTest extends KernelTestCase
         $this->em->persist($vol);
         $this->em->flush();
 
-        $volId = $vol->getId();
+        $userId = $user->getId();
 
+        // No cliLabel => legal/GDPR delete => the matching operator account
+        // (resolved by shared external id) is removed too.
         $this->manager->anonymize($vol);
 
         $this->em->clear();
-        $reloaded = $this->em->getRepository(Volunteer::class)->find($volId);
 
-        $this->assertNull($reloaded->getUser());
+        $this->assertNull($this->em->getRepository(\App\Entity\User::class)->find($userId));
+    }
+
+    public function testAnonymizeOnStalePathLeavesMatchingUserUntouched(): void
+    {
+        // The operational stale-sync path must NOT delete the operator account
+        // — that decoupling is the point of the refactor.
+        $user = $this->fixtures->createRawUser('vm_stale_keep@test.com');
+        $vol = $this->fixtures->createVolunteer($user, 'VM-VOL-020B', 'vm_stale_keep_v@test.com');
+        $this->em->persist($vol);
+        $this->em->flush();
+
+        $userId = $user->getId();
+
+        $this->manager->anonymize($vol, null, 'sync: stale');
+
+        $this->em->clear();
+
+        $this->assertNotNull($this->em->getRepository(\App\Entity\User::class)->find($userId));
     }
 
     // ──────────────────────────────────────────────
@@ -581,7 +601,7 @@ class VolunteerManagerTest extends KernelTestCase
         $this->em->persist($vol);
 
         $user = $this->fixtures->createRawUser('vma_locked@test.com', 'password', false);
-        $user->setVolunteer($vol);
+        $user->setExternalId($vol->getExternalId());
         $user->setIsTrusted(true);
         $user->setLocked(true);
         $this->em->persist($user);

@@ -55,8 +55,8 @@
 
             <div class="card-text">
                 <div class="text-muted">
-                    {% if campaign.volunteer %}
-                        <p>{{ 'campaign.titles.created_by'|trans({'%name%': campaign.volunteer.displayName}) }}</p>
+                    {% if campaign.user %}
+                        <p>{{ 'campaign.titles.created_by'|trans({'%name%': campaign.user.displayName}) }}</p>
                     {% endif %}
 
                     {% if campaign.reportReady %}

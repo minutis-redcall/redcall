@@ -7,6 +7,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerAuditLog;
 use App\Enum\VolunteerAuditAction;
+use App\Repository\UserRepository;
 use App\Repository\VolunteerAuditLogRepository;
 use Doctrine\ORM\QueryBuilder;
 
@@ -25,9 +26,16 @@ class VolunteerAuditLogManager
      */
     private $volunteerAuditLogRepository;
 
-    public function __construct(VolunteerAuditLogRepository $volunteerAuditLogRepository)
+    /**
+     * @var UserRepository
+     */
+    private $userRepository;
+
+    public function __construct(VolunteerAuditLogRepository $volunteerAuditLogRepository,
+        UserRepository $userRepository)
     {
         $this->volunteerAuditLogRepository = $volunteerAuditLogRepository;
+        $this->userRepository              = $userRepository;
     }
 
     public function searchQueryBuilder(?string $criteria, bool $hideTechnical = false) : QueryBuilder
@@ -63,7 +71,7 @@ class VolunteerAuditLogManager
         }
         sort($badges);
 
-        $boundUser    = $volunteer->getUser();
+        $boundUser    = $this->userRepository->findOneTrustedByExternalId($volunteer->getExternalId());
         $lastSyncedAt = $volunteer->getLastSyncedAt();
 
         return [

@@ -107,12 +107,6 @@ class Volunteer implements LockableInterface
     private $structures;
 
     /**
-     * @var User
-     */
-    #[ORM\OneToOne(targetEntity: \App\Entity\User::class, mappedBy: 'volunteer')]
-    private $user;
-
-    /**
      * @var bool
      */
     #[ORM\Column(type: 'boolean', options: ['default' => 0])]
@@ -624,27 +618,6 @@ class Volunteer implements LockableInterface
         return $this->getDisplayName();
     }
 
-    public function getUser() : ?User
-    {
-        if ($this->user && $this->user->isTrusted()) {
-            return $this->user;
-        }
-
-        return null;
-    }
-
-    public function setUser(?User $user)
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function isUserEnabled() : bool
-    {
-        return $this->user && $this->user->isVerified() && $this->user->isTrusted();
-    }
-
     public function isPhoneNumberLocked() : ?bool
     {
         return $this->phoneNumberLocked;
@@ -675,7 +648,7 @@ class Volunteer implements LockableInterface
         $new = get_object_vars($this);
 
         foreach ($old as $key => $value) {
-            if (in_array($key, ['phones', 'email', 'structures', 'user', 'messages', 'badges', 'lists'], true)) {
+            if (in_array($key, ['phones', 'email', 'structures', 'messages', 'badges', 'lists'], true)) {
                 continue;
             }
 
@@ -735,16 +708,6 @@ class Volunteer implements LockableInterface
     public function getMessages() : Collection
     {
         return $this->messages;
-    }
-
-    #[Assert\Callback]
-    public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
-    {
-        if ($this->user && !$this->enabled) {
-            $context->buildViolation('form.volunteer.errors.redcall_user')
-                    ->atPath('enabled')
-                    ->addViolation();
-        }
     }
 
     public function clearPhones()
@@ -1007,9 +970,14 @@ class Volunteer implements LockableInterface
         }
     }
 
+    /**
+     * Whether messages to this volunteer must be prefixed with a structure
+     * shortcut. The "recipient is also a multi-structure RedCall operator"
+     * case is handled by the caller (MessageFormatter), which can resolve the
+     * matching User by external id — the Volunteer no longer holds that link.
+     */
     public function needsShortcutInMessages() : bool
     {
-        return $this->structures->count() > 1
-               || $this->user && $this->user->getStructures()->count() > 1;
+        return $this->structures->count() > 1;
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
+use App\Manager\UserManager;
+use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Provider\OAuth\GoogleConnect\GoogleConnectInterface;
 use App\Tools\Url;
@@ -26,6 +28,8 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
 {
     private GoogleConnectInterface $googleConnect;
     private VolunteerSessionManager $volunteerSessionManager;
+    private UserManager $userManager;
+    private VolunteerManager $volunteerManager;
     private RouterInterface $router;
     private LoggerInterface $logger;
 
@@ -34,11 +38,15 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
 
     public function __construct(GoogleConnectInterface $googleConnect,
         VolunteerSessionManager $volunteerSessionManager,
+        UserManager $userManager,
+        VolunteerManager $volunteerManager,
         RouterInterface $router,
         ?LoggerInterface $logger = null)
     {
         $this->googleConnect           = $googleConnect;
         $this->volunteerSessionManager = $volunteerSessionManager;
+        $this->userManager             = $userManager;
+        $this->volunteerManager        = $volunteerManager;
         $this->router                  = $router;
         $this->logger                  = $logger ?? new NullLogger();
     }
@@ -58,31 +66,36 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
 
     public function authenticate(Request $request): Passport
     {
-        $volunteer = $this->googleConnect->verify($request);
+        $oAuthUser = $this->googleConnect->verify($request);
 
-        if (null === $volunteer) {
-            $this->logger->warning('GoogleConnectAuthenticator: no volunteer matched from Google identity');
-
-            throw new BadCredentialsException();
-        }
-
-        if (!$volunteer->isEnabled()) {
-            $this->logger->warning('GoogleConnectAuthenticator: matched volunteer is disabled', [
-                'volunteer_id' => $volunteer->getId(),
-            ]);
+        if (null === $oAuthUser) {
+            $this->logger->warning('GoogleConnectAuthenticator: Google identity verification failed');
 
             throw new BadCredentialsException();
         }
 
-        $this->volunteer = $volunteer;
+        // The RedCall operator is keyed by email (username) — independent of any
+        // directory record, so pure-email / Annuaire users (no NIVOL) log in too.
+        $user = $this->userManager->findOneByUsername($oAuthUser->getEmail());
 
-        $user = $volunteer->getUser();
-        if (null === $user) {
-            $this->logger->warning('GoogleConnectAuthenticator: matched volunteer has no user account', [
-                'volunteer_id' => $volunteer->getId(),
+        if (null === $user || !$user->isTrusted()) {
+            $this->logger->info('GoogleConnectAuthenticator: no trusted RedCall user for this Google identity, falling back to personal space', [
+                'email' => $oAuthUser->getEmail(),
             ]);
 
+            // Keep a volunteer (matched by email) around so onAuthenticationFailure
+            // can offer the volunteer's personal space.
+            $this->volunteer = $this->volunteerManager->getVolunteerFromOauth($oAuthUser);
+
             throw new BadCredentialsException();
+        }
+
+        // Re-enable the matching directory record if it had been disabled.
+        if ($user->getExternalId()
+            && ($volunteer = $this->volunteerManager->findOneByExternalId($user->getExternalId()))
+            && !$volunteer->isEnabled()) {
+            $volunteer->setEnabled(true);
+            $this->volunteerManager->save($volunteer);
         }
 
         $this->logger->info('GoogleConnectAuthenticator: building passport', [

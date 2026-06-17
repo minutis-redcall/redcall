@@ -8,11 +8,11 @@
     {% if communication.canExpandBody %}
         <a href="#" class="sd-body-toggle show-complete-body" data-communication-id="{{ communication.id }}">&#x25BC; Show more</a>
     {% endif %}
-    {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
-        <div class="sd-comm-body-meta" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
+    {% if communication.user or is_granted('ROLE_ADMIN') %}
+        <div class="sd-comm-body-meta" {% if communication.user %}title="{{ communication.user.externalId }}"{% endif %}>
             {{ macros.communicationBy(communication) }}
 
-            {% if communication.volunteer and is_granted('ROLE_ADMIN') %}
+            {% if communication.user and is_granted('ROLE_ADMIN') %}
                 <span>/</span>
             {% endif %}
 

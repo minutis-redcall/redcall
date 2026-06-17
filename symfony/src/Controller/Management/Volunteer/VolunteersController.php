@@ -18,7 +18,9 @@ use App\Manager\CommunicationManager;
 use App\Manager\DeletedVolunteerManager;
 use App\Manager\MessageManager;
 use App\Manager\PhoneManager;
+use App\Manager\RedCallUserResolver;
 use App\Manager\StructureManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
 use App\Repository\VolunteerSyncSnapshotRepository;
@@ -105,6 +107,16 @@ class VolunteersController extends BaseController
 
     private VolunteerSyncSnapshotRepository $snapshotRepository;
 
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var RedCallUserResolver
+     */
+    private $redCallUserResolver;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         CampaignManager $campaignManager,
@@ -117,8 +129,12 @@ class VolunteersController extends BaseController
         Environment $templating,
         SimpleProcessor $simpleProcessor,
         DeletedVolunteerManager $deletedVolunteerManager,
-        VolunteerSyncSnapshotRepository $snapshotRepository)
+        VolunteerSyncSnapshotRepository $snapshotRepository,
+        UserManager $userManager,
+        RedCallUserResolver $redCallUserResolver)
     {
+        $this->userManager             = $userManager;
+        $this->redCallUserResolver     = $redCallUserResolver;
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
         $this->campaignManager         = $campaignManager;
@@ -132,6 +148,15 @@ class VolunteersController extends BaseController
         $this->simpleProcessor         = $simpleProcessor;
         $this->deletedVolunteerManager = $deletedVolunteerManager;
         $this->snapshotRepository      = $snapshotRepository;
+    }
+
+    /**
+     * The RedCall operator (trusted user) sharing this volunteer's NIVOL, if
+     * any. Replaces the old Volunteer::getUser() entity link.
+     */
+    private function getRedCallUser(Volunteer $volunteer) : ?\App\Entity\User
+    {
+        return $this->redCallUserResolver->resolve($volunteer);
     }
 
     #[Route(name: "list", path: "/{id}", requirements: ["id" => "\d+"], defaults: ["id" => null])]
@@ -164,9 +189,15 @@ class VolunteersController extends BaseController
             $queryBuilder = $this->volunteerManager->searchQueryBuilder($criteria, $hideDisabled, $filterUsers, $filterLocked);
         }
 
+        $pager = $this->paginationManager->getPager($queryBuilder);
+
+        // Warm the shared resolver cache for the whole page in one query so the
+        // per-card redcall_user()/redcall_user_enabled() calls don't N+1.
+        $this->redCallUserResolver->preload($pager->getCurrentPageResults());
+
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
-            'volunteers' => $this->paginationManager->getPager($queryBuilder),
+            'volunteers' => $pager,
             'structure'  => $structure,
         ]);
     }
@@ -356,7 +387,7 @@ class VolunteersController extends BaseController
         #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
         #[MapEntity(expr: "answerId ? repository.find(answerId) : null")] ?Answer $answer = null)
     {
-        if ($volunteer->getUser()) {
+        if ($this->getRedCallUser($volunteer)) {
             throw $this->createNotFoundException();
         }
 
@@ -400,7 +431,8 @@ class VolunteersController extends BaseController
     {
         $volunteer = $this->getVolunteerById(($request->attributes->get('id') ?? $request->query->get('id') ?? $request->request->get('id')));
 
-        if (!$volunteer->isUserEnabled()) {
+        $user = $this->getRedCallUser($volunteer);
+        if (!$user || !$user->isVerified()) {
             throw $this->createNotFoundException();
         }
 
@@ -409,7 +441,7 @@ class VolunteersController extends BaseController
                 '%name%' => $volunteer->getDisplayName(),
             ]),
             'body'  => $this->renderView('management/volunteers/user_structures.html.twig', [
-                'user' => $volunteer->getUser(),
+                'user' => $user,
             ]),
         ]);
     }
@@ -431,7 +463,7 @@ class VolunteersController extends BaseController
     #[Template("management/volunteers/volunteer.html.twig")]
     public function toggleEnable(Volunteer $volunteer, Csrf $token)
     {
-        if ($volunteer->getUser() && $volunteer->isEnabled()) {
+        if ($this->getRedCallUser($volunteer) && $volunteer->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
@@ -486,7 +518,7 @@ class VolunteersController extends BaseController
             /** @var Structure $structure */
             foreach ($structure->getVolunteers() as $structureVolunteer) {
                 /** @var Volunteer $volunteer */
-                if ($structureVolunteer->getUser()) {
+                if ($this->getRedCallUser($structureVolunteer)) {
                     $audience[] = $structureVolunteer->getId();
                 }
             }

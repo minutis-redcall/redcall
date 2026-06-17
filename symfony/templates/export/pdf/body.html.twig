@@ -8,12 +8,12 @@
             </div>
             <div style="margin-left:50px;">
                 <b>
-                    {% if campaign.volunteer %}
+                    {% if campaign.user %}
                         <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
-                            {{ campaign.volunteer.structures.get(0).name }}
-                            {% if campaign.volunteer.structures.count > 1 %}
+                            {{ campaign.user.structures.get(0).name }}
+                            {% if campaign.user.structures.count > 1 %}
                                 <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
-                                    {{ 'pdf_export.others'|trans({'%others%': campaign.volunteer.structures.count - 1}) }}
+                                    {{ 'pdf_export.others'|trans({'%others%': campaign.user.structures.count - 1}) }}
                                 </span>
                             {% endif %}
                         </span>

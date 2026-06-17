@@ -64,11 +64,11 @@ class CampaignVoter extends Voter
             return true;
         }
 
-        if ($campaign->getVolunteer() && $campaign->getVolunteer()->getUser()) {
+        if ($campaign->getUser()) {
             // A user has ownership of a campaign if he shares one structure with
-            // user who triggered the campaign.
+            // the operator who triggered the campaign.
             $isOwner = $me->hasCommonStructure(
-                $campaign->getVolunteer()->getUser()->getStructures()
+                $campaign->getUser()->getStructures()
             );
 
             if ($isOwner) {

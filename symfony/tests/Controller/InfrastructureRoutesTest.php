@@ -169,7 +169,7 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         $ownerVol  = $fixtures->createVolunteer($owner, 'VOL-EXP-OWN-'.uniqid(), 'eov-'.uniqid().'@test.com');
         $fixtures->assignVolunteerToStructure($ownerVol, $ownerStruct);
         $campaign      = $fixtures->createCampaign('Export Campaign-'.uniqid());
-        $campaign->setVolunteer($ownerVol);
+        $campaign->setUser($owner);
         $em = $container->get('doctrine.orm.entity_manager');
         $em->persist($campaign);
         $em->flush();

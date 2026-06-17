@@ -3,6 +3,7 @@
 namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Firebase\JWT\JWT;
@@ -31,6 +32,7 @@ use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface
 class MinutisAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
     private VolunteerManager $volunteerManager;
+    private UserManager $userManager;
     private VolunteerSessionManager $volunteerSessionManager;
     private RouterInterface $router;
     private LoggerInterface $logger;
@@ -41,6 +43,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
     private ?Volunteer $volunteer = null;
 
     public function __construct(VolunteerManager $volunteerManager,
+        UserManager $userManager,
         VolunteerSessionManager $volunteerSessionManager,
         RouterInterface $router,
         LoggerInterface $logger,
@@ -48,6 +51,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
         RequestStack $requestStack)
     {
         $this->volunteerManager        = $volunteerManager;
+        $this->userManager             = $userManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->router                  = $router;
         $this->logger                  = $logger;
@@ -127,7 +131,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
 
         $this->volunteer = $volunteer;
 
-        $user = $volunteer->getUser();
+        $user = $this->userManager->findOneTrustedByExternalId($externalId);
         if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
                 'external-id' => $externalId,

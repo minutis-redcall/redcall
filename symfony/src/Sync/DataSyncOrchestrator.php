@@ -3,6 +3,7 @@
 namespace App\Sync;
 
 use App\Entity\Structure;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
@@ -29,6 +30,7 @@ use App\Task\SyncStructuresChunkTask;
 use App\Task\SyncVolunteersChunkTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Query\Expr\Join;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Bridge\Doctrine\Middleware\Debug\DebugDataHolder;
@@ -714,7 +716,7 @@ class DataSyncOrchestrator
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(v.id)')
                             ->from(Volunteer::class, 'v')
-                            ->leftJoin('v.user', 'u')
+                            ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                             ->where('v.locked = :unlocked')
                             ->andWhere('v.enabled = :enabled')
                             ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :staleThreshold)')
@@ -733,7 +735,7 @@ class DataSyncOrchestrator
         $qb = $this->em->createQueryBuilder()
                        ->select('v')
                        ->from(Volunteer::class, 'v')
-                       ->leftJoin('v.user', 'u')
+                       ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                        ->where('v.locked = :unlocked')
                        ->andWhere('v.enabled = :enabled')
                        ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :staleThreshold)')
@@ -770,7 +772,7 @@ class DataSyncOrchestrator
         $countQb = $this->em->createQueryBuilder()
                             ->select('COUNT(DISTINCT v.id)')
                             ->from(Volunteer::class, 'v')
-                            ->leftJoin('v.user', 'u')
+                            ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                             ->leftJoin('v.badges', 'b')
                             ->where('u.id IS NOT NULL')
                             ->orWhere('b.name IN (:rtmrBadges)')
@@ -785,7 +787,7 @@ class DataSyncOrchestrator
         $qb = $this->em->createQueryBuilder()
                        ->select('DISTINCT v')
                        ->from(Volunteer::class, 'v')
-                       ->leftJoin('v.user', 'u')
+                       ->leftJoin(User::class, 'u', Join::WITH, 'u.externalId = v.externalId')
                        ->leftJoin('v.badges', 'b')
                        ->where('u.id IS NOT NULL')
                        ->orWhere('b.name IN (:rtmrBadges)')

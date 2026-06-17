@@ -91,12 +91,12 @@ class CampaignManager
 
     public function launchNewCampaign(CampaignModel $campaignModel,
         ?ProcessorInterface $processor = null,
-        ?Volunteer $volunteer = null) : ?CampaignEntity
+        ?User $author = null) : ?CampaignEntity
     {
-        if (!$volunteer && ($this->tokenStorage->getToken()->getUser() instanceof UserInterface)) {
-            $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
-            if (!$volunteer) {
-                return null;
+        if (!$author) {
+            $token = $this->tokenStorage->getToken();
+            if ($token && $token->getUser() instanceof UserInterface) {
+                $author = $token->getUser();
             }
         }
 
@@ -106,7 +106,7 @@ class CampaignManager
 
         $campaignEntity = new CampaignEntity();
         $campaignEntity
-            ->setVolunteer($volunteer)
+            ->setUser($author)
             ->setCode($code)
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
@@ -124,7 +124,7 @@ class CampaignManager
         if ($campaignModel->hasOperation) {
             if (CampaignModel::CREATE_OPERATION === $campaignModel->createOperation) {
                 $this->operationManager->createOperation($campaignModel, $campaignEntity);
-            } elseif ($this->operationManager->canBindOperation($volunteer, $campaignModel)) {
+            } elseif ($this->operationManager->canBindOperation($author, $campaignModel)) {
                 $this->operationManager->bindOperation($campaignModel, $campaignEntity);
             }
 
@@ -135,12 +135,12 @@ class CampaignManager
 
         $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 
-        if ($communication->getMessageCount() > 1 && $volunteer->getEmail()) {
+        if ($communication->getMessageCount() > 1 && $author && $author->getUserIdentifier()) {
             $locale  = 'fr';
             $url     = sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('synthesis_index', ['code' => $campaignEntity->getCode()]));
             $subject = $this->translator->trans('synthesis.email.subject', ['%label%' => $campaignEntity->getLabel()], null, $locale);
             $body    = $this->translator->trans('synthesis.email.content', ['%url%' => $url], null, $locale);
-            $this->mailManager->simple($volunteer->getEmail(), $subject, $body, $body, $locale);
+            $this->mailManager->simple($author->getUserIdentifier(), $subject, $body, $body, $locale);
         }
 
         return $campaignEntity;

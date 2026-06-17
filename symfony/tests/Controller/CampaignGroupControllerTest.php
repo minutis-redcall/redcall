@@ -47,7 +47,7 @@ class CampaignGroupControllerTest extends BaseWebTestCase
         $fixtures->assignVolunteerToStructure($volunteer, $structure);
 
         $campaign = $fixtures->createCampaign("Grp Campaign {$suffix}");
-        $campaign->setVolunteer($volunteer);
+        $campaign->setUser($user);
         $em = $container->get('doctrine.orm.entity_manager');
         $em->persist($campaign);
         $em->flush();

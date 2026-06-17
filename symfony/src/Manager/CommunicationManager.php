@@ -148,10 +148,9 @@ class CommunicationManager
 
         $processor->process($communication);
 
-        if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
-            $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
-        } elseif ($communication->getVolunteer()->getMainStructure()) {
-            $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
+        $author = $communication->getUser();
+        if ($author && $author->getMainStructure()) {
+            $structureName = $author->getMainStructure()->getDisplayName();
         } else {
             $structureName = '?';
         }
@@ -161,7 +160,7 @@ class CommunicationManager
                 sprintf(
                     'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s%s%s',
                     strtoupper($communication->getType()),
-                    $communication->getVolunteer()->getDisplayName(),
+                    $author ? $author->getDisplayName() : '?',
                     $structureName,
                     count($communication->getMessages()),
                     count($this->structureManager->getCampaignStructures($campaign)),
@@ -187,19 +186,16 @@ class CommunicationManager
 
     public function createCommunicationEntityFromTrigger(BaseTrigger $trigger) : Communication
     {
-        /** @var User|null $user */
-        if ($user = $this->security->getUser()) {
-            $id        = null;
-            $volunteer = $user->getVolunteer();
-        } else {
-            // Triggers ran through the Campaign::contact() method only contain 1 volunteer
-            $id        = $trigger->getAudience()['volunteers'][0];
-            $volunteer = $this->volunteerManager->find($id);
-        }
+        /** @var User|null $author */
+        $author = $this->security->getUser() instanceof User ? $this->security->getUser() : null;
+
+        // Triggers ran through the Campaign::contact() method have no logged-in
+        // operator and carry exactly one volunteer (the recipient).
+        $singleRecipientId = $author ? null : ($trigger->getAudience()['volunteers'][0] ?? null);
 
         $communication = new Communication();
         $communication
-            ->setVolunteer($volunteer)
+            ->setUser($author)
             ->setShortcut($trigger->getShortcut())
             ->setType($trigger->getType())
             ->setLanguage($trigger->getLanguage())
@@ -227,8 +223,8 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        if ($id) {
-            $volunteers = [$volunteer];
+        if ($singleRecipientId) {
+            $volunteers = [$this->volunteerManager->find($singleRecipientId)];
         } else {
             $classification = $this->audienceManager->classifyAudience($trigger->getAudience());
             $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());

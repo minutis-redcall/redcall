@@ -155,7 +155,7 @@ class CampaignVoterTest extends KernelTestCase
 
         // Campaign linked to creator's volunteer
         $campaign = $this->fixtures->createCampaign('Owner Campaign');
-        $campaign->setVolunteer($creatorSetup['volunteer']);
+        $campaign->setUser($creatorSetup['user']);
         $this->em()->persist($campaign);
         $this->em()->flush();
 
@@ -177,7 +177,7 @@ class CampaignVoterTest extends KernelTestCase
         );
 
         $campaign = $this->fixtures->createCampaign('Not Owner Campaign');
-        $campaign->setVolunteer($creatorSetup['volunteer']);
+        $campaign->setUser($creatorSetup['user']);
         $this->em()->persist($campaign);
         $this->em()->flush();
 
@@ -270,11 +270,9 @@ class CampaignVoterTest extends KernelTestCase
 
     public function testCampaignWithVolunteerButNoUserIsNotOwner(): void
     {
-        // A volunteer without a user account
-        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-NOUSER');
-
+        // A campaign with no author user (e.g. a system-triggered campaign).
         $campaign = $this->fixtures->createCampaign('No User Campaign');
-        $campaign->setVolunteer($volunteer);
+        $campaign->setUser(null);
         $this->em()->persist($campaign);
         $this->em()->flush();
 
@@ -284,8 +282,8 @@ class CampaignVoterTest extends KernelTestCase
 
         $token = $this->createToken($userSetup['user']);
 
-        // volunteer->getUser() returns null, so ownership check is skipped
-        // Falls through to campaign structures check (no messages, so no structures)
+        // No author, so the ownership check is skipped and it falls through to
+        // the campaign structures check (no messages, so no structures).
         $result = $this->voter->vote($token, $campaign, [CampaignVoter::OWNER]);
         $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
     }

@@ -74,9 +74,14 @@ class AudienceManager
         $classification = new Classification();
 
         if (true === ($data['test_on_me'] ?? false)) {
-            $classification->setReachable([
-                $this->security->getUser()->getVolunteer()->getId(),
-            ]);
+            // "Test on me" targets the volunteer record that shares the
+            // operator's NIVOL — there is no entity link anymore.
+            $me        = $this->security->getUser();
+            $volunteer = $me && $me->getExternalId()
+                ? $this->volunteerManager->findOneByExternalId($me->getExternalId())
+                : null;
+
+            $classification->setReachable($volunteer ? [$volunteer->getId()] : []);
 
             return $classification;
         }

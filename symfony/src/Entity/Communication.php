@@ -76,8 +76,13 @@ class Communication
     #[ORM\Column(type: 'boolean')]
     private $multipleAnswer = false;
 
-    #[ORM\ManyToOne(targetEntity: \App\Entity\Volunteer::class)]
-    private $volunteer;
+    /**
+     * The RedCall operator who triggered this communication. Nullable: a
+     * historical communication survives the deletion of its author.
+     */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\User::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private $user;
 
     #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private $shortcut;
@@ -518,14 +523,14 @@ class Communication
         return false;
     }
 
-    public function getVolunteer() : ?Volunteer
+    public function getUser() : ?User
     {
-        return $this->volunteer;
+        return $this->user;
     }
 
-    public function setVolunteer(?Volunteer $volunteer) : self
+    public function setUser(?User $user) : self
     {
-        $this->volunteer = $volunteer;
+        $this->user = $user;
 
         return $this;
     }

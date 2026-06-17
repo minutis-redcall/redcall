@@ -632,32 +632,8 @@ class VolunteerTest extends TestCase
         $this->assertSame('Jean-Pierre De La Fontaine', $displayName);
     }
 
-    // --- getUser ---
-
-    public function testGetUserReturnsUserWhenTrusted(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $user = $this->createUser('user@test.com', true);
-        $volunteer->setUser($user);
-
-        $this->assertSame($user, $volunteer->getUser());
-    }
-
-    public function testGetUserReturnsNullWhenNotTrusted(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $user = $this->createUser('user@test.com', false);
-        $volunteer->setUser($user);
-
-        $this->assertNull($volunteer->getUser());
-    }
-
-    public function testGetUserReturnsNullWhenNoUser(): void
-    {
-        $volunteer = $this->createVolunteer();
-
-        $this->assertNull($volunteer->getUser());
-    }
+    // (getUser/setUser removed: User and Volunteer are no longer linked —
+    // resolution by shared NIVOL now lives in RedCallUserResolver / UserManager.)
 
     // --- shouldBeLocked ---
 
@@ -747,51 +723,8 @@ class VolunteerTest extends TestCase
         $this->assertSame('ab@test.com', $hidden);
     }
 
-    // --- doNotDisableRedCallUsers ---
-
-    public function testDoNotDisableRedCallUsersAddsViolationWhenUserExistsAndDisabled(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $volunteer->setEnabled(false);
-        $user = $this->createUser();
-        $volunteer->setUser($user);
-
-        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
-        $violationBuilder->method('atPath')->willReturn($violationBuilder);
-        $violationBuilder->expects($this->once())->method('addViolation');
-
-        $context = $this->createMock(ExecutionContextInterface::class);
-        $context->expects($this->once())
-                ->method('buildViolation')
-                ->with('form.volunteer.errors.redcall_user')
-                ->willReturn($violationBuilder);
-
-        $volunteer->doNotDisableRedCallUsers($context, null);
-    }
-
-    public function testDoNotDisableRedCallUsersNoViolationWhenNoUser(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $volunteer->setEnabled(false);
-
-        $context = $this->createMock(ExecutionContextInterface::class);
-        $context->expects($this->never())->method('buildViolation');
-
-        $volunteer->doNotDisableRedCallUsers($context, null);
-    }
-
-    public function testDoNotDisableRedCallUsersNoViolationWhenEnabled(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $volunteer->setEnabled(true);
-        $user = $this->createUser();
-        $volunteer->setUser($user);
-
-        $context = $this->createMock(ExecutionContextInterface::class);
-        $context->expects($this->never())->method('buildViolation');
-
-        $volunteer->doNotDisableRedCallUsers($context, null);
-    }
+    // (doNotDisableRedCallUsers removed: disabling a volunteer no longer
+    // affects an operator account, so the validation constraint is obsolete.)
 
     // --- removeBadge ---
 
@@ -1210,20 +1143,6 @@ class VolunteerTest extends TestCase
         $structureB = $this->createStructure('B', 'EXT-B');
         $volunteer->addStructure($structureA);
         $volunteer->addStructure($structureB);
-
-        $this->assertTrue($volunteer->needsShortcutInMessages());
-    }
-
-    public function testNeedsShortcutInMessagesTrueWhenUserHasMultipleStructures(): void
-    {
-        $volunteer = $this->createVolunteer();
-        $structureA = $this->createStructure('A', 'EXT-A');
-        $volunteer->addStructure($structureA);
-
-        $user = $this->createUser();
-        $user->addStructure($structureA);
-        $user->addStructure($this->createStructure('B', 'EXT-B'));
-        $volunteer->setUser($user);
 
         $this->assertTrue($volunteer->needsShortcutInMessages());
     }

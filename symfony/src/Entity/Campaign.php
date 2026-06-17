@@ -91,8 +91,13 @@ class Campaign
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $notesUpdatedAt;
 
-    #[ORM\ManyToOne(targetEntity: Volunteer::class)]
-    private $volunteer;
+    /**
+     * The RedCall operator who launched this campaign. Nullable: a historical
+     * campaign survives the deletion of its author (FK is ON DELETE SET NULL).
+     */
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    private $user;
 
     #[ORM\Column(type: 'datetime')]
     private $expiresAt;
@@ -347,14 +352,14 @@ class Campaign
         return $this;
     }
 
-    public function getVolunteer() : ?Volunteer
+    public function getUser() : ?User
     {
-        return $this->volunteer;
+        return $this->user;
     }
 
-    public function setVolunteer(?Volunteer $volunteer) : self
+    public function setUser(?User $user) : self
     {
-        $this->volunteer = $volunteer;
+        $this->user = $user;
 
         return $this;
     }

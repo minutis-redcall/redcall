@@ -93,7 +93,7 @@ class CampaignController extends BaseController
     {
         $user = $this->getUser();
 
-        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
+        if (!$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 

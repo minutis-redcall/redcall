@@ -423,23 +423,17 @@
                     <div class="peer-grid">
                         {% for user in peers %}
                             <div class="peer-card">
-                                {% if user.volunteer %}
+                                {% if user.firstName or user.lastName %}
                                     <span class="peer-avatar">
-                                        {% if user.volunteer.firstName or user.volunteer.lastName %}
-                                            {{ user.volunteer.firstName|first|upper }}{{ user.volunteer.lastName|first|upper }}
-                                        {% else %}
-                                            !
-                                        {% endif %}
+                                        {{ user.firstName|first|upper }}{{ user.lastName|first|upper }}
                                     </span>
                                     <div class="peer-meta">
-                                        <div class="peer-name {% if not user.volunteer.firstName and not user.volunteer.lastName %}is-warn{% endif %}">
-                                            {% if user.volunteer.firstName or user.volunteer.lastName %}
-                                                {{ user.volunteer.firstName }} {{ user.volunteer.lastName }}
-                                            {% else %}
-                                                {{ user.username }}
-                                            {% endif %}
+                                        <div class="peer-name">
+                                            {{ user.firstName }} {{ user.lastName }}
                                         </div>
-                                        <div class="peer-id">{{ 'management.external_id_label'|trans({'%external_id%': user.volunteer.externalId}) }}</div>
+                                        {% if user.externalId %}
+                                            <div class="peer-id">{{ 'management.external_id_label'|trans({'%external_id%': user.externalId}) }}</div>
+                                        {% endif %}
                                     </div>
                                 {% else %}
                                     <span class="peer-avatar is-warn">!</span>

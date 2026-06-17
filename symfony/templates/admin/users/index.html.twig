@@ -110,10 +110,11 @@
                                 {% endif %}
                             </div>
 
-                            {% if user.volunteer %}
+                            {% set bound_volunteer = volunteer_of(user) %}
+                            {% if bound_volunteer %}
                                 <div class="mb-3">
-                                    <a href="{{ path('management_volunteers_manual_update', {'id': user.volunteer.id}) }}" target="_blank" class="badge badge-light p-2">
-                                        <i class="fas fa-link mr-1"></i>{{ 'admin.users.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
+                                    <a href="{{ path('management_volunteers_manual_update', {'id': bound_volunteer.id}) }}" target="_blank" class="badge badge-light p-2">
+                                        <i class="fas fa-link mr-1"></i>{{ 'admin.users.bound_volunteer'|trans({'%name%': bound_volunteer.displayName}) }}
                                     </a>
                                 </div>
                             {% endif %}

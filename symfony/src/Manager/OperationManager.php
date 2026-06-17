@@ -8,6 +8,7 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Operation;
 use App\Entity\Structure;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Form\Model\Campaign as CampaignModel;
@@ -65,9 +66,9 @@ class OperationManager
         $this->saveCampaignOperation($campaignEntity, $id);
     }
 
-    public function canBindOperation(Volunteer $volunteer, CampaignModel $campaignModel) : bool
+    public function canBindOperation(?User $user, CampaignModel $campaignModel) : bool
     {
-        if (!($user = $volunteer->getUser())) {
+        if (!$user) {
             return false;
         }
 
