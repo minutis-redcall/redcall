@@ -167,6 +167,29 @@ class CommunicationTest extends TestCase
 
     // ---- addMessage ----
 
+    // ---- getCampaign ----
+
+    // A freshly built communication (before it is linked to a campaign) must
+    // return null rather than raising a TypeError. During campaign creation
+    // the communication's messages can be flushed before the campaign
+    // association is set, and the Doctrine event subscriber relies on this
+    // getter being nullable to skip tracking in that transient state.
+    public function testGetCampaignReturnsNullWhenNotLinked(): void
+    {
+        $comm = $this->createCommunication();
+
+        $this->assertNull($comm->getCampaign());
+    }
+
+    public function testGetCampaignReturnsLinkedCampaign(): void
+    {
+        $comm     = $this->createCommunication();
+        $campaign = new Campaign();
+        $comm->setCampaign($campaign);
+
+        $this->assertSame($campaign, $comm->getCampaign());
+    }
+
     public function testAddMessageAddsAndSetsCommunication(): void
     {
         $comm = $this->createCommunication();

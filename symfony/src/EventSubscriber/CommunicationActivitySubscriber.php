@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Answer;
+use App\Entity\Communication;
 use App\Entity\Cost;
 use App\Entity\Message;
 use Doctrine\ORM\Event\PostFlushEventArgs;
@@ -51,15 +52,26 @@ class CommunicationActivitySubscriber
     public function onChange($entity)
     {
         if ($entity instanceof Message) {
-            $entity->getCommunication()->setReport(null);
-            $this->trackCampaign($entity->getCommunication()->getCampaign()->getId());
+            $this->onCommunicationChange($entity->getCommunication());
         }
 
         if ($entity instanceof Answer || $entity instanceof Cost) {
             if ($entity->getMessage()) {
-                $entity->getMessage()->getCommunication()->setReport(null);
-                $this->trackCampaign($entity->getMessage()->getCommunication()->getCampaign()->getId());
+                $this->onCommunicationChange($entity->getMessage()->getCommunication());
             }
+        }
+    }
+
+    private function onCommunicationChange(Communication $communication)
+    {
+        $communication->setReport(null);
+
+        // During campaign creation, messages can be flushed before their
+        // communication is linked to a campaign. In that transient state there
+        // is nothing to track yet.
+        $campaign = $communication->getCampaign();
+        if ($campaign) {
+            $this->trackCampaign($campaign->getId());
         }
     }
 

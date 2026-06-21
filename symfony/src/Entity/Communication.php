@@ -136,9 +136,9 @@ class Communication
     }
 
     /**
-     * @return Campaign
+     * @return Campaign|null
      */
-    public function getCampaign() : Campaign
+    public function getCampaign() : ?Campaign
     {
         return $this->campaign;
     }

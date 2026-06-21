@@ -96,12 +96,25 @@ class Minutis implements MinutisProvider
     {
         $nivol = str_pad($volunteerExternalId, 12, '0', STR_PAD_LEFT);
 
-        $response = $this->getClient()->get('/api/ressource', $this->populateAuthentication([
-            'query' => [
-                'type'       => 'benevole',
-                'externalId' => trim($nivol, '0'),
-            ],
-        ]));
+        try {
+            $response = $this->getClient()->get('/api/ressource', $this->populateAuthentication([
+                'query' => [
+                    'type'       => 'benevole',
+                    'externalId' => trim($nivol, '0'),
+                ],
+            ]));
+        } catch (ClientException|ServerException $exception) {
+            // A 403/404 (or any error response) means we cannot resolve the
+            // volunteer in Minutis. Degrade gracefully like an empty result
+            // instead of crashing the whole campaign creation.
+            $this->logger->error(sprintf(
+                'Cannot find volunteer with external id "%s" in Minutis (HTTP %d)',
+                $nivol,
+                $exception->getResponse()->getStatusCode()
+            ));
+
+            return null;
+        }
 
         $result = json_decode($response->getBody()->getContents(), true)['entities'];
 
