@@ -32,7 +32,12 @@ if ($debug) {
 }
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
-    Request::setTrustedProxies(explode(',', $trustedProxies), Request::HEADER_X_FORWARDED_ALL ^ Request::HEADER_X_FORWARDED_HOST);
+    // Trust every X-Forwarded-* header except Host (HEADER_X_FORWARDED_ALL was
+    // removed from Symfony; this is its equivalent minus the Host header).
+    Request::setTrustedProxies(
+        explode(',', $trustedProxies),
+        Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PREFIX
+    );
 }
 
 if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
