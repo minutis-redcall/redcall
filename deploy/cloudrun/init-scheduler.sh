@@ -28,14 +28,14 @@ esac
 GCLOUD=(gcloud --project="$GCP_PROJECT" --account="$GCP_ACCOUNT")
 INVOKER_SA="cron-invoker@$GCP_PROJECT.iam.gserviceaccount.com"
 
-SERVICE_URL="$("${GCLOUD[@]}" run services describe "$SERVICE" --region="$REGION" --format='value(status.url)')"
+SERVICE_URL="$("${GCLOUD[@]}" run services describe "$SERVICE" --region="$REGION" --format='value(status.url)' 2>/dev/null || true)"
 if [[ -z "$SERVICE_URL" ]]; then
   error "Cloud Run service '$SERVICE' not found; deploy it first."
   exit 1
 fi
 
 # The OIDC token audience must equal WEBSITE_URL: CronTokenVerifier pins it.
-AUDIENCE="$(grep '^WEBSITE_URL=' "$DEPLOY_DIR/$ENV/dotenv" | cut -d= -f2-)"
+AUDIENCE="$(grep -m1 '^WEBSITE_URL=' "$DEPLOY_DIR/$ENV/dotenv" 2>/dev/null | cut -d= -f2- | tr -d '\r' | sed -e "s/^['\"]//" -e "s/['\"]\$//" || true)"
 if [[ -z "$AUDIENCE" ]]; then
   error "WEBSITE_URL not found in $DEPLOY_DIR/$ENV/dotenv"
   exit 1
