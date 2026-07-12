@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Security\CronTokenVerifier;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
 
@@ -73,6 +74,78 @@ class InfrastructureRoutesTest extends BaseWebTestCase
             [302, 403],
             sprintf('Expected 302 or 403 for a cron call from a non-whitelisted IP; got %d', $status)
         );
+    }
+
+    public function testCronRejectsSpoofedAppEngineHeaderOffGae(): void
+    {
+        // Off App Engine (GAE_SERVICE not set), the X-Appengine-Cron header
+        // is client-controlled and must NOT grant access.
+        $client = static::createClient();
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'          => '203.0.113.5',
+            'HTTP_X_APPENGINE_CRON' => 'true',
+        ]);
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains($status, [302, 403], sprintf(
+            'Expected 302 or 403 for a spoofed GAE cron header off GAE; got %d', $status
+        ));
+    }
+
+    public function testCronAcceptsAppEngineHeaderOnGae(): void
+    {
+        // On App Engine (GAE_SERVICE set by the platform), the header is
+        // stripped from external traffic and can be trusted.
+        putenv('GAE_SERVICE=default');
+
+        try {
+            $client = static::createClient();
+
+            $client->request('GET', '/cron/user-cron', [], [], [
+                'REMOTE_ADDR'          => '203.0.113.5',
+                'HTTP_X_APPENGINE_CRON' => 'true',
+            ]);
+
+            $this->assertResponseIsSuccessful();
+        } finally {
+            putenv('GAE_SERVICE');
+        }
+    }
+
+    public function testCronAcceptsValidCloudSchedulerOidcToken(): void
+    {
+        $client = static::createClient();
+
+        $verifier = $this->createMock(CronTokenVerifier::class);
+        $verifier->expects($this->once())->method('verify')->with('valid-token')->willReturn(true);
+        $client->getContainer()->set(CronTokenVerifier::class, $verifier);
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'        => '203.0.113.5',
+            'HTTP_AUTHORIZATION' => 'Bearer valid-token',
+        ]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testCronRejectsInvalidOidcToken(): void
+    {
+        $client = static::createClient();
+
+        $verifier = $this->createStub(CronTokenVerifier::class);
+        $verifier->method('verify')->willReturn(false);
+        $client->getContainer()->set(CronTokenVerifier::class, $verifier);
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'        => '203.0.113.5',
+            'HTTP_AUTHORIZATION' => 'Bearer forged-token',
+        ]);
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains($status, [302, 403], sprintf(
+            'Expected 302 or 403 for an invalid OIDC token; got %d', $status
+        ));
     }
 
     // ──────────────────────────────────────────────

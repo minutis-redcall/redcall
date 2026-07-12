@@ -7,6 +7,9 @@ services:
     arguments: [ '@doctrine' ]
     public: true
 
+  App\Security\CronTokenVerifier:
+    public: true
+
   App\Provider\Minutis\MinutisProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeMinutisProvider'
     arguments:
