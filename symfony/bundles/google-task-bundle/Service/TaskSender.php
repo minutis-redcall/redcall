@@ -56,7 +56,7 @@ class TaskSender
         }
 
         if (null === $process) {
-            $process = Process::APP_ENGINE();
+            $process = $this->getDefaultProcess();
         }
 
         $payload = json_encode([
@@ -77,6 +77,17 @@ class TaskSender
         $this->getClient()->createTask(
             CreateTaskRequest::build($this->getQueueName($name), $cloudTask)
         );
+    }
+
+    public function getDefaultProcess() : Process
+    {
+        // On Cloud Run, tasks must use HTTP targets; App Engine targets
+        // only work when the app runs on GAE.
+        if ('http' === getenv('GOOGLE_TASK_PROCESS')) {
+            return Process::HTTP();
+        }
+
+        return Process::APP_ENGINE();
     }
 
     private function createAppEngineTask(string $payload) : Task

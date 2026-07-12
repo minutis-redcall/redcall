@@ -93,3 +93,6 @@ GOOGLE_SHEETS_ANNUAIRE_NATIONAL_ID=xxx
 GOOGLE_SHEETS_ANNUAIRE_DROITS_ID=xxx
 
 ANNUAIRE_NATIONAL_MAIL_ALERTING='foo@bar.baz;test@example.com'
+
+# Cloud Tasks target type: 'app_engine' (default, GAE deployments) or 'http' (Cloud Run deployments)
+GOOGLE_TASK_PROCESS=http
