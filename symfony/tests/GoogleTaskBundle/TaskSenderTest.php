@@ -41,9 +41,9 @@ class TaskSenderTest extends TestCase
     private function createSender() : TaskSender
     {
         return new TaskSender(
-            $this->createMock(RouterInterface::class),
-            $this->createMock(KernelInterface::class),
-            $this->createMock(TaskBag::class)
+            $this->createStub(RouterInterface::class),
+            $this->createStub(KernelInterface::class),
+            $this->createStub(TaskBag::class)
         );
     }
 }
