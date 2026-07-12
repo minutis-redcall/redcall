@@ -92,10 +92,13 @@ RUN chmod +x /entrypoint.sh
 ENV TMPDIR=/app/tmp
 RUN mkdir -p /app/tmp
 
-# Build-time template generation + container/cache warmup (uses the baked .env)
+# Build-time template generation + container/cache warmup (uses the baked .env).
+# php-fpm workers run as www-data and must be able to write under TMPDIR
+# (logs, sessions dir, google-cloud batch runtime) — hand the warmed tree over.
 RUN php bin/console generate:mjml templates/message/email.html.twig.mjml \
  && php bin/console generate:mjml templates/message/image.html.twig.mjml \
- && php bin/console cache:warmup --env=prod
+ && php bin/console cache:warmup --env=prod \
+ && chown -R www-data:www-data /app/tmp
 
 EXPOSE 8080
 ENTRYPOINT ["/entrypoint.sh"]
