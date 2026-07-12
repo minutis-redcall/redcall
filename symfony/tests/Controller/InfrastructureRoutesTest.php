@@ -131,6 +131,39 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         );
     }
 
+    public function testTaskWebhookAcceptsCloudTasksQueueHeader(): void
+    {
+        $client = static::createClient();
+
+        // A Cloud Tasks HTTP-target request carries X-CloudTasks-QueueName
+        // instead of X-Appengine-QueueName. With the header present the
+        // origin check must pass; the empty body then yields 404 (no
+        // WebhookRequest payload), NOT 403.
+        $client->request('POST', '/task/webhook', [], [], [
+            'HTTP_X_CLOUDTASKS_QUEUENAME' => 'webhook-sms-responses',
+        ], json_encode([]));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testTaskWebhookRejectsRequestWithoutAnyQueueHeader(): void
+    {
+        $client = static::createClient();
+
+        // Missing both X-Appengine-QueueName and X-CloudTasks-QueueName
+        // headers; the origin check must fail. The firewall may intercept
+        // before the controller's exception throw. Accept either 302 (firewall
+        // redirect) or 403 (controller exception).
+        $client->request('POST', '/task/webhook', [], [], [], json_encode([]));
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains(
+            $status,
+            [302, 403],
+            sprintf('Expected 302 (firewall) or 403 (controller) for /task/webhook without queue header; got %d', $status)
+        );
+    }
+
     // ──────────────────────────────────────────────
     // /google-connect, /google-verify
     // ──────────────────────────────────────────────
