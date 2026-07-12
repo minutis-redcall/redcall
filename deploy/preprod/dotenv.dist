@@ -97,3 +97,6 @@ GOOGLE_TASK_PROCESS=http
 
 # Service account Cloud Scheduler uses to invoke /cron/* (OIDC); token audience must be WEBSITE_URL
 CRON_INVOKER_SA=cron-invoker@your-project.iam.gserviceaccount.com
+
+# Cloud Run sits behind Google's HTTPS front end; trust X-Forwarded-* from the direct peer
+TRUSTED_PROXIES=REMOTE_ADDR
