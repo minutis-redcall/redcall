@@ -73,7 +73,7 @@ One-time (idempotent) creation of 9 Cloud Scheduler jobs mirroring `cron.yaml`:
 | Job | Path | Schedule |
 |-----|------|----------|
 | twilio-price | /cron/twilio-price | `0 * * * *` |
-| report-communication | /cron/report-communication | `0 * * * *` |
+| report-communication | /cron/report-communication | `30 * * * *` |
 | user-cron | /cron/user-cron | daily |
 | clear-campaign | /cron/clear-campaign | daily |
 | clear-media | /cron/clear-media | daily |

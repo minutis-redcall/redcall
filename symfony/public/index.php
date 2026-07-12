@@ -32,11 +32,12 @@ if ($debug) {
 }
 
 if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
-    // Trust every X-Forwarded-* header except Host (HEADER_X_FORWARDED_ALL was
-    // removed from Symfony; this is its equivalent minus the Host header).
+    // HEADER_X_FORWARDED_ALL (FOR|HOST|PROTO|PORT) was removed from Symfony;
+    // this is its equivalent minus Host. Do not add PREFIX: Google's front
+    // end does not strip a client-supplied X-Forwarded-Prefix.
     Request::setTrustedProxies(
         explode(',', $trustedProxies),
-        Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO | Request::HEADER_X_FORWARDED_PREFIX
+        Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO
     );
 }
 
