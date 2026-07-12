@@ -1,0 +1,23 @@
+{
+    auto_https off
+    admin off
+}
+
+:{$PORT:8080} {
+    root * /app/symfony/public
+
+    encode zstd gzip
+
+    # Mirrors the App Engine static handlers (/build, /bundles, images) with 1d expiration
+    @static path /build/* /bundles/* *.ico *.txt *.gif *.png *.jpg
+    header @static Cache-Control "public, max-age=86400"
+
+    php_fastcgi 127.0.0.1:9000
+
+    file_server
+
+    log {
+        output stdout
+        format json
+    }
+}
