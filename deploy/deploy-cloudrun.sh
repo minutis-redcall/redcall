@@ -77,11 +77,17 @@ log "Building $IMAGE with Cloud Build..."
 
 # ─── Deploy to Cloud Run ──────────────────────────────────────────────────────
 
+# Cloud Scheduler's OIDC tokens carry WEBSITE_URL as audience (that is what
+# CronTokenVerifier pins); the service must accept it as a custom audience,
+# otherwise Cloud Run's IAM layer rejects the calls with 401 before the app.
+WEBSITE_URL="$(grep -m1 '^WEBSITE_URL=' "$SCRIPT_DIR/$ENV/dotenv" | cut -d= -f2- | tr -d '\r' | sed -e "s/^['\"]//" -e "s/['\"]\$//")"
+
 log "Deploying $SERVICE to Cloud Run ($GCP_PROJECT)..."
 "${GCLOUD[@]}" run deploy "$SERVICE" \
   --image="$IMAGE" \
   --region="$REGION" \
   --platform=managed \
+  --add-custom-audiences="$WEBSITE_URL" \
   --vpc-connector="$VPC_CONNECTOR" \
   --concurrency=10 \
   --min-instances=0 \
