@@ -58,9 +58,21 @@ if ! "${GCLOUD[@]}" artifacts repositories describe "$AR_REPO" --location="$REGI
     --location="$REGION" --repository-format=docker
 fi
 
+# The Red Cross org policy (constraints/gcp.resourceLocations) only allows EU
+# resources: the build must run in-region and stage sources in an EU bucket
+# (gcloud's defaults for both are US and get rejected with HTTP 412).
+STAGING_BUCKET="$GCP_PROJECT-cloudbuild-source"
+if ! "${GCLOUD[@]}" storage buckets describe "gs://$STAGING_BUCKET" &>/dev/null; then
+  log "Creating Cloud Build staging bucket gs://$STAGING_BUCKET..."
+  "${GCLOUD[@]}" storage buckets create "gs://$STAGING_BUCKET" \
+    --location="$REGION" --uniform-bucket-level-access
+fi
+
 log "Building $IMAGE with Cloud Build..."
 "${GCLOUD[@]}" builds submit "$ROOT_DIR" \
+  --region="$REGION" \
   --config="$SCRIPT_DIR/cloudrun/cloudbuild.yaml" \
+  --gcs-source-staging-dir="gs://$STAGING_BUCKET/source" \
   --substitutions="_ENV=$ENV,_IMAGE=$IMAGE"
 
 # ─── Deploy to Cloud Run ──────────────────────────────────────────────────────
