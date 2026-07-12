@@ -13,7 +13,7 @@ class VolunteerSyncSnapshotWriterTest extends TestCase
 {
     private function makeDeadlock() : DeadlockException
     {
-        $driverException = $this->createMock(DriverException::class);
+        $driverException = $this->createStub(DriverException::class);
 
         return new DeadlockException($driverException, new Query('', [], []));
     }

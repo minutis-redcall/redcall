@@ -3,5 +3,9 @@ framework:
   form:
     enabled: true
     csrf_protection: false
+  validation:
+    # Tests must not call the haveibeenpwned API: the check is non-deterministic
+    # (leaked test passwords start failing) and needs network access.
+    not_compromised_password: false
   session:
     storage_factory_id: session.storage.factory.mock_file
