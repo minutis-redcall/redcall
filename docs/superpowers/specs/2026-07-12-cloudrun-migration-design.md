@@ -89,16 +89,19 @@ Cloud Tasks queues (targeting is per-task), GCS buckets, Cloud SQL, Twilio/Sendg
 
 ## 4. Rollout & verification
 
+Preprod state: GAE and Cloud SQL in `redcall-dev` are currently **stopped**. Preprod URL is `https://dev.redcall.minutis.croix-rouge.fr/`. The user has authorized removing the App Engine deployment in `redcall-dev` entirely (delete versions/services + GAE domain mapping, disable the app — a GAE application cannot be fully deleted without deleting the project, which stays: it hosts Cloud SQL, buckets, and Task queues).
+
 1. **Local:** `docker build` the image, run against the dev MySQL container with a dev dotenv, smoke-test: homepage 200, login page renders, `/build` statics served with cache headers, a cron endpoint 403s without credentials.
-2. **Preprod deploy** (`redcall-dev`): deploy script end-to-end; verify on the `run.app` URL: pages load, DB reachable via connector, fire a real Cloud Task (HTTP target) and see it execute, `gcloud scheduler jobs run` one job and confirm 200 + effect.
-3. GAE preprod keeps running in parallel; nothing is deleted or reconfigured on the GAE side.
-4. `make test` passes (full suite) with the code changes.
+2. **Preprod deploy** (`redcall-dev`): start the Cloud SQL instance, run the deploy script end-to-end; verify on the `run.app` URL: pages load, DB reachable via connector, fire a real Cloud Task (HTTP target) and see it execute, `gcloud scheduler jobs run` one job and confirm 200 + effect.
+3. **Preprod domain:** move `dev.redcall.minutis.croix-rouge.fr` to the Cloud Run service. Both GAE custom domains and Cloud Run domain mappings resolve via `ghs.googlehosted.com`, so if preprod DNS already CNAMEs there, deleting the GAE domain mapping and creating the Cloud Run one needs no croix-rouge.fr DNS change; otherwise flag the required DNS record to the user.
+4. **GAE cleanup (preprod only):** delete GAE versions/services and disable the App Engine app in `redcall-dev`.
+5. `make test` passes (full suite) with the code changes.
 
 ## 5. Production cutover (runbook only — NOT executed)
 
 1. Deploy prod image to Cloud Run in `redcall-prod-260921`; smoke-test on `run.app` URL.
 2. Create prod Scheduler jobs **paused**; set `GOOGLE_TASK_PROCESS=http` only in the Cloud Run dotenv.
-3. Point `redcall.fr` at Cloud Run (domain mapping or LB). External callers (Twilio webhooks, Minutis SSO, Google OAuth redirect URIs) follow the domain — verify OAuth authorized redirect URIs and Twilio webhook URLs reference the domain, not `appspot.com`.
+3. Point the production domain (`redcall.minutis.croix-rouge.fr` / whatever `WEBSITE_URL` is in `deploy/prod/dotenv`) at Cloud Run (domain mapping or LB). External callers (Twilio webhooks, Minutis SSO, Google OAuth redirect URIs) follow the domain — verify OAuth authorized redirect URIs and Twilio webhook URLs reference the domain, not `appspot.com`.
 4. Resume Scheduler jobs; pause GAE cron (`cron.yaml` emptied or GAE stopped).
 5. Rollback = DNS/domain mapping back to GAE (kept warm until confidence).
 6. Later cleanup: disable GAE app, move secrets to Secret Manager.
