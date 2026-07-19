@@ -82,7 +82,13 @@ class VolunteerImporter
         $this->updateStructures($volunteer, $row);
 
         if ($volunteer->isLocked()) {
+            // Badges are DSI-owned referential data, so they must follow the
+            // daily files even on locked volunteers — the lock only protects
+            // contact info and the enabled flag. (2026-07-19 incident: locked
+            // volunteers kept badges whose external ids had been renumbered
+            // upstream and no longer meant the same thing.)
             $volunteer->addReport('import_report.update_locked');
+            $volunteer->setExternalBadges($this->buildBadges($row));
             $volunteer->removeExpiredBadges();
             $this->volunteerManager->save($volunteer);
             $this->refreshBoundUserIdentity($volunteer);

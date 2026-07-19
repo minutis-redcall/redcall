@@ -24,6 +24,21 @@ use Doctrine\DBAL\Connection;
  */
 class BadgeFactory
 {
+    /**
+     * bulkUpsert() aborts when it would rename more than this share of the
+     * existing badges it touches: a legitimate run tweaks a few labels, while
+     * a massive rename means the upstream referential was renumbered and
+     * every existing badge row would silently change meaning while keeping
+     * its RedCall config (2026-07-19 incident).
+     */
+    public const MAX_RENAME_RATIO = 0.10;
+
+    /**
+     * Below this many existing rows the ratio is meaningless (a 2-badge
+     * sandbox run renaming 1 badge is not an incident).
+     */
+    private const RENAME_GUARD_MIN_EXISTING = 10;
+
     private BadgeManager $badgeManager;
     private Connection $conn;
 
@@ -67,12 +82,19 @@ class BadgeFactory
      * label tweaks in the DSI reference data propagate, and expirations
      * advance as new training rows arrive.
      *
+     * Set $allowMassRename to true only when an upstream referential change
+     * is expected and has been reconciled (see the rename guard above).
+     *
      * @param array<int,array{externalId:string,name:string,description:string,expiresAt:?\DateTimeImmutable}> $items
      */
-    public function bulkUpsert(array $items) : void
+    public function bulkUpsert(array $items, bool $allowMassRename = false) : void
     {
         if (!$items) {
             return;
+        }
+
+        if (!$allowMassRename) {
+            $this->guardAgainstMassRename($items);
         }
 
         // Chunk into reasonable batch sizes — MySQL has a max_allowed_packet
@@ -101,5 +123,52 @@ class BadgeFactory
 
             $this->conn->executeStatement($sql, $params);
         }
+    }
+
+    /**
+     * @param array<int,array{externalId:string,name:string,description:string,expiresAt:?\DateTimeImmutable}> $items
+     */
+    private function guardAgainstMassRename(array $items) : void
+    {
+        $incoming = [];
+        foreach ($items as $item) {
+            $incoming[$item['externalId']] = substr($item['name'], 0, 64);
+        }
+
+        $renamed  = [];
+        $existing = 0;
+        foreach (array_chunk(array_keys($incoming), 500) as $chunk) {
+            $rows = $this->conn->fetchAllAssociative(
+                'SELECT external_id, name FROM badge WHERE external_id IN (?)',
+                [$chunk],
+                [\Doctrine\DBAL\ArrayParameterType::STRING]
+            );
+            foreach ($rows as $row) {
+                $existing++;
+                if ($row['name'] !== $incoming[$row['external_id']]) {
+                    $renamed[] = sprintf('%s: "%s" -> "%s"', $row['external_id'], $row['name'], $incoming[$row['external_id']]);
+                }
+            }
+        }
+
+        if ($existing < self::RENAME_GUARD_MIN_EXISTING) {
+            return;
+        }
+
+        $ratio = count($renamed) / $existing;
+        if ($ratio <= self::MAX_RENAME_RATIO) {
+            return;
+        }
+
+        throw new \RuntimeException(sprintf(
+            'Badge sync aborted: this run would rename %d of the %d existing badges it touches (%d%%, max allowed %d%%). '
+            .'This usually means the upstream referential was renumbered: existing badge rows would silently change '
+            .'meaning while keeping their RedCall configuration. Reconcile the referential first. First renames: %s',
+            count($renamed),
+            $existing,
+            (int) round(100 * $ratio),
+            (int) round(100 * self::MAX_RENAME_RATIO),
+            implode(' | ', array_slice($renamed, 0, 5))
+        ));
     }
 }
