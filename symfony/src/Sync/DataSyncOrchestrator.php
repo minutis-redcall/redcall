@@ -10,6 +10,7 @@ use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\UserExtract;
 use App\Model\InstancesNationales\VolunteerExtract;
 use App\Sync\Dto\ActionRow;
+use App\Sync\Dto\IndividualActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\StructureRow;
@@ -279,11 +280,12 @@ class DataSyncOrchestrator
      */
     private function precreateBadges(array $volunteerRows) : void
     {
-        $now              = new \DateTimeImmutable();
-        $actionBadges     = [];
-        $skillBadges      = [];
-        $trainingBadges   = [];
-        $nominationBadges = [];
+        $now                    = new \DateTimeImmutable();
+        $actionBadges           = [];
+        $individualActionBadges = [];
+        $skillBadges            = [];
+        $trainingBadges         = [];
+        $nominationBadges       = [];
 
         foreach ($volunteerRows as $row) {
             foreach ($row->actions as $action) {
@@ -295,6 +297,19 @@ class DataSyncOrchestrator
                     'externalId'  => 'groupeAction-'.$action->groupActionId,
                     'name'        => $action->groupActionLabel,
                     'description' => $action->groupActionLabel,
+                    'expiresAt'   => null,
+                ];
+            }
+
+            foreach ($row->individualActions as $action) {
+                /** @var IndividualActionRow $action */
+                if ('' === $action->actionId) {
+                    continue;
+                }
+                $individualActionBadges['action-'.$action->actionId] = [
+                    'externalId'  => 'action-'.$action->actionId,
+                    'name'        => $action->label,
+                    'description' => $action->label,
                     'expiresAt'   => null,
                 ];
             }
@@ -355,11 +370,12 @@ class DataSyncOrchestrator
         }
 
         $this->badgeFactory->bulkUpsert(array_values($actionBadges));
+        $this->badgeFactory->bulkUpsert(array_values($individualActionBadges));
         $this->badgeFactory->bulkUpsert(array_values($skillBadges));
         $this->badgeFactory->bulkUpsert(array_values($trainingBadges));
         $this->badgeFactory->bulkUpsert(array_values($nominationBadges));
 
-        $count = count($actionBadges) + count($skillBadges) + count($trainingBadges) + count($nominationBadges);
+        $count = count($actionBadges) + count($individualActionBadges) + count($skillBadges) + count($trainingBadges) + count($nominationBadges);
         $this->logger->info(sprintf('Pre-created/refreshed %d badges', $count));
         $this->progress->info(sprintf('Pre-created/refreshed %d badges', $count));
     }
@@ -489,6 +505,7 @@ class DataSyncOrchestrator
                 'phone'             => $row[6] ?? '',
                 'structureId'       => $row[7] ?? '',
                 'actions'           => [],
+                'individualActions' => [],
                 'trainings'         => [],
                 'skills'            => [],
                 'nominations'       => [],
@@ -515,6 +532,31 @@ class DataSyncOrchestrator
                     structureId: (string) ($row[1] ?? ''),
                     groupActionId: (string) $groupId,
                     groupActionLabel: (string) $this->referenceTables->getGroupActionLabel($groupId)
+                ))->toArray();
+            }
+            $this->progress->finishBar();
+        }
+
+        // Step 2b — individual actions (file added by the DSI on 2026-07-20;
+        // absent from older drops, so its presence stays optional)
+        if (isset($files['redcall_actions_menees.csv'])) {
+            $individualCsv = $files['redcall_actions_menees.csv'];
+            $this->progress->startBar('Reading individual actions', $this->csvReader->countRows($individualCsv));
+            foreach ($this->csvReader->read($individualCsv) as $row) {
+                // nivol,id_structure,id_action
+                $this->progress->advanceBar();
+                $nivol = $row[0];
+                if (!isset($bag[$nivol])) {
+                    continue;
+                }
+                $actionId = $row[2] ?? '';
+                if (!$this->referenceTables->hasAction($actionId)) {
+                    continue;
+                }
+                $bag[$nivol]['individualActions'][] = (new IndividualActionRow(
+                    structureId: (string) ($row[1] ?? ''),
+                    actionId: (string) $actionId,
+                    label: (string) $this->referenceTables->getActionLabel($actionId)
                 ))->toArray();
             }
             $this->progress->finishBar();

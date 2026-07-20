@@ -5,10 +5,11 @@ namespace App\Sync\Dto;
 final readonly class VolunteerRow
 {
     /**
-     * @param ActionRow[]     $actions
-     * @param TrainingRow[]   $trainings
-     * @param SkillRow[]      $skills
-     * @param NominationRow[] $nominations
+     * @param ActionRow[]           $actions
+     * @param IndividualActionRow[] $individualActions
+     * @param TrainingRow[]         $trainings
+     * @param SkillRow[]            $skills
+     * @param NominationRow[]       $nominations
      */
     public function __construct(
         public string $nivol,
@@ -22,7 +23,8 @@ final readonly class VolunteerRow
         public array $actions = [],
         public array $trainings = [],
         public array $skills = [],
-        public array $nominations = []
+        public array $nominations = [],
+        public array $individualActions = []
     ) {
     }
 
@@ -46,6 +48,7 @@ final readonly class VolunteerRow
             'phone'             => $this->phone,
             'structureId'       => $this->structureId,
             'actions'           => array_map(fn (ActionRow $a) => $a->toArray(), $this->actions),
+            'individualActions' => array_map(fn (IndividualActionRow $a) => $a->toArray(), $this->individualActions),
             'trainings'         => array_map(fn (TrainingRow $t) => $t->toArray(), $this->trainings),
             'skills'            => array_map(fn (SkillRow $s) => $s->toArray(), $this->skills),
             'nominations'       => array_map(fn (NominationRow $n) => $n->toArray(), $this->nominations),
@@ -69,7 +72,8 @@ final readonly class VolunteerRow
             actions: array_map(fn (array $a) => ActionRow::fromArray($a), $data['actions'] ?? []),
             trainings: array_map(fn (array $t) => TrainingRow::fromArray($t), $data['trainings'] ?? []),
             skills: array_map(fn (array $s) => SkillRow::fromArray($s), $data['skills'] ?? []),
-            nominations: array_map(fn (array $n) => NominationRow::fromArray($n), $data['nominations'] ?? [])
+            nominations: array_map(fn (array $n) => NominationRow::fromArray($n), $data['nominations'] ?? []),
+            individualActions: array_map(fn (array $a) => IndividualActionRow::fromArray($a), $data['individualActions'] ?? [])
         );
     }
 }

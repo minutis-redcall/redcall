@@ -11,6 +11,7 @@ use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Sync\Dto\ActionRow;
+use App\Sync\Dto\IndividualActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\TrainingRow;
@@ -82,7 +83,13 @@ class VolunteerImporter
         $this->updateStructures($volunteer, $row);
 
         if ($volunteer->isLocked()) {
+            // Badges are DSI-owned referential data, so they must follow the
+            // daily files even on locked volunteers — the lock only protects
+            // contact info and the enabled flag. (2026-07-19 incident: locked
+            // volunteers kept badges whose external ids had been renumbered
+            // upstream and no longer meant the same thing.)
             $volunteer->addReport('import_report.update_locked');
+            $volunteer->setExternalBadges($this->buildBadges($row));
             $volunteer->removeExpiredBadges();
             $this->volunteerManager->save($volunteer);
             $this->refreshBoundUserIdentity($volunteer);
@@ -197,6 +204,17 @@ class VolunteerImporter
             $badges[] = $this->badgeFactory->findOrCreate(
                 sprintf('groupeAction-%s', $action->groupActionId),
                 $action->groupActionLabel
+            );
+        }
+
+        foreach ($row->individualActions as $action) {
+            /** @var IndividualActionRow $action */
+            if ('' === $action->actionId) {
+                continue;
+            }
+            $badges[] = $this->badgeFactory->findOrCreate(
+                sprintf('action-%s', $action->actionId),
+                $action->label
             );
         }
 

@@ -152,6 +152,43 @@ class BadgeTest extends TestCase
         $this->assertSame($badgeC, $badgeA->getSynonym());
     }
 
+    public function testGetSynonymSurvivesSelfReference(): void
+    {
+        // Regression test (2026-07-19 incident follow-up): a badge that is
+        // its own synonym must not make getSynonym() recurse forever — that
+        // hangs every page rendering badges, including the trigger form.
+        $badge = $this->createBadge('Self');
+        $badge->setSynonym($badge);
+
+        $this->assertNull($badge->getSynonym(), 'A cyclic synonym chain has no canonical badge');
+    }
+
+    public function testGetSynonymSurvivesPairCycle(): void
+    {
+        $badgeA = $this->createBadge('A');
+        $badgeB = $this->createBadge('B');
+
+        $badgeA->setSynonym($badgeB);
+        $badgeB->setSynonym($badgeA);
+
+        $this->assertNull($badgeA->getSynonym());
+        $this->assertNull($badgeB->getSynonym());
+    }
+
+    public function testGetSynonymSurvivesLongerCycle(): void
+    {
+        $badgeA = $this->createBadge('A');
+        $badgeB = $this->createBadge('B');
+        $badgeC = $this->createBadge('C');
+
+        // A -> B -> C -> B: the cycle does not even include A
+        $badgeA->setSynonym($badgeB);
+        $badgeB->setSynonym($badgeC);
+        $badgeC->setSynonym($badgeB);
+
+        $this->assertNull($badgeA->getSynonym());
+    }
+
     // --- getChildren ---
 
     public function testGetChildrenEmpty(): void

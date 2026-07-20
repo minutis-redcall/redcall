@@ -48,6 +48,7 @@ class VolunteerImporterTest extends KernelTestCase
             'phone'             => '+33600000001',
             'structureId'       => '980',
             'actions'           => [],
+            'individualActions' => [],
             'trainings'         => [],
             'skills'            => [],
             'nominations'       => [],
@@ -154,6 +155,45 @@ class VolunteerImporterTest extends KernelTestCase
         $this->assertSame('manual@override.test', $reloaded->getEmail(), 'Locked volunteer email must not be touched by sync');
     }
 
+    public function testLockedVolunteerStillGetsBadgeUpdates()
+    {
+        // Regression test for the 2026-07-19 referential incident: locked
+        // volunteers were skipped before badges got synced, so they kept
+        // badges pointing at external ids that no longer exist upstream.
+        // Badges are DSI-owned data: the lock protects contact info, not them.
+        $this->fixtures->createStructure('UL 980', '980');
+
+        $volunteer = $this->fixtures->createStandaloneVolunteer('1100999999X', 'jean.dupont@example.test');
+        $volunteer->setLastName('Dupont');
+        $volunteer->setFirstName('Jean');
+        $volunteer->setLocked(true);
+
+        $obsolete = new \App\Entity\Badge();
+        $obsolete->setExternalId('skill-15');
+        $obsolete->setName('Maraudeur (old referential)');
+        $obsolete->setDescription('Maraudeur (old referential)');
+        $this->em->persist($obsolete);
+        $volunteer->addBadge($obsolete);
+
+        $this->em->persist($volunteer);
+        $this->em->flush();
+
+        $row = $this->row([
+            'skills' => [
+                ['competenceId' => '239', 'label' => 'Maraudeur'],
+            ],
+        ]);
+        $this->importer->import($row);
+        $this->em->clear();
+
+        $reloaded    = $this->volunteerManager->findOneByExternalId('1100999999X');
+        $externalIds = array_map(fn ($b) => $b->getExternalId(), $reloaded->getBadges(false)->toArray());
+
+        $this->assertContains('skill-239', $externalIds, 'Locked volunteer must receive the up-to-date external badges');
+        $this->assertNotContains('skill-15', $externalIds, 'Obsolete external badges must be dropped even when the volunteer is locked');
+        $this->assertSame('jean.dupont@example.test', $reloaded->getEmail(), 'Lock must keep protecting contact info');
+    }
+
     public function testEmailFallbackToOrganizationWhenNoPersonal()
     {
         $this->fixtures->createStructure('UL 980', '980');
@@ -241,6 +281,24 @@ class VolunteerImporterTest extends KernelTestCase
 
         $reloaded = $this->volunteerManager->findOneByExternalId('1100999999X');
         $this->assertSame('+33611111111', $reloaded->getPhoneNumber(), 'Locked phone must not be overwritten');
+    }
+
+    public function testIndividualActionBadgesAreCreated()
+    {
+        $this->fixtures->createStructure('UL 980', '980');
+
+        $row = $this->row([
+            'individualActions' => [
+                ['structureId' => '980', 'actionId' => '21', 'label' => 'Urgence et autres operations'],
+            ],
+        ]);
+        $this->importer->import($row);
+        $this->em->clear();
+
+        $volunteer   = $this->volunteerManager->findOneByExternalId('1100999999X');
+        $externalIds = array_map(fn ($b) => $b->getExternalId(), $volunteer->getBadges(false)->toArray());
+
+        $this->assertContains('action-21', $externalIds);
     }
 
     public function testGroupActionBadgesAreCreated()
