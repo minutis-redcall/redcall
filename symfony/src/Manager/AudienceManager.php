@@ -197,7 +197,7 @@ class AudienceManager
         $volunteerIds = array_merge(
             $data['volunteers'] ?? [],
             $data['external_ids'] ? $this->volunteerManager->getIdsByExternalIds($data['external_ids']) : [],
-            $data['preselection_key'] ? $this->expirableManager->get($data['preselection_key'])['volunteers'] : []
+            $data['preselection_key'] ? ($this->expirableManager->get($data['preselection_key'])['volunteers'] ?? []) : []
         );
 
         $structureIds = $this->extractStructures($data);

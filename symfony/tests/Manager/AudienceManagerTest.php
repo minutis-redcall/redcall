@@ -395,6 +395,31 @@ class AudienceManagerTest extends KernelTestCase
         $this->assertCount(1, $audience);
     }
 
+    public function testExtractAudienceWithExpiredPreselectionKey()
+    {
+        // Regression: a preselection_key pointing to an expired / cleared
+        // Expirable makes ExpirableManager::get() return null. The
+        // array_merge() in extractAudience() must not receive that null
+        // (was: "array_merge(): Argument #3 must be of type array, null given").
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-EA-EXP', 'eaexp@test.com');
+
+        $data = [
+            'volunteers'        => [$volunteer->getId()],
+            'external_ids'      => [],
+            'preselection_key'  => 'non-existent-uuid-0000-0000-000000000000',
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        // No exception, directly-selected volunteer still present.
+        $this->assertContains($volunteer->getId(), $audience);
+    }
+
     public function testExtractAudienceWithBadgesAllInStructure()
     {
         $setup = $this->fixtures->createUserWithVolunteerAndStructure(
