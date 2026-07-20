@@ -90,6 +90,28 @@ class BadgeFactoryTest extends KernelTestCase
         $this->factory->bulkUpsert($items);
     }
 
+    public function testBulkUpsertIgnoresAccentAndCaseOnlyRenames()
+    {
+        // The 2026-07-20 DSI referential writes labels without accents while
+        // the legacy badges kept accented names ("Corps de Réserve de
+        // l'Urgence" vs "Corps de Reserve de l'Urgence"). A rename that only
+        // changes accents or case does not change the badge's meaning and
+        // must not count toward the mass-rename guard.
+        $items = [];
+        for ($i = 1; $i <= 20; $i++) {
+            $this->factory->findOrCreate(sprintf('skill-test-%d', $i), sprintf('Réservé à l\'Urgence %d', $i));
+            $items[] = $this->item(sprintf('skill-test-%d', $i), sprintf('RESERVE A L\'URGENCE %d', $i));
+        }
+
+        $this->factory->bulkUpsert($items);
+
+        $this->em->clear();
+        $this->assertSame(
+            "RESERVE A L'URGENCE 1",
+            $this->badgeManager->findOneByExternalId('skill-test-1')->getName()
+        );
+    }
+
     public function testBulkUpsertMassRenameCanBeExplicitlyAllowed()
     {
         $items = $this->createTwentyBadges();

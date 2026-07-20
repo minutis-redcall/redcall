@@ -11,6 +11,7 @@ use App\Manager\UserAuditLogManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Sync\Dto\ActionRow;
+use App\Sync\Dto\IndividualActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\TrainingRow;
@@ -203,6 +204,17 @@ class VolunteerImporter
             $badges[] = $this->badgeFactory->findOrCreate(
                 sprintf('groupeAction-%s', $action->groupActionId),
                 $action->groupActionLabel
+            );
+        }
+
+        foreach ($row->individualActions as $action) {
+            /** @var IndividualActionRow $action */
+            if ('' === $action->actionId) {
+                continue;
+            }
+            $badges[] = $this->badgeFactory->findOrCreate(
+                sprintf('action-%s', $action->actionId),
+                $action->label
             );
         }
 

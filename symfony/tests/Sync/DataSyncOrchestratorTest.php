@@ -165,6 +165,27 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $this->assertSame($volunteer->getInternalEmail(), $volunteer->getEmail(), 'When MAIL is empty, MAILTRAV should be the fallback');
     }
 
+    public function testVolunteerWithIndividualActionGetsActionBadge()
+    {
+        // redcall_actions_menees.csv (added by the DSI on 2026-07-20) links
+        // volunteers to INDIVIDUAL actions — finer-grained than the groupe
+        // d'action file. They materialize as action-{id} badges.
+        $this->runFullSync(new \DateTimeImmutable());
+        $this->em->clear();
+
+        $volunteer = $this->volunteerManager->findOneByExternalId('T0000000001B');
+        $this->assertNotNull($volunteer);
+
+        $byExternalId = [];
+        foreach ($volunteer->getBadges(false) as $badge) {
+            $byExternalId[$badge->getExternalId()] = $badge;
+        }
+
+        $this->assertArrayHasKey('action-21', $byExternalId, 'Individual action 21 must be persisted as an action-21 badge');
+        $this->assertSame('Urgence et autres operations', $byExternalId['action-21']->getName());
+        $this->assertArrayNotHasKey('action-99999', $byExternalId, 'Actions absent from redcall_ref_actions.csv must be skipped');
+    }
+
     public function testNominatedVolunteerHasNominationBadge()
     {
         $this->runFullSync(new \DateTimeImmutable());

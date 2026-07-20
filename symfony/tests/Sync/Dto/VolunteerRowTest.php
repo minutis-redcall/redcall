@@ -3,6 +3,7 @@
 namespace App\Tests\Sync\Dto;
 
 use App\Sync\Dto\ActionRow;
+use App\Sync\Dto\IndividualActionRow;
 use App\Sync\Dto\NominationRow;
 use App\Sync\Dto\SkillRow;
 use App\Sync\Dto\TrainingRow;
@@ -69,6 +70,9 @@ class VolunteerRowTest extends TestCase
                 new ActionRow('980', '1', 'Urgence et Secourisme'),
                 new ActionRow('980', '17', 'Formation'),
             ],
+            individualActions: [
+                new IndividualActionRow('980', '21', 'Urgence et autres operations'),
+            ],
             trainings: [
                 new TrainingRow(
                     formationId: '167',
@@ -109,8 +113,34 @@ class VolunteerRowTest extends TestCase
         ]);
 
         $this->assertSame([], $row->actions);
+        $this->assertSame([], $row->individualActions);
         $this->assertSame([], $row->trainings);
         $this->assertSame([], $row->skills);
         $this->assertSame([], $row->nominations);
+    }
+
+    public function testFromArrayToleratesPayloadsPredatingIndividualActions()
+    {
+        // Task payloads and sync snapshots serialized before 2026-07-20 have
+        // no 'individualActions' key: deserializing them must keep working.
+        $legacy = [
+            'nivol'             => '01100999999X',
+            'lastName'          => 'DUPONT',
+            'firstName'         => 'Jean',
+            'age'               => 45,
+            'personalEmail'     => '',
+            'organizationEmail' => '',
+            'phone'             => '',
+            'structureId'       => '980',
+            'actions'           => [['structureId' => '980', 'groupActionId' => '1', 'groupActionLabel' => 'Urgence et Secourisme']],
+            'trainings'         => [],
+            'skills'            => [],
+            'nominations'       => [],
+        ];
+
+        $row = VolunteerRow::fromArray($legacy);
+
+        $this->assertSame([], $row->individualActions);
+        $this->assertCount(1, $row->actions);
     }
 }

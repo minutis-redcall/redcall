@@ -99,6 +99,16 @@ class ReferenceTables
         return $this->groupesActions[$id] ?? null;
     }
 
+    public function hasAction(string $id) : bool
+    {
+        return isset($this->actions[$id]);
+    }
+
+    public function getActionLabel(string $id) : ?string
+    {
+        return isset($this->actions[$id]) ? $this->actions[$id]['label'] : null;
+    }
+
     public function hasCompetence(string $id) : bool
     {
         return isset($this->competences[$id]);

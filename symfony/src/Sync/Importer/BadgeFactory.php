@@ -6,6 +6,8 @@ use App\Entity\Badge;
 use App\Manager\BadgeManager;
 use Doctrine\DBAL\Connection;
 
+use function Symfony\Component\String\u;
+
 /**
  * Finds or creates Badge entities by external id. External id conventions:
  *   - "groupeAction-{id}" for activity group badges
@@ -145,7 +147,7 @@ class BadgeFactory
             );
             foreach ($rows as $row) {
                 $existing++;
-                if ($row['name'] !== $incoming[$row['external_id']]) {
+                if ($this->normalizeName($row['name']) !== $this->normalizeName($incoming[$row['external_id']])) {
                     $renamed[] = sprintf('%s: "%s" -> "%s"', $row['external_id'], $row['name'], $incoming[$row['external_id']]);
                 }
             }
@@ -170,5 +172,15 @@ class BadgeFactory
             (int) round(100 * self::MAX_RENAME_RATIO),
             implode(' | ', array_slice($renamed, 0, 5))
         ));
+    }
+
+    /**
+     * A "rename" only counts toward the guard when it changes the badge's
+     * meaning: accent or case tweaks in upstream labels (e.g. "Réserve" vs
+     * "Reserve" after the 2026-07 referential migration) are cosmetic.
+     */
+    private function normalizeName(string $name) : string
+    {
+        return u($name)->ascii()->lower()->trim()->toString();
     }
 }

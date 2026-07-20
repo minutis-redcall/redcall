@@ -48,6 +48,7 @@ class VolunteerImporterTest extends KernelTestCase
             'phone'             => '+33600000001',
             'structureId'       => '980',
             'actions'           => [],
+            'individualActions' => [],
             'trainings'         => [],
             'skills'            => [],
             'nominations'       => [],
@@ -280,6 +281,24 @@ class VolunteerImporterTest extends KernelTestCase
 
         $reloaded = $this->volunteerManager->findOneByExternalId('1100999999X');
         $this->assertSame('+33611111111', $reloaded->getPhoneNumber(), 'Locked phone must not be overwritten');
+    }
+
+    public function testIndividualActionBadgesAreCreated()
+    {
+        $this->fixtures->createStructure('UL 980', '980');
+
+        $row = $this->row([
+            'individualActions' => [
+                ['structureId' => '980', 'actionId' => '21', 'label' => 'Urgence et autres operations'],
+            ],
+        ]);
+        $this->importer->import($row);
+        $this->em->clear();
+
+        $volunteer   = $this->volunteerManager->findOneByExternalId('1100999999X');
+        $externalIds = array_map(fn ($b) => $b->getExternalId(), $volunteer->getBadges(false)->toArray());
+
+        $this->assertContains('action-21', $externalIds);
     }
 
     public function testGroupActionBadgesAreCreated()
