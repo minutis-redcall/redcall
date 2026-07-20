@@ -259,12 +259,38 @@ class Badge implements LockableInterface
         return $this;
     }
 
+    /**
+     * Follows the synonym chain to its canonical end. Cyclic data (a badge
+     * that is directly or indirectly its own synonym) has no canonical badge
+     * and resolves to null — recursing forever here hangs every page that
+     * renders badges, trigger form included.
+     */
     public function getSynonym() : ?self
     {
-        if ($this->synonym && $this->synonym->getSynonym()) {
-            return $this->synonym->getSynonym();
+        $visited = [$this];
+        $synonym = $this->synonym;
+
+        while ($synonym) {
+            foreach ($visited as $badge) {
+                if ($badge === $synonym) {
+                    return null;
+                }
+            }
+            $visited[] = $synonym;
+
+            // Method call (not property access) so Doctrine proxies initialize
+            $next = $synonym->getDirectSynonym();
+            if (null === $next) {
+                break;
+            }
+            $synonym = $next;
         }
 
+        return $synonym;
+    }
+
+    public function getDirectSynonym() : ?self
+    {
         return $this->synonym;
     }
 
