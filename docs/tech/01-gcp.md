@@ -348,8 +348,6 @@ Add the following variables in your .env:
 ```
 GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
 GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
-GCP_FUNCTION_TWILIO_STATUS=webHooksToTasksSMSStatus
-GCP_FUNCTION_TWILIO_RESPONSE=webHooksToTasksSMSResponse
 ```
 
 Run `gcp/deploy/init/init_api.sh` once per environment.
