@@ -182,6 +182,61 @@ class VolunteerVoterTest extends KernelTestCase
     }
 
     // ────────────────────────────────────────────────────────
+    // Trusted (non-admin) user — descendant structures
+    // ────────────────────────────────────────────────────────
+
+    public function testTrustedUserIsGrantedForVolunteerInDescendantStructure(): void
+    {
+        $setup = $this->fixtures->createUserWithStructure(
+            'vv_parent@test.com', 'Parent DT', 'STR-VV-PARENT'
+        );
+
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+
+        $child = $this->fixtures->createStructure('Child UL', 'STR-VV-CHILD');
+        $child->setParentStructure($setup['structure']);
+        $em->persist($child);
+        $em->flush();
+
+        // The volunteer belongs only to the sub-structure, the user only to the parent.
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-DESC-001');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $token = $this->createToken($setup['user']);
+
+        $result = $this->voter->vote($token, $volunteer, ['VOLUNTEER']);
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $result);
+    }
+
+    public function testTrustedUserIsDeniedWhenDescendantChainHasDisabledAncestor(): void
+    {
+        $setup = $this->fixtures->createUserWithStructure(
+            'vv_sever@test.com', 'Grandparent DT', 'STR-VV-GRANDP'
+        );
+
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+
+        // grandparent (user's) → middle (disabled) → child (volunteer's):
+        // the disabled hop severs the chain, exactly like the audience targeting.
+        $middle = $this->fixtures->createStructure('Middle UL', 'STR-VV-MIDDLE', false);
+        $middle->setParentStructure($setup['structure']);
+        $em->persist($middle);
+
+        $child = $this->fixtures->createStructure('Child EL', 'STR-VV-SEVERED');
+        $child->setParentStructure($middle);
+        $em->persist($child);
+        $em->flush();
+
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-SEVER-001');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $token = $this->createToken($setup['user']);
+
+        $result = $this->voter->vote($token, $volunteer, ['VOLUNTEER']);
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
+    }
+
+    // ────────────────────────────────────────────────────────
     // Unauthenticated
     // ────────────────────────────────────────────────────────
 

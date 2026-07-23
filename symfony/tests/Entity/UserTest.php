@@ -632,4 +632,74 @@ class UserTest extends TestCase
         $this->assertSame($user, $result);
         $this->assertCount(0, $user->getFavoriteBadges());
     }
+
+    // ────────────────────────────────────────────────────────
+    // coversStructure()
+    // ────────────────────────────────────────────────────────
+
+    public function testCoversStructureAcceptsDirectMembership(): void
+    {
+        $user      = $this->createUser();
+        $structure = $this->createStructure('Mine', 'COV-001');
+        $user->addStructure($structure);
+
+        $this->assertTrue($user->coversStructure($structure));
+    }
+
+    public function testCoversStructureAcceptsDescendant(): void
+    {
+        $user   = $this->createUser();
+        $parent = $this->createStructure('Parent', 'COV-P');
+        $child  = $this->createStructure('Child', 'COV-C');
+        $child->setParentStructure($parent);
+        $user->addStructure($parent);
+
+        $this->assertTrue($user->coversStructure($child));
+    }
+
+    public function testCoversStructureRejectsUnrelated(): void
+    {
+        $user  = $this->createUser();
+        $mine  = $this->createStructure('Mine', 'COV-M');
+        $other = $this->createStructure('Other', 'COV-O');
+        $user->addStructure($mine);
+
+        $this->assertFalse($user->coversStructure($other));
+    }
+
+    public function testCoversStructureStopsAtDisabledAncestor(): void
+    {
+        $user        = $this->createUser();
+        $grandparent = $this->createStructure('Grandparent', 'COV-GP');
+        $middle      = $this->createStructure('Middle', 'COV-MID', false);
+        $child       = $this->createStructure('Child', 'COV-CHILD');
+        $middle->setParentStructure($grandparent);
+        $child->setParentStructure($middle);
+        $user->addStructure($grandparent);
+
+        $this->assertFalse($user->coversStructure($child));
+    }
+
+    public function testCoversStructureHonorsFiveAncestorCap(): void
+    {
+        $user = $this->createUser();
+
+        // Chain of 7: root → l1 → … → l6. The subject plus at most 5 ancestor
+        // hops are examined, mirroring the SQL walks — the 6th ancestor (root)
+        // is out of reach from l6.
+        $chain = [$this->createStructure('Root', 'COV-D0')];
+        for ($i = 1; $i <= 6; $i++) {
+            $structure = $this->createStructure('Level '.$i, 'COV-D'.$i);
+            $structure->setParentStructure($chain[$i - 1]);
+            $chain[] = $structure;
+        }
+
+        $user->addStructure($chain[0]);
+
+        // 5 hops away (l5 → root): covered.
+        $this->assertTrue($user->coversStructure($chain[5]));
+
+        // 6 hops away (l6 → root): beyond the cap.
+        $this->assertFalse($user->coversStructure($chain[6]));
+    }
 }
