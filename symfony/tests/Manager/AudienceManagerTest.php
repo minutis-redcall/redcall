@@ -687,4 +687,92 @@ class AudienceManagerTest extends KernelTestCase
         // Only the enabled volunteer should be counted
         $this->assertEquals(1, $counts[$badge->getId()]);
     }
+
+    // ──────────────────────────────────────────────
+    // Descendant-structure accessibility
+    // ──────────────────────────────────────────────
+
+    /**
+     * A trusted (non-admin) user assigned to a parent structure targets that
+     * parent as a global structure. The targeting layer expands the parent to
+     * all its descendants, so a volunteer belonging only to a sub-structure
+     * must remain reachable — the accessibility filter has to mirror the
+     * hierarchy-aware targeting, not just direct membership.
+     */
+    public function testClassifyAudienceGrantsAccessToDescendantStructureVolunteers()
+    {
+        $user = $this->fixtures->createRawUser('descendant-access@test.com', 'password', false);
+
+        $parent = $this->fixtures->createStructure('PARENT DT', 'STRUCT-PARENT');
+        $child  = $this->fixtures->createStructure('CHILD UL', 'STRUCT-CHILD');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+
+        // The user manages the parent only, NOT the sub-structure.
+        $this->fixtures->assignUserToStructure($user, $parent);
+
+        // The volunteer belongs only to the sub-structure.
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-DESCENDANT', 'descendant-vol@test.com');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $this->loginUser($user);
+
+        $data = [
+            'test_on_me'          => false,
+            'external_ids'        => [],
+            'volunteers'          => [],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'structures_local'    => [],
+            'structures_global'   => [$parent->getId()],
+            'allow_minors'        => true,
+            'excluded_volunteers' => [],
+            'preselection_key'    => null,
+        ];
+
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $this->assertContains($volunteer->getId(), $classification->getReachable());
+    }
+
+    /**
+     * The descendant-aware accessibility must not turn into "everyone": a
+     * volunteer in a structure unrelated to any of the user's structures stays
+     * inaccessible.
+     */
+    public function testClassifyAudienceStillExcludesUnrelatedStructureVolunteers()
+    {
+        $user = $this->fixtures->createRawUser('unrelated-access@test.com', 'password', false);
+
+        $ownStructure = $this->fixtures->createStructure('OWN STRUCT', 'STRUCT-OWN');
+        $this->fixtures->assignUserToStructure($user, $ownStructure);
+
+        // A volunteer sitting in a structure the user has nothing to do with.
+        $foreign   = $this->fixtures->createStructure('FOREIGN STRUCT', 'STRUCT-FOREIGN');
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-FOREIGN', 'foreign-vol@test.com');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $foreign);
+
+        $this->loginUser($user);
+
+        $data = [
+            'test_on_me'          => false,
+            'external_ids'        => [],
+            'volunteers'          => [$volunteer->getId()],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'structures_local'    => [],
+            'structures_global'   => [],
+            'allow_minors'        => true,
+            'excluded_volunteers' => [],
+            'preselection_key'    => null,
+        ];
+
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $this->assertNotContains($volunteer->getId(), $classification->getReachable());
+        $this->assertContains($volunteer->getId(), $classification->getInaccessible());
+    }
 }
