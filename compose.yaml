@@ -27,6 +27,13 @@
 # native (host MySQL) and Docker (containerised MySQL) setups.
 # =============================================================================
 
+# Explicit project name: by default Docker Compose uses the directory name
+# ("app"), which collides with any other project checked out in a directory
+# of the same name — same-named containers (app-php-1, app-mysql-1) then
+# replace each other. The name prefixes containers, networks and volumes
+# (redcall-php-1, ...).
+name: redcall
+
 services:
 
   mysql:
