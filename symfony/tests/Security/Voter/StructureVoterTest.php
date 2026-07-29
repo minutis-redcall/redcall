@@ -174,6 +174,45 @@ class StructureVoterTest extends KernelTestCase
     // Unauthenticated
     // ────────────────────────────────────────────────────────
 
+    public function testTrustedUserIsGrantedForDescendantOfOwnStructure(): void
+    {
+        $setup = $this->fixtures->createUserWithStructure(
+            'sv_parent@test.com', 'Parent DT', 'STR-SV-PARENT'
+        );
+
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+
+        $child = $this->fixtures->createStructure('Child UL', 'STR-SV-CHILD');
+        $child->setParentStructure($setup['structure']);
+        $em->persist($child);
+        $em->flush();
+
+        $token = $this->createToken($setup['user']);
+
+        $result = $this->voter->vote($token, $child, ['STRUCTURE']);
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $result);
+    }
+
+    public function testTrustedUserIsDeniedForChildOfUnrelatedStructure(): void
+    {
+        $setup = $this->fixtures->createUserWithStructure(
+            'sv_unrelated@test.com', 'Own Struct', 'STR-SV-OWN'
+        );
+
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+
+        $foreignParent = $this->fixtures->createStructure('Foreign Parent', 'STR-SV-FOREIGN-P');
+        $foreignChild  = $this->fixtures->createStructure('Foreign Child', 'STR-SV-FOREIGN-C');
+        $foreignChild->setParentStructure($foreignParent);
+        $em->persist($foreignChild);
+        $em->flush();
+
+        $token = $this->createToken($setup['user']);
+
+        $result = $this->voter->vote($token, $foreignChild, ['STRUCTURE']);
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
+    }
+
     public function testUnauthenticatedUserThrowsException(): void
     {
         $structure = $this->fixtures->createStructure('Anon Struct', 'STR-ANON-001');

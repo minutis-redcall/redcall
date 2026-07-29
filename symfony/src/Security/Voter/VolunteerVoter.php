@@ -57,7 +57,7 @@ class VolunteerVoter extends Voter
         }
 
         foreach ($volunteer->getStructures() as $structure) {
-            if ($me->getStructures()->contains($structure)) {
+            if ($me->coversStructure($structure)) {
                 return true;
             }
         }

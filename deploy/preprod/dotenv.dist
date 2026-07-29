@@ -38,8 +38,6 @@ GCP_STORAGE_BUCKET=redcall-public-prod-assets
 GCP_STORAGE_PEGASS=used-by-pegass-files-command
 GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
 GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
-GCP_FUNCTION_TWILIO_STATUS=cloudFunction
-GCP_FUNCTION_TWILIO_RESPONSE=cloudFunction
 
 TWILIO_ACCOUNT_SID=xxx
 TWILIO_AUTH_TOKEN=xxx

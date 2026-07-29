@@ -104,11 +104,35 @@ class VolunteerRepository extends BaseRepository
 
     private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
     {
-        return $this->createVolunteersQueryBuilder($enabled)
-                    ->join('v.structures', 's')
-                    ->join('s.users', 'u')
-                    ->andWhere('u.id = :user')
-                    ->setParameter('user', $user);
+        // A volunteer is accessible when they belong to a structure the user is
+        // assigned to, OR to any enabled descendant of such a structure: a user
+        // managing a parent structure (e.g. a "DT") can trigger every
+        // sub-structure the audience form offers them, so they must reach the
+        // volunteers who only belong to those sub-structures. The parent chain
+        // is walked up to 5 levels, matching the depth handled by
+        // StructureRepository::getDescendantStructures(), and each hop requires
+        // an enabled structure so a disabled ancestor severs the chain exactly
+        // like the descent does.
+        $qb = $this->createVolunteersQueryBuilder($enabled)
+                   ->join('v.structures', 's')
+                   ->leftJoin('s.parentStructure', 'p1', Join::WITH, 'p1.enabled = true')
+                   ->leftJoin('p1.parentStructure', 'p2', Join::WITH, 'p2.enabled = true')
+                   ->leftJoin('p2.parentStructure', 'p3', Join::WITH, 'p3.enabled = true')
+                   ->leftJoin('p3.parentStructure', 'p4', Join::WITH, 'p4.enabled = true')
+                   ->leftJoin('p4.parentStructure', 'p5', Join::WITH, 'p5.enabled = true');
+
+        return $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    ':user MEMBER OF s.users',
+                    ':user MEMBER OF p1.users',
+                    ':user MEMBER OF p2.users',
+                    ':user MEMBER OF p3.users',
+                    ':user MEMBER OF p4.users',
+                    ':user MEMBER OF p5.users'
+                )
+            )
+            ->setParameter('user', $user);
     }
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)

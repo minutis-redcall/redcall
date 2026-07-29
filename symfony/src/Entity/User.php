@@ -212,7 +212,7 @@ class User extends AbstractUser implements LockableInterface
         }
 
         foreach ($structures as $structure) {
-            if ($this->hasStructure($structure)) {
+            if ($this->coversStructure($structure)) {
                 return true;
             }
         }
@@ -223,6 +223,35 @@ class User extends AbstractUser implements LockableInterface
     public function hasStructure(Structure $structure) : bool
     {
         return $this->structures->contains($structure);
+    }
+
+    /**
+     * Whether the given structure is inside the user's triggering scope: the
+     * user is assigned to it directly, or to one of its ancestors. A user
+     * assigned to a parent structure (e.g. a DT) manages and can trigger its
+     * whole sub-tree, so access checks must accept descendants — hasStructure()
+     * alone would deny volunteers of sub-structures the user legitimately
+     * reaches.
+     *
+     * The walk mirrors VolunteerRepository::createAccessibleVolunteersQueryBuilder()
+     * and StructureRepository::getDescendantStructures(): at most 5 ancestor
+     * hops, and a disabled ancestor severs the chain.
+     */
+    public function coversStructure(Structure $structure) : bool
+    {
+        $mine    = $this->getStructures();
+        $current = $structure;
+
+        for ($depth = 0; $current && $depth <= 5; $depth++) {
+            if ($mine->contains($current)) {
+                return true;
+            }
+
+            $parent  = $current->getParentStructure();
+            $current = ($parent && $parent->isEnabled()) ? $parent : null;
+        }
+
+        return false;
     }
 
     public function getCommonStructures($structures) : array
@@ -238,7 +267,7 @@ class User extends AbstractUser implements LockableInterface
         $common = [];
 
         foreach ($structures as $structure) {
-            if ($this->hasStructure($structure)) {
+            if ($this->coversStructure($structure)) {
                 $common[] = $structure;
             }
         }

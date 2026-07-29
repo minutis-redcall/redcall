@@ -59,9 +59,12 @@
 
                                 <h4>{{ 'audience.structures'|trans }}</h4>
 
-                                {# All structure ticks, in the tree view #}
-                                {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
-                                    {% set ticked = ticked or current in global or current in local %}
+                                {# All structure ticks, in the tree view. A tick only ever
+                                   represents its own structure: the "whole structure" slider
+                                   materializes each descendant as its own tick (see the
+                                   .structure-tick click handler), so redisplay reads each
+                                   structure's state from the submitted fields only. #}
+                                {% macro renderSlider(form, global, local, hierarchy, information, current) %}
 
                                     {# A user may not have access to a children structure #}
                                     {% if hierarchy[current] is defined %}
@@ -74,7 +77,7 @@
                                                 <input id="global-structure-{{ current }}"
                                                        type="checkbox"
                                                        class="toggle-to-text structure-tick numbers"
-                                                       {% if ticked %}checked{% endif %}
+                                                       {% if current in global %}checked{% endif %}
                                                        data-field="#{{ form.structures_global.vars.id }}"
                                                        data-id="{{ current }}"/>
                                                 <span class="slider"></span>
@@ -104,7 +107,7 @@
                                                                 <input id="local-structure-{{ current }}"
                                                                        type="checkbox"
                                                                        class="toggle-to-text structure-tick numbers"
-                                                                       {% if ticked %}checked{% endif %}
+                                                                       {% if current in local %}checked{% endif %}
                                                                        data-field="#{{ form.structures_local.vars.id }}"
                                                                        data-id="{{ current }}"/>
                                                                 <span class="slider"></span>
@@ -115,8 +118,7 @@
                                                             </label>
                                                         </div>
                                                         {% for child in hierarchy[current] %}
-                                                            {% set ticked = ticked or child in global or child in local %}
-                                                            {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
+                                                            {{ _self.renderSlider(form, global, local, hierarchy, information, child) }}
                                                         {% endfor %}
                                                     </div>
                                                 </div>
@@ -430,7 +432,12 @@
             input.val(list.join(','));
         });
 
-        {# Handling parent structure selection #}
+        {# Handling parent structure selection. Every tick stands for its own
+           structure only: ticking a parent *clicks* each descendant tick so
+           they all land in the hidden fields, and unticking any structure
+           clears the "whole structure" slider of its ancestors — the subtree
+           is no longer fully selected, and remaining ticks keep their state.
+           This keeps "select whole DT, then untick one UL" meaningful. #}
         var structureTicked = false;
         $('body').on('click', '.structure-tick', function () {
             if (structureTicked) {
@@ -439,9 +446,12 @@
             structureTicked = true;
             var that = $(this);
             if (that.is(':checked')) {
-                that.parents().eq(1).find('.structure-children .structure-tick').prop('checked', 'checked');
+                that.parents().eq(1).find('.structure-children .structure-tick:not(:checked)').click();
             } else {
                 that.parents().eq(1).find('.structure-children input:is(:checked)').click();
+                that.parents('.structure-children').each(function () {
+                    $('#global-structure-' + $(this).data('current') + ':checked').click();
+                });
             }
             structureTicked = false;
         });

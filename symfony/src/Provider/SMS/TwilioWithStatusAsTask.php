@@ -13,16 +13,6 @@ class TwilioWithStatusAsTask extends BaseTwilio implements SMSProvider
 
         $twilioMessage = parent::sendMessage($from, $to, $message, $context, [
             'messageUuid' => $uuid,
-
-            // Cloud functions should be upgraded (nodejs10 is decommissioned from GCP)
-            //
-            //            'statusCallback' => sprintf(
-            //                'https://%s-%s.cloudfunctions.net/%s/%s',
-            //                getenv('GCP_PROJECT_LOCATION'),
-            //                getenv('GCP_PROJECT_NAME'),
-            //                rtrim(getenv('GCP_FUNCTION_TWILIO_STATUS'), '/'),
-            //                $uuid
-            //            ),
         ]);
 
         return $twilioMessage->getSid();

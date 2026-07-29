@@ -211,4 +211,85 @@ class UserManagerTest extends KernelTestCase
 
         $this->manager->createUser('UM-VOL-DOES-NOT-EXIST');
     }
+
+    // ──────────────────────────────────────────────
+    // syncStructureScope
+    // ──────────────────────────────────────────────
+
+    public function testSyncStructureScopeAddsMissingDescendants(): void
+    {
+        $user   = $this->fixtures->createRawUser('um_scope1@test.com');
+        $parent = $this->fixtures->createStructure('Scope Parent DT', 'STR-UM-SCOPE-P');
+        $this->fixtures->assignUserToStructure($user, $parent);
+
+        // Sub-structures created AFTER the user was assigned the parent:
+        // they are missing from the materialized user_structure rows.
+        $child = $this->fixtures->createStructure('Scope Child UL', 'STR-UM-SCOPE-C');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+
+        $grandChild = $this->fixtures->createStructure('Scope Grandchild EL', 'STR-UM-SCOPE-G');
+        $grandChild->setParentStructure($child);
+        $this->em->persist($grandChild);
+        $this->em->flush();
+
+        $changed = $this->manager->syncStructureScope($user);
+
+        $this->assertTrue($changed);
+
+        $this->em->clear();
+        $fresh = $this->em->getRepository(User::class)->find($user->getId());
+        $ids   = array_map(function ($structure) {
+            return $structure->getId();
+        }, $fresh->getStructures(false)->toArray());
+
+        $this->assertContains($child->getId(), $ids);
+        $this->assertContains($grandChild->getId(), $ids);
+    }
+
+    public function testSyncStructureScopeIgnoresDisabledDescendants(): void
+    {
+        $user   = $this->fixtures->createRawUser('um_scope2@test.com');
+        $parent = $this->fixtures->createStructure('Scope Parent 2', 'STR-UM-SCOPE2-P');
+        $this->fixtures->assignUserToStructure($user, $parent);
+
+        $disabledChild = $this->fixtures->createStructure('Scope Disabled Child', 'STR-UM-SCOPE2-C', false);
+        $disabledChild->setParentStructure($parent);
+        $this->em->persist($disabledChild);
+        $this->em->flush();
+
+        $changed = $this->manager->syncStructureScope($user);
+
+        $this->assertFalse($changed);
+
+        $this->em->clear();
+        $fresh = $this->em->getRepository(User::class)->find($user->getId());
+        $ids   = array_map(function ($structure) {
+            return $structure->getId();
+        }, $fresh->getStructures(false)->toArray());
+
+        $this->assertNotContains($disabledChild->getId(), $ids);
+    }
+
+    public function testSyncStructureScopeIsIdempotent(): void
+    {
+        $user   = $this->fixtures->createRawUser('um_scope3@test.com');
+        $parent = $this->fixtures->createStructure('Scope Parent 3', 'STR-UM-SCOPE3-P');
+        $this->fixtures->assignUserToStructure($user, $parent);
+
+        $child = $this->fixtures->createStructure('Scope Child 3', 'STR-UM-SCOPE3-C');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+
+        $this->assertTrue($this->manager->syncStructureScope($user));
+        $this->assertFalse($this->manager->syncStructureScope($user));
+    }
+
+    public function testSyncStructureScopeDoesNothingForUserWithoutStructures(): void
+    {
+        $user = $this->fixtures->createRawUser('um_scope4@test.com');
+
+        $this->assertFalse($this->manager->syncStructureScope($user));
+    }
 }

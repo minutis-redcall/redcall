@@ -395,6 +395,31 @@ class AudienceManagerTest extends KernelTestCase
         $this->assertCount(1, $audience);
     }
 
+    public function testExtractAudienceWithExpiredPreselectionKey()
+    {
+        // Regression: a preselection_key pointing to an expired / cleared
+        // Expirable makes ExpirableManager::get() return null. The
+        // array_merge() in extractAudience() must not receive that null
+        // (was: "array_merge(): Argument #3 must be of type array, null given").
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-EA-EXP', 'eaexp@test.com');
+
+        $data = [
+            'volunteers'        => [$volunteer->getId()],
+            'external_ids'      => [],
+            'preselection_key'  => 'non-existent-uuid-0000-0000-000000000000',
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        // No exception, directly-selected volunteer still present.
+        $this->assertContains($volunteer->getId(), $audience);
+    }
+
     public function testExtractAudienceWithBadgesAllInStructure()
     {
         $setup = $this->fixtures->createUserWithVolunteerAndStructure(
@@ -661,5 +686,132 @@ class AudienceManagerTest extends KernelTestCase
 
         // Only the enabled volunteer should be counted
         $this->assertEquals(1, $counts[$badge->getId()]);
+    }
+
+    // ──────────────────────────────────────────────
+    // Descendant-structure accessibility
+    // ──────────────────────────────────────────────
+
+    /**
+     * A trusted (non-admin) user assigned to a parent structure explicitly
+     * ticks one of its sub-structures in the trigger form (the "whole DT"
+     * slider materializes each descendant tick client-side). A volunteer
+     * belonging only to that sub-structure must be reachable: the
+     * accessibility filter is hierarchy-aware, not just direct membership.
+     */
+    public function testClassifyAudienceGrantsAccessToDescendantStructureVolunteers()
+    {
+        $user = $this->fixtures->createRawUser('descendant-access@test.com', 'password', false);
+
+        $parent = $this->fixtures->createStructure('PARENT DT', 'STRUCT-PARENT');
+        $child  = $this->fixtures->createStructure('CHILD UL', 'STRUCT-CHILD');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+
+        // The user manages the parent only, NOT the sub-structure.
+        $this->fixtures->assignUserToStructure($user, $parent);
+
+        // The volunteer belongs only to the sub-structure.
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-DESCENDANT', 'descendant-vol@test.com');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $this->loginUser($user);
+
+        $data = [
+            'test_on_me'          => false,
+            'external_ids'        => [],
+            'volunteers'          => [],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'structures_local'    => [],
+            'structures_global'   => [$parent->getId(), $child->getId()],
+            'allow_minors'        => true,
+            'excluded_volunteers' => [],
+            'preselection_key'    => null,
+        ];
+
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $this->assertContains($volunteer->getId(), $classification->getReachable());
+    }
+
+    /**
+     * Selecting a structure must select ONLY that structure: sub-structures
+     * are individual, untickable choices in the form, so the backend must not
+     * re-add them implicitly. Regression test for the "untick one UL of the
+     * DT but the count does not move" bug: the server used to expand
+     * structures_global to all descendants, making individual unticks
+     * meaningless.
+     */
+    public function testExtractAudienceDoesNotImplicitlySelectDescendantStructures()
+    {
+        $parent = $this->fixtures->createStructure('EXPL PARENT DT', 'STRUCT-EXPL-P');
+        $child  = $this->fixtures->createStructure('EXPL CHILD UL', 'STRUCT-EXPL-C');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+
+        $parentVolunteer = $this->fixtures->createStandaloneVolunteer('VOL-EXPL-P', 'expl-p@test.com');
+        $this->fixtures->assignVolunteerToStructure($parentVolunteer, $parent);
+
+        $childVolunteer = $this->fixtures->createStandaloneVolunteer('VOL-EXPL-C', 'expl-c@test.com');
+        $this->fixtures->assignVolunteerToStructure($childVolunteer, $child);
+
+        $data = [
+            'volunteers'        => [],
+            'external_ids'      => [],
+            'preselection_key'  => null,
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [$parent->getId()],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        $this->assertContains($parentVolunteer->getId(), $audience);
+        $this->assertNotContains($childVolunteer->getId(), $audience);
+    }
+
+    /**
+     * The descendant-aware accessibility must not turn into "everyone": a
+     * volunteer in a structure unrelated to any of the user's structures stays
+     * inaccessible.
+     */
+    public function testClassifyAudienceStillExcludesUnrelatedStructureVolunteers()
+    {
+        $user = $this->fixtures->createRawUser('unrelated-access@test.com', 'password', false);
+
+        $ownStructure = $this->fixtures->createStructure('OWN STRUCT', 'STRUCT-OWN');
+        $this->fixtures->assignUserToStructure($user, $ownStructure);
+
+        // A volunteer sitting in a structure the user has nothing to do with.
+        $foreign   = $this->fixtures->createStructure('FOREIGN STRUCT', 'STRUCT-FOREIGN');
+        $volunteer = $this->fixtures->createStandaloneVolunteer('VOL-FOREIGN', 'foreign-vol@test.com');
+        $this->fixtures->assignVolunteerToStructure($volunteer, $foreign);
+
+        $this->loginUser($user);
+
+        $data = [
+            'test_on_me'          => false,
+            'external_ids'        => [],
+            'volunteers'          => [$volunteer->getId()],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'structures_local'    => [],
+            'structures_global'   => [],
+            'allow_minors'        => true,
+            'excluded_volunteers' => [],
+            'preselection_key'    => null,
+        ];
+
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $this->assertNotContains($volunteer->getId(), $classification->getReachable());
+        $this->assertContains($volunteer->getId(), $classification->getInaccessible());
     }
 }

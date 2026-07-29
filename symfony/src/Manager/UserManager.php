@@ -142,6 +142,58 @@ class UserManager extends BaseUserManager
         return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins);
     }
 
+    /**
+     * user_structure is a materialized snapshot: assigning a parent structure
+     * copies its whole sub-tree at that moment (findCallableStructuresForStructure),
+     * so sub-structures created or re-parented afterwards silently drift out
+     * of the user's scope. Called on login to heal the snapshot: adds every
+     * enabled descendant of the user's current structures that is not
+     * materialized yet. Additive only — explicit assignments cannot be told
+     * apart from materialized descendants, so nothing is ever removed here.
+     *
+     * @return bool whether the user's structures changed
+     */
+    public function syncStructureScope(User $user) : bool
+    {
+        $enabledIds = [];
+        foreach ($user->getStructures() as $structure) {
+            $enabledIds[] = $structure->getId();
+        }
+
+        if (!$enabledIds) {
+            return false;
+        }
+
+        $knownIds = [];
+        foreach ($user->getStructures(false) as $structure) {
+            $knownIds[] = $structure->getId();
+        }
+
+        $missingIds = array_diff(
+            $this->structureManager->getDescendantStructures($enabledIds),
+            $knownIds
+        );
+
+        if (!$missingIds) {
+            return false;
+        }
+
+        $old = $this->userAuditLogManager->buildSnapshot($user);
+
+        foreach ($missingIds as $missingId) {
+            $structure = $this->structureManager->find($missingId);
+            if ($structure) {
+                $user->addStructure($structure);
+            }
+        }
+
+        $this->save($user);
+
+        $this->userAuditLogManager->logUpdated(null, 'login: materialize descendant structures', $user, $old);
+
+        return true;
+    }
+
     public function getRedCallUsersInStructure(Structure $structure, bool $includeChildren) : array
     {
         $users = $this->userRepository->getRedCallUsersInStructure($structure);

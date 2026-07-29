@@ -56,6 +56,6 @@ class StructureVoter extends Voter
             return true;
         }
 
-        return $me->getStructures()->contains($structure);
+        return $me->coversStructure($structure);
     }
 }
