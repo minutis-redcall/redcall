@@ -15,11 +15,6 @@ class AudienceManager
     private $volunteerManager;
 
     /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
      * @var BadgeManager
      */
     private $badgeManager;
@@ -35,13 +30,11 @@ class AudienceManager
     private $security;
 
     public function __construct(VolunteerManager $volunteerManager,
-        StructureManager $structureManager,
         BadgeManager $badgeManager,
         ExpirableManager $expirableManager,
         Security $security)
     {
         $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
         $this->badgeManager     = $badgeManager;
         $this->expirableManager = $expirableManager;
         $this->security         = $security;
@@ -229,28 +222,15 @@ class AudienceManager
 
     public function extractStructures(array $data) : array
     {
-        // This method is called twice when updating numbers:
-        // - when we need to get the classification data
-        // - when we need to get the badge counts for selected structures
-        // So we cache results to prevent hitting the db twice
-        static $cache = [];
-
-        $hash = sha1(json_encode($data));
-        if (array_key_exists($hash, $cache)) {
-            return $cache[$hash];
-        }
-
-        $structureIds = $data['structures_local'] ?? [];
-        if ($data['structures_global']) {
-            $structureIds = array_merge(
-                $structureIds,
-                $this->structureManager->getDescendantStructures($data['structures_global'])
-            );
-        }
-
-        $cache[$hash] = $structureIds;
-
-        return $cache[$hash];
+        // Selections are literal: ticking a structure targets that structure
+        // only. The "whole structure" slider in the audience form materializes
+        // every descendant as its own tick client-side, so unticking one
+        // sub-structure genuinely removes it — the backend must not re-add
+        // descendants implicitly.
+        return array_unique(array_merge(
+            $data['structures_local'] ?? [],
+            $data['structures_global'] ?? []
+        ));
     }
 
     public function extractBadgeCounts(array $data, array $badgeList) : array

@@ -693,11 +693,11 @@ class AudienceManagerTest extends KernelTestCase
     // ──────────────────────────────────────────────
 
     /**
-     * A trusted (non-admin) user assigned to a parent structure targets that
-     * parent as a global structure. The targeting layer expands the parent to
-     * all its descendants, so a volunteer belonging only to a sub-structure
-     * must remain reachable — the accessibility filter has to mirror the
-     * hierarchy-aware targeting, not just direct membership.
+     * A trusted (non-admin) user assigned to a parent structure explicitly
+     * ticks one of its sub-structures in the trigger form (the "whole DT"
+     * slider materializes each descendant tick client-side). A volunteer
+     * belonging only to that sub-structure must be reachable: the
+     * accessibility filter is hierarchy-aware, not just direct membership.
      */
     public function testClassifyAudienceGrantsAccessToDescendantStructureVolunteers()
     {
@@ -726,7 +726,7 @@ class AudienceManagerTest extends KernelTestCase
             'badges_ticked'       => [],
             'badges_searched'     => [],
             'structures_local'    => [],
-            'structures_global'   => [$parent->getId()],
+            'structures_global'   => [$parent->getId(), $child->getId()],
             'allow_minors'        => true,
             'excluded_volunteers' => [],
             'preselection_key'    => null,
@@ -735,6 +735,45 @@ class AudienceManagerTest extends KernelTestCase
         $classification = $this->audienceManager->classifyAudience($data);
 
         $this->assertContains($volunteer->getId(), $classification->getReachable());
+    }
+
+    /**
+     * Selecting a structure must select ONLY that structure: sub-structures
+     * are individual, untickable choices in the form, so the backend must not
+     * re-add them implicitly. Regression test for the "untick one UL of the
+     * DT but the count does not move" bug: the server used to expand
+     * structures_global to all descendants, making individual unticks
+     * meaningless.
+     */
+    public function testExtractAudienceDoesNotImplicitlySelectDescendantStructures()
+    {
+        $parent = $this->fixtures->createStructure('EXPL PARENT DT', 'STRUCT-EXPL-P');
+        $child  = $this->fixtures->createStructure('EXPL CHILD UL', 'STRUCT-EXPL-C');
+        $child->setParentStructure($parent);
+        $this->em->persist($child);
+        $this->em->flush();
+
+        $parentVolunteer = $this->fixtures->createStandaloneVolunteer('VOL-EXPL-P', 'expl-p@test.com');
+        $this->fixtures->assignVolunteerToStructure($parentVolunteer, $parent);
+
+        $childVolunteer = $this->fixtures->createStandaloneVolunteer('VOL-EXPL-C', 'expl-c@test.com');
+        $this->fixtures->assignVolunteerToStructure($childVolunteer, $child);
+
+        $data = [
+            'volunteers'        => [],
+            'external_ids'      => [],
+            'preselection_key'  => null,
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [$parent->getId()],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        $this->assertContains($parentVolunteer->getId(), $audience);
+        $this->assertNotContains($childVolunteer->getId(), $audience);
     }
 
     /**

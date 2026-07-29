@@ -227,10 +227,11 @@ class User extends AbstractUser implements LockableInterface
 
     /**
      * Whether the given structure is inside the user's triggering scope: the
-     * user is assigned to it directly, or to one of its ancestors. Audience
-     * targeting expands a structure into its whole sub-tree, so access checks
-     * must accept descendants too — hasStructure() alone would deny volunteers
-     * that a trigger on the parent structure legitimately reaches.
+     * user is assigned to it directly, or to one of its ancestors. A user
+     * assigned to a parent structure (e.g. a DT) manages and can trigger its
+     * whole sub-tree, so access checks must accept descendants — hasStructure()
+     * alone would deny volunteers of sub-structures the user legitimately
+     * reaches.
      *
      * The walk mirrors VolunteerRepository::createAccessibleVolunteersQueryBuilder()
      * and StructureRepository::getDescendantStructures(): at most 5 ancestor

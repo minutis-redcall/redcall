@@ -105,14 +105,14 @@ class VolunteerRepository extends BaseRepository
     private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
     {
         // A volunteer is accessible when they belong to a structure the user is
-        // assigned to, OR to any enabled descendant of such a structure. This
-        // mirrors how audience targeting expands a selected structure into its
-        // whole sub-tree (StructureRepository::getDescendantStructures), so a
-        // user managing a parent structure (e.g. a "DT") can reach volunteers
-        // who only belong to its sub-structures. The parent chain is walked up
-        // to 5 levels, matching the depth handled by getDescendantStructures(),
-        // and each hop requires an enabled structure so a disabled ancestor
-        // severs the chain exactly like the descent does.
+        // assigned to, OR to any enabled descendant of such a structure: a user
+        // managing a parent structure (e.g. a "DT") can trigger every
+        // sub-structure the audience form offers them, so they must reach the
+        // volunteers who only belong to those sub-structures. The parent chain
+        // is walked up to 5 levels, matching the depth handled by
+        // StructureRepository::getDescendantStructures(), and each hop requires
+        // an enabled structure so a disabled ancestor severs the chain exactly
+        // like the descent does.
         $qb = $this->createVolunteersQueryBuilder($enabled)
                    ->join('v.structures', 's')
                    ->leftJoin('s.parentStructure', 'p1', Join::WITH, 'p1.enabled = true')
