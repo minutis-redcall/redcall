@@ -30,8 +30,6 @@ GOOGLE_CLIENT_SECRET=
 
 WEBSITE_URL=https://redcall.fr
 
-MAPBOX_API_KEY=some key
-
 GCP_PROJECT_NAME=redcall
 GCP_PROJECT_LOCATION=europe-west1
 GCP_COMPUTE_ENGINE_LOCATION=europe-west1-b
