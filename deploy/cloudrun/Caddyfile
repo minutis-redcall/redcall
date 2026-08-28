@@ -1,6 +1,13 @@
 {
     auto_https off
     admin off
+    servers {
+        # Cloud Run's front end terminates TLS and sets X-Forwarded-Proto/For;
+        # without this, Caddy overwrites them with its own plain-http view and
+        # Symfony sees every request as http:// (breaking generated URLs and
+        # the Twilio webhook signature check).
+        trusted_proxies static private_ranges
+    }
 }
 
 :{$PORT:8080} {
