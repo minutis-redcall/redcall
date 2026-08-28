@@ -77,6 +77,9 @@ RUN { \
 WORKDIR /app/symfony
 
 COPY symfony/ ./
+# .gcloudignore/.dockerignore already exclude local credentials from the build
+# context; scrub the destination anyway so a developer's key can never ship.
+RUN rm -f config/keys/*.json
 COPY --from=deps /app/symfony/vendor ./vendor
 COPY --from=assets /app/public/build ./public/build
 
