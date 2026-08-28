@@ -12,7 +12,6 @@ symfony/vendor
 symfony/var
 symfony/public/build
 symfony/.env.local
-# Local credentials must never reach a build: gcloud only honors the root
-# .gitignore, not symfony/.gitignore, so exclude them here explicitly.
+# Local credentials must never reach an image (COPY symfony/ would grab them).
 symfony/config/keys/*
 !symfony/config/keys/.gitkeep

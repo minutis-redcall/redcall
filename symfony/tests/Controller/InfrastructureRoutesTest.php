@@ -2,6 +2,7 @@
 
 namespace App\Tests\Controller;
 
+use App\Security\CronTokenVerifier;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
 
@@ -75,6 +76,78 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         );
     }
 
+    public function testCronRejectsSpoofedAppEngineHeaderOffGae(): void
+    {
+        // Off App Engine (GAE_SERVICE not set), the X-Appengine-Cron header
+        // is client-controlled and must NOT grant access.
+        $client = static::createClient();
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'          => '203.0.113.5',
+            'HTTP_X_APPENGINE_CRON' => 'true',
+        ]);
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains($status, [302, 403], sprintf(
+            'Expected 302 or 403 for a spoofed GAE cron header off GAE; got %d', $status
+        ));
+    }
+
+    public function testCronAcceptsAppEngineHeaderOnGae(): void
+    {
+        // On App Engine (GAE_SERVICE set by the platform), the header is
+        // stripped from external traffic and can be trusted.
+        putenv('GAE_SERVICE=default');
+
+        try {
+            $client = static::createClient();
+
+            $client->request('GET', '/cron/user-cron', [], [], [
+                'REMOTE_ADDR'          => '203.0.113.5',
+                'HTTP_X_APPENGINE_CRON' => 'true',
+            ]);
+
+            $this->assertResponseIsSuccessful();
+        } finally {
+            putenv('GAE_SERVICE');
+        }
+    }
+
+    public function testCronAcceptsValidCloudSchedulerOidcToken(): void
+    {
+        $client = static::createClient();
+
+        $verifier = $this->createMock(CronTokenVerifier::class);
+        $verifier->expects($this->once())->method('verify')->with('valid-token')->willReturn(true);
+        $client->getContainer()->set(CronTokenVerifier::class, $verifier);
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'        => '203.0.113.5',
+            'HTTP_AUTHORIZATION' => 'Bearer valid-token',
+        ]);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testCronRejectsInvalidOidcToken(): void
+    {
+        $client = static::createClient();
+
+        $verifier = $this->createStub(CronTokenVerifier::class);
+        $verifier->method('verify')->willReturn(false);
+        $client->getContainer()->set(CronTokenVerifier::class, $verifier);
+
+        $client->request('GET', '/cron/user-cron', [], [], [
+            'REMOTE_ADDR'        => '203.0.113.5',
+            'HTTP_AUTHORIZATION' => 'Bearer forged-token',
+        ]);
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains($status, [302, 403], sprintf(
+            'Expected 302 or 403 for an invalid OIDC token; got %d', $status
+        ));
+    }
+
     // ──────────────────────────────────────────────
     // /deploy
     // ──────────────────────────────────────────────
@@ -128,6 +201,39 @@ class InfrastructureRoutesTest extends BaseWebTestCase
             $status,
             [302, 404],
             sprintf('Expected 302 (firewall) or 404 (controller) for malformed payload; got %d', $status)
+        );
+    }
+
+    public function testTaskWebhookAcceptsCloudTasksQueueHeader(): void
+    {
+        $client = static::createClient();
+
+        // A Cloud Tasks HTTP-target request carries X-CloudTasks-QueueName
+        // instead of X-Appengine-QueueName. With the header present the
+        // origin check must pass; the empty body then yields 404 (no
+        // WebhookRequest payload), NOT 403.
+        $client->request('POST', '/task/webhook', [], [], [
+            'HTTP_X_CLOUDTASKS_QUEUENAME' => 'webhook-sms-responses',
+        ], json_encode([]));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testTaskWebhookRejectsRequestWithoutAnyQueueHeader(): void
+    {
+        $client = static::createClient();
+
+        // Missing both X-Appengine-QueueName and X-CloudTasks-QueueName
+        // headers; the origin check must fail. The firewall may intercept
+        // before the controller's exception throw. Accept either 302 (firewall
+        // redirect) or 403 (controller exception).
+        $client->request('POST', '/task/webhook', [], [], [], json_encode([]));
+
+        $status = $client->getResponse()->getStatusCode();
+        $this->assertContains(
+            $status,
+            [302, 403],
+            sprintf('Expected 302 (firewall) or 403 (controller) for /task/webhook without queue header; got %d', $status)
         );
     }
 

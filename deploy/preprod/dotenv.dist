@@ -28,8 +28,6 @@ GOOGLE_CLIENT_SECRET=
 
 WEBSITE_URL=https://preprod.redcall.fr
 
-MAPBOX_API_KEY=some key
-
 GCP_PROJECT_NAME=project-name
 GCP_PROJECT_LOCATION=europe-west1
 GCP_COMPUTE_ENGINE_LOCATION=europe-west1-b
@@ -91,3 +89,12 @@ GOOGLE_SHEETS_ANNUAIRE_NATIONAL_ID=xxx
 GOOGLE_SHEETS_ANNUAIRE_DROITS_ID=xxx
 
 ANNUAIRE_NATIONAL_MAIL_ALERTING='foo@bar.baz;test@example.com'
+
+# Cloud Tasks target type: 'app_engine' (default, GAE deployments) or 'http' (Cloud Run deployments)
+GOOGLE_TASK_PROCESS=http
+
+# Service account Cloud Scheduler uses to invoke /cron/* (OIDC); token audience must be WEBSITE_URL
+CRON_INVOKER_SA=cron-invoker@your-project.iam.gserviceaccount.com
+
+# Cloud Run sits behind Google's HTTPS front end; trust X-Forwarded-* from the direct peer
+TRUSTED_PROXIES=REMOTE_ADDR

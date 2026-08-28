@@ -74,14 +74,6 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ```
 
-The next one can be useful in development environment if you want to work on the geo location part.
-
-You can create an API key for free on Mapbox, follow [this document](https://github.com/redcall-io/app/blob/master/docs/tech/09-configure-mapbox.md).
-
-```
-MAPBOX_API_KEY=some key
-```
-
 Pegass is a Red Cross application that allow scheduling activities or search for volunteers. We use
 its API to scrap and regularly update RedCall volunteers list.
 

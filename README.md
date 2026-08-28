@@ -35,7 +35,6 @@ sections.
 
 - [Setting up Symfony](docs/tech/05-configure-symfony.md)
 - [Setting up Google reCaptcha](docs/tech/06-google-recaptcha.md)
-- [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
 - [Setting up Twilio](docs/tech/10-configure-twilio.md)
 - [Setting up Sendgrid](docs/tech/10-configure-sendgrid.md)
 - [Setting up Slack](docs/tech/13-configure-slack.md)

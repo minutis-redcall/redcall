@@ -28,3 +28,6 @@ TestController.php
 /docker/mysql/data/
 /docker/caddy/data/
 /docker/caddy/config/
+
+.superpowers
+.agents

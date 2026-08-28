@@ -81,7 +81,10 @@ class TaskController extends BaseController
 
     private function checkOrigin(Request $request)
     {
-        if (!$name = $request->headers->get('X-Appengine-QueueName')) {
+        // App Engine targets send X-Appengine-QueueName, Cloud Run (HTTP)
+        // targets send X-CloudTasks-QueueName.
+        if (!$request->headers->get('X-Appengine-QueueName')
+            && !$request->headers->get('X-CloudTasks-QueueName')) {
             throw $this->createAccessDeniedException();
         }
     }
