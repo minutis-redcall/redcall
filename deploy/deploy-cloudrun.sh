@@ -30,7 +30,10 @@ case "$ENV" in
     ;;
   preprod)
     GCP_PROJECT="redcall-dev"
-    VPC_CONNECTOR="serverless-connector"
+    # The dev service was switched to Direct VPC egress by the Red Cross ops
+    # (network rdcl-dev-vpc1): --vpc-connector conflicts with it, and omitting
+    # any VPC flag preserves the service's current network config.
+    VPC_CONNECTOR=""
     ;;
   *)
     error "No GCP project configured for environment '$ENV'."
@@ -82,13 +85,18 @@ log "Building $IMAGE with Cloud Build..."
 # otherwise Cloud Run's IAM layer rejects the calls with 401 before the app.
 WEBSITE_URL="$(grep -m1 '^WEBSITE_URL=' "$SCRIPT_DIR/$ENV/dotenv" | cut -d= -f2- | tr -d '\r' | sed -e "s/^['\"]//" -e "s/['\"]\$//")"
 
+VPC_FLAG=()
+if [[ -n "$VPC_CONNECTOR" ]]; then
+  VPC_FLAG=(--vpc-connector="$VPC_CONNECTOR")
+fi
+
 log "Deploying $SERVICE to Cloud Run ($GCP_PROJECT)..."
 "${GCLOUD[@]}" run deploy "$SERVICE" \
   --image="$IMAGE" \
   --region="$REGION" \
   --platform=managed \
   --add-custom-audiences="$WEBSITE_URL" \
-  --vpc-connector="$VPC_CONNECTOR" \
+  ${VPC_FLAG[@]+"${VPC_FLAG[@]}"} \
   --concurrency=10 \
   --min-instances=0 \
   --max-instances=10 \
