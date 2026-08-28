@@ -80,8 +80,12 @@ COPY symfony/ ./
 COPY --from=deps /app/symfony/vendor ./vendor
 COPY --from=assets /app/public/build ./public/build
 
+# No service-account key is baked in: without config/keys/google-service-account.json,
+# index.php leaves GOOGLE_APPLICATION_CREDENTIALS unset and the Google clients fall
+# back to ADC, i.e. the Cloud Run runtime service account (same identity, no key to
+# rotate). Signed URLs go through the IAM Credentials API (the SA holds
+# roles/iam.serviceAccountTokenCreator on itself).
 COPY deploy/${ENV}/dotenv ./.env
-COPY deploy/${ENV}/google-service-account.json ./config/keys/google-service-account.json
 COPY deploy/cloudrun/Caddyfile /etc/caddy/Caddyfile
 COPY deploy/cloudrun/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

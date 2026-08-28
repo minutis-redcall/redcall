@@ -41,12 +41,12 @@ case "$ENV" in
     ;;
 esac
 
-for file in "$SCRIPT_DIR/$ENV/dotenv" "$SCRIPT_DIR/$ENV/google-service-account.json"; do
-  if [[ ! -f "$file" ]]; then
-    error "Missing deploy config: $file"
-    exit 1
-  fi
-done
+# Only the dotenv is required: on Cloud Run the app authenticates to Google
+# APIs through ADC (runtime service account), not a baked service-account key.
+if [[ ! -f "$SCRIPT_DIR/$ENV/dotenv" ]]; then
+  error "Missing deploy config: $SCRIPT_DIR/$ENV/dotenv"
+  exit 1
+fi
 
 GCLOUD=(gcloud --project="$GCP_PROJECT" --account="$GCP_ACCOUNT")
 
