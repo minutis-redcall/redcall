@@ -6,7 +6,9 @@
         # without this, Caddy overwrites them with its own plain-http view and
         # Symfony sees every request as http:// (breaking generated URLs and
         # the Twilio webhook signature check).
-        trusted_proxies static private_ranges
+        # 169.254.0.0/16: Cloud Run's front end connects from link-local
+        # addresses, which Caddy's private_ranges preset does not include.
+        trusted_proxies static private_ranges 169.254.0.0/16
     }
 }
 
