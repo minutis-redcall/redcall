@@ -106,11 +106,25 @@ class TaskSender
         return $task;
     }
 
+    public function getHttpTargetUrl() : string
+    {
+        // The task URL must not depend on the scheme/host of the request that
+        // fired it: a visitor browsing over plain http would produce an
+        // http:// target that Cloud Tasks cannot reach when the load balancer
+        // only exposes https. WEBSITE_URL is the canonical public base URL.
+        $base = getenv('WEBSITE_URL');
+        if (!$base) {
+            return $this->router->generate('google_task_receiver', [], RouterInterface::ABSOLUTE_URL);
+        }
+
+        return rtrim($base, '/').$this->router->generate('google_task_receiver');
+    }
+
     private function createHttpTask(string $payload) : Task
     {
         $httpRequest = new HttpRequest();
 
-        $url = $this->router->generate('google_task_receiver', [], RouterInterface::ABSOLUTE_URL);
+        $url = $this->getHttpTargetUrl();
 
         $httpRequest->setUrl($url)
                     ->setHttpMethod(HttpMethod::POST)

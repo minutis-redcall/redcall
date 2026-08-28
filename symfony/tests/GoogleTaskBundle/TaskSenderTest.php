@@ -10,9 +10,22 @@ use Symfony\Component\Routing\RouterInterface;
 
 class TaskSenderTest extends TestCase
 {
+    /**
+     * @var string|false
+     */
+    private $originalWebsiteUrl;
+
+    protected function setUp() : void
+    {
+        parent::setUp();
+
+        $this->originalWebsiteUrl = getenv('WEBSITE_URL');
+    }
+
     protected function tearDown() : void
     {
         putenv('GOOGLE_TASK_PROCESS');
+        putenv(false === $this->originalWebsiteUrl ? 'WEBSITE_URL' : 'WEBSITE_URL='.$this->originalWebsiteUrl);
 
         parent::tearDown();
     }
@@ -38,10 +51,47 @@ class TaskSenderTest extends TestCase
         $this->assertTrue($this->createSender()->getDefaultProcess()->isAppEngine());
     }
 
-    private function createSender() : TaskSender
+    public function testHttpTargetUrlUsesWebsiteUrlRatherThanRequestContext()
     {
+        putenv('WEBSITE_URL=https://redcall.example.org');
+
+        $sender = $this->createSender('/cloud-task', 'http://attacker-or-plain-http-host/cloud-task');
+
+        $this->assertSame('https://redcall.example.org/cloud-task', $sender->getHttpTargetUrl());
+    }
+
+    public function testHttpTargetUrlSupportsTrailingSlashInWebsiteUrl()
+    {
+        putenv('WEBSITE_URL=https://redcall.example.org/');
+
+        $sender = $this->createSender('/cloud-task', 'http://whatever/cloud-task');
+
+        $this->assertSame('https://redcall.example.org/cloud-task', $sender->getHttpTargetUrl());
+    }
+
+    public function testHttpTargetUrlFallsBackToRequestContextWithoutWebsiteUrl()
+    {
+        putenv('WEBSITE_URL');
+
+        $sender = $this->createSender('/cloud-task', 'http://127.0.0.1:8000/cloud-task');
+
+        $this->assertSame('http://127.0.0.1:8000/cloud-task', $sender->getHttpTargetUrl());
+    }
+
+    private function createSender(?string $relativeUrl = null, ?string $absoluteUrl = null) : TaskSender
+    {
+        $router = $this->createStub(RouterInterface::class);
+
+        if (null !== $relativeUrl) {
+            $router->method('generate')->willReturnCallback(
+                function (string $route, array $parameters = [], int $referenceType = RouterInterface::ABSOLUTE_PATH) use ($relativeUrl, $absoluteUrl) {
+                    return RouterInterface::ABSOLUTE_URL === $referenceType ? $absoluteUrl : $relativeUrl;
+                }
+            );
+        }
+
         return new TaskSender(
-            $this->createStub(RouterInterface::class),
+            $router,
             $this->createStub(KernelInterface::class),
             $this->createStub(TaskBag::class)
         );
