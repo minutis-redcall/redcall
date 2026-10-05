@@ -3,6 +3,7 @@
 namespace App\Tests\Controller\Admin;
 
 use App\Entity\User;
+use App\Entity\UserAuditLog;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
@@ -151,5 +152,123 @@ class UserControllerTest extends BaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
+    }
+
+    private function submitCreateUser($client, string $externalId) : void
+    {
+        $crawler = $client->request('GET', '/admin/redcall-users/create-user');
+        $form    = $crawler->filter('form[name="form"]')->form();
+        $form['form[externalId]'] = $externalId;
+        $client->submit($form);
+    }
+
+    public function testCreateUserTrustsExistingUntrustedUser()
+    {
+        // Non-reg: support "re-creates" a user who lost access, but the account
+        // already existed, so creation silently failed and access stayed disabled.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $admin  = $fixtures->createRawUser('create_trust_admin@test.com', 'password', true);
+        $target = $fixtures->createRawUser('create_trust_target@test.com', 'password', false);
+        $fixtures->createVolunteer($target, 'CREATETRUST1', 'create_trust_target@test.com');
+        $target->setIsTrusted(false);
+        $em->persist($target); // User is DEFERRED_EXPLICIT
+        $em->flush();
+
+        $this->login($client, $admin);
+        $this->submitCreateUser($client, 'CREATETRUST1');
+        $this->assertResponseRedirects();
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $updated = $em->getRepository(User::class)->findOneBy(['username' => 'create_trust_target@test.com']);
+        $this->assertTrue($updated->isTrusted());
+
+        $logs = $em->getRepository(UserAuditLog::class)->findBy([
+            'targetUsername' => 'create_trust_target@test.com',
+            'action'         => 'update',
+        ]);
+        $this->assertCount(1, $logs);
+        $this->assertSame('create_trust_admin@test.com', $logs[0]->getActor() ? $logs[0]->getActor()->getUsername() : null);
+        $this->assertFalse($logs[0]->getSnapshot()['old']['isTrusted']);
+        $this->assertTrue($logs[0]->getSnapshot()['new']['isTrusted']);
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('.flashes-container', 'réactivé');
+    }
+
+    public function testCreateUserLeavesTrustedExistingUserUntouched()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $admin  = $fixtures->createRawUser('create_exists_admin@test.com', 'password', true);
+        $target = $fixtures->createRawUser('create_exists_target@test.com', 'password', false);
+        $fixtures->createVolunteer($target, 'CREATEEXISTS1', 'create_exists_target@test.com');
+
+        $this->login($client, $admin);
+        $this->submitCreateUser($client, 'CREATEEXISTS1');
+        $this->assertResponseRedirects();
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('.flashes-container', 'existe déjà');
+    }
+
+    public function testCreateUserCreatesTrustedUser()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $admin = $fixtures->createRawUser('create_new_admin@test.com', 'password', true);
+        $fixtures->createStandaloneVolunteer('CREATENEW1', 'create_new_target@test.com');
+
+        $this->login($client, $admin);
+        $this->submitCreateUser($client, 'CREATENEW1');
+        $this->assertResponseRedirects();
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $created = $em->getRepository(User::class)->findOneBy(['externalId' => 'CREATENEW1']);
+        $this->assertNotNull($created);
+        $this->assertTrue($created->isTrusted());
+    }
+
+    public function testIndexShowsAccessBanners()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $admin  = $fixtures->createRawUser('banner_admin@test.com', 'password', true);
+        $target = $fixtures->createRawUser('banner_target@test.com', 'password', false, false);
+        $target->setIsTrusted(false);
+        $em->persist($target); // User is DEFERRED_EXPLICIT
+        $em->flush();
+
+        $this->login($client, $admin);
+        $client->request('GET', '/admin/redcall-users', ['form' => ['criteria' => 'banner_target']]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('.alert-danger', 'Accès bloqué : adresse email non vérifiée.');
+        $this->assertSelectorTextContains('.alert-warning', 'Accès actuellement désactivé');
+    }
+
+    public function testIndexShowsNoBannerForHealthyUser()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin = $fixtures->createRawUser('healthy_admin@test.com', 'password', true);
+        $fixtures->createUserWithStructure('healthy_target@test.com');
+
+        $this->login($client, $admin);
+        $client->request('GET', '/admin/redcall-users', ['form' => ['criteria' => 'healthy_target']]);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorNotExists('.card .alert');
     }
 }

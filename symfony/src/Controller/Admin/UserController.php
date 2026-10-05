@@ -241,9 +241,32 @@ class UserController extends BaseController
 
             try {
                 $this->userManager->createUser($volunteer->getExternalId(), $this->resolveActor());
+                $this->addFlash('success', 'admin.users.create_user_flash.created');
             } catch (\LogicException $e) {
-                // creation failures (no email, user already exists...) were
-                // already silent before, keep redirecting to the filtered list
+                $existing = $this->userManager->findOneByExternalId($volunteer->getExternalId());
+                if (!$existing && $volunteer->getEmail()) {
+                    $existing = $this->userManager->findOneByUsername($volunteer->getEmail());
+                }
+
+                if (!$existing) {
+                    $this->addFlash('danger', 'admin.users.create_user_flash.no_email');
+                } elseif (!$existing->isTrusted()) {
+                    // Support usually "re-creates" a user who lost access: the
+                    // account already exists, so granting access means trusting it.
+                    $old = $this->userAuditLogManager->buildSnapshot($existing);
+                    $existing->setIsTrusted(true);
+                    $this->userManager->save($existing);
+                    $this->userAuditLogManager->logUpdated($this->resolveActor(), null, $existing, $old);
+                    $this->addFlash('success', 'admin.users.create_user_flash.trusted');
+                } else {
+                    $this->addFlash('info', 'admin.users.create_user_flash.already_exists');
+                }
+
+                if ($existing) {
+                    return $this->redirectToRoute('admin_redcall_users_index', [
+                        'form[criteria]' => $existing->getExternalId() ?: $existing->getUsername(),
+                    ]);
+                }
             }
 
             return $this->redirectToRoute('admin_redcall_users_index', [

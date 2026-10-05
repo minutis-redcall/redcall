@@ -119,6 +119,27 @@
                                 </div>
                             {% endif %}
 
+                            {% if not user.verified %}
+                                <div class="alert alert-danger rc-access-alert">
+                                    <i class="fas fa-ban mr-1 fa-fw"></i><span>{{ 'admin.users.access.unverified'|trans }}</span>
+                                </div>
+                            {% endif %}
+                            {% if not user.trusted %}
+                                <div class="alert alert-warning rc-access-alert">
+                                    <i class="fas fa-user-slash mr-1 fa-fw"></i><span>{{ 'admin.users.access.untrusted'|trans }}</span>
+                                </div>
+                            {% endif %}
+                            {% if bound_volunteer and not bound_volunteer.enabled %}
+                                <div class="alert alert-warning rc-access-alert">
+                                    <i class="fas fa-user-times mr-1 fa-fw"></i><span>{{ 'admin.users.access.volunteer_disabled'|trans }}</span>
+                                </div>
+                            {% endif %}
+                            {% if user.verified and user.trusted and not user.admin and user.structures is empty %}
+                                <div class="alert alert-info rc-access-alert">
+                                    <i class="fas fa-sitemap mr-1 fa-fw"></i><span>{{ 'admin.users.access.no_structures'|trans }}</span>
+                                </div>
+                            {% endif %}
+
                             <div class="badges-grid mb-3">
                                 <span class="badge {{ user.verified ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_valid'|trans }}">V</span>
                                 <span class="badge {{ user.trusted ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_trusted'|trans }}">T</span>
@@ -176,6 +197,18 @@
         </div>
 
     </div>
+
+    <style>
+        .rc-access-alert {
+            display: flex;
+            align-items: baseline;
+            font-size: .75rem;
+            line-height: 1.3;
+            padding: .35rem .5rem;
+            margin-bottom: .4rem;
+            overflow-wrap: anywhere;
+        }
+    </style>
 
     <script type="text/javascript">
 

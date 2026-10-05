@@ -109,9 +109,19 @@ admin:
   home:
     link: Administration
   users:
+    access:
+      no_structures: 'Aucune structure : l''utilisateur peut se connecter mais ne peut déclencher personne.'
+      unverified: 'Accès bloqué : adresse email non vérifiée.'
+      untrusted: 'Accès actuellement désactivé : l''utilisateur n''est pas autorisé.'
+      volunteer_disabled: 'Bénévole associé désactivé : l''accès pourra être retiré à la prochaine sync (sauf si gelé).'
     add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    create_user_flash:
+      already_exists: 'Cet utilisateur existe déjà et son accès est actif.'
+      created: 'L''utilisateur a été créé.'
+      no_email: 'Impossible de créer l''utilisateur : le bénévole n''a pas d''adresse email.'
+      trusted: 'Cet utilisateur existait déjà mais son accès était désactivé : il a été réactivé.'
     delete_confirm: 'Vraiment supprimer "%email%" ?'
     delete_structures: 'Effacer une ou plusieurs structures'
     edit: 'Ouvrir la fiche bénévole'
