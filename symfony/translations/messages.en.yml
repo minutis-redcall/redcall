@@ -109,9 +109,19 @@ admin:
   home:
     link: Administration
   users:
+    access:
+      no_structures: 'No structure: the user can log in but cannot trigger anyone.'
+      unverified: 'Access blocked: email address not verified.'
+      untrusted: 'Access is currently disabled: the user is not trusted.'
+      volunteer_disabled: 'Bound volunteer disabled: access may be revoked at the next sync (unless frozen).'
     add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'
+    create_user_flash:
+      already_exists: 'This user already exists and their access is enabled.'
+      created: 'The user has been created.'
+      no_email: 'Cannot create the user: the volunteer has no email address.'
+      trusted: 'This user already existed but their access was disabled: it has been re-enabled.'
     delete_confirm: 'Really remove "%email%"?'
     delete_structures: 'Delete one or several structures'
     edit: 'Open volunteer record'
