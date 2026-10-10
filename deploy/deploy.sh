@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# NOTE: this script deploys to App Engine and is kept for prod rollback only.
+# Cloud Run deployments (the current target) use deploy/deploy-cloudrun.sh
+# — see deploy/cloudrun/README.md.
+
 set -euo pipefail
 
 # ─── Configuration ────────────────────────────────────────────────────────────

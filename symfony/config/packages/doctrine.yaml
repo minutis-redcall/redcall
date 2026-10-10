@@ -24,6 +24,12 @@ doctrine:
         wrapper_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Connection'
         options:
             x_reconnect_attempts: 3
+            # Cloud SQL (rdcl-dev-sql1) only accepts encrypted connections
+            # (sslMode: ENCRYPTED_ONLY); providing a CA is what makes mysqlnd
+            # negotiate TLS. Verification stays off because we reach the
+            # instance through its PSC IP, not the DNS name its cert carries.
+            !php/const PDO::MYSQL_ATTR_SSL_CA: '%kernel.project_dir%/config/ssl/mysql-server-ca.pem'
+            !php/const PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT: false
     orm:
         naming_strategy: doctrine.orm.naming_strategy.underscore
         auto_mapping: true

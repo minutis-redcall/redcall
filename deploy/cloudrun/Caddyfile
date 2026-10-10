@@ -1,0 +1,32 @@
+{
+    auto_https off
+    admin off
+    servers {
+        # Cloud Run's front end terminates TLS and sets X-Forwarded-Proto/For;
+        # without this, Caddy overwrites them with its own plain-http view and
+        # Symfony sees every request as http:// (breaking generated URLs and
+        # the Twilio webhook signature check).
+        # 169.254.0.0/16: Cloud Run's front end connects from link-local
+        # addresses, which Caddy's private_ranges preset does not include.
+        trusted_proxies static private_ranges 169.254.0.0/16
+    }
+}
+
+:{$PORT:8080} {
+    root * /app/symfony/public
+
+    encode zstd gzip
+
+    # Mirrors the App Engine static handlers (/build, /bundles, images) with 1d expiration
+    @static path /build/* /bundles/* *.ico *.txt *.gif *.png *.jpg
+    header @static Cache-Control "public, max-age=86400"
+
+    php_fastcgi 127.0.0.1:9000
+
+    file_server
+
+    log {
+        output stdout
+        format json
+    }
+}

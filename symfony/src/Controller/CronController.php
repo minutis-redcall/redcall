@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Security\CronTokenVerifier;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -35,15 +36,14 @@ class CronController extends AbstractController
     }
 
     #[Route("/{key}")]
-    public function run(Request $request, string $key, KernelInterface $kernel)
+    public function run(Request $request, string $key, KernelInterface $kernel, CronTokenVerifier $verifier)
     {
         $key = str_replace('-', ':', $key);
         if (!in_array($key, self::CRONS)) {
             throw $this->createNotFoundException();
         }
 
-        if ($request->getClientIp() !== '127.0.0.1'
-            && 'true' !== $request->headers->get('X-Appengine-Cron')) {
+        if (!$this->isTrustedCronCall($request, $verifier)) {
             if ($this->getUser() && $this->getUser()->isAdmin()) {
                 $this->requestStack->getSession()->save();
             } else {
@@ -61,5 +61,27 @@ class CronController extends AbstractController
         $application->run($input, new NullOutput());
 
         return new Response();
+    }
+
+    private function isTrustedCronCall(Request $request, CronTokenVerifier $verifier) : bool
+    {
+        if ('127.0.0.1' === $request->getClientIp()) {
+            return true;
+        }
+
+        // On App Engine the front end strips X-Appengine-Cron from external
+        // traffic, so the header proves the call comes from GAE Cron. Off
+        // GAE (e.g. Cloud Run) it is forgeable and must be ignored.
+        if ('true' === $request->headers->get('X-Appengine-Cron') && getenv('GAE_SERVICE')) {
+            return true;
+        }
+
+        // Cloud Scheduler authenticates with an OIDC identity token.
+        $authorization = $request->headers->get('Authorization', '');
+        if (0 === strpos($authorization, 'Bearer ')) {
+            return $verifier->verify(substr($authorization, 7));
+        }
+
+        return false;
     }
 }

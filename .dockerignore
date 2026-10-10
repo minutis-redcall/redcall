@@ -1,0 +1,17 @@
+.git
+.deploy-backup
+logs
+var
+docs
+notes.txt
+docker/mysql/data
+docker/caddy/data
+docker/caddy/config
+symfony/node_modules
+symfony/vendor
+symfony/var
+symfony/public/build
+symfony/.env.local
+# Local credentials must never reach an image (COPY symfony/ would grab them).
+symfony/config/keys/*
+!symfony/config/keys/.gitkeep

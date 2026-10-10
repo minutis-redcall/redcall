@@ -34,6 +34,7 @@
     "pagerfanta/doctrine-orm-adapter": "^4.4",
     "pagerfanta/twig": "^4.8",
     "phpdocumentor/reflection-docblock": "^6.0",
+    "phpseclib/phpseclib": "^3.0",
     "ramsey/uuid": "^4.0",
     "sendgrid/sendgrid": "^8.0",
     "symfony/apache-pack": "^1.0",
