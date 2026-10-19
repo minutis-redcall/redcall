@@ -202,8 +202,15 @@ class AudienceManager
         // would then throw "New communication has no message" deep in the
         // submission pipeline. Treat "structures picked but no badge filter"
         // as the obvious intent: include every volunteer in those structures.
+        //
+        // That fallback only makes sense when the user picked nothing else.
+        // When volunteers were explicitly chosen (search field, pasted
+        // external ids, or a preselection coming from a campaign), the
+        // auto-filled structure must not silently widen the audience to the
+        // whole structure: "1 volunteer selected" would otherwise send to
+        // hundreds of people (incident 2026-10-19).
         $badgeIds  = array_unique(array_merge($data['badges_ticked'] ?? [], $data['badges_searched'] ?? []));
-        $allBadges = ($data['badges_all'] ?? false) || empty($badgeIds);
+        $allBadges = ($data['badges_all'] ?? false) || (empty($badgeIds) && empty($volunteerIds));
 
         if ($allBadges) {
             $volunteerIds = array_merge(

@@ -446,6 +446,109 @@ class AudienceManagerTest extends KernelTestCase
         $this->assertContains($setup['volunteer']->getId(), $audience);
     }
 
+    public function testExtractAudiencePreselectionDoesNotExpandToWholeStructureWithoutBadgeFilter()
+    {
+        // Regression (incident 2026-10-19): a user with a single structure has
+        // it auto-filled in structures_global (AudienceType::buildForm). When
+        // they reach the "send a new message" form from a campaign with a
+        // preselection of volunteers, the classic form is hidden, no badge is
+        // ticked, and the "no badge filter => everyone in structure" fallback
+        // added every volunteer of the structure on top of the preselection
+        // (1 volunteer picked, 318 selected).
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'ea4@test.com', false, 'VOL-EA-004', 'STRUCT EA4', 'EXT-EA-004'
+        );
+        $other = $this->fixtures->createStandaloneVolunteer('VOL-EA-004-B', 'ea4b@test.com');
+        $this->fixtures->assignVolunteerToStructure($other, $setup['structure']);
+        $this->em->persist($setup['volunteer']);
+        $this->em->persist($other);
+        $this->em->flush();
+        $this->loginUser($setup['user']);
+
+        $key = self::getContainer()->get(\App\Manager\ExpirableManager::class)->set([
+            'volunteers' => [$setup['volunteer']->getId()],
+        ]);
+
+        $data = [
+            'volunteers'        => [],
+            'external_ids'      => [],
+            'preselection_key'  => $key,
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [$setup['structure']->getId()],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        $this->assertSame([$setup['volunteer']->getId()], array_values($audience));
+    }
+
+    public function testExtractAudienceDirectVolunteersDoNotExpandToWholeStructureWithoutBadgeFilter()
+    {
+        // Same root cause as above, through the "search for volunteers" field:
+        // an explicit volunteer pick plus the auto-filled structure and no
+        // badge filter must target the picked volunteer only.
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'ea5@test.com', false, 'VOL-EA-005', 'STRUCT EA5', 'EXT-EA-005'
+        );
+        $other = $this->fixtures->createStandaloneVolunteer('VOL-EA-005-B', 'ea5b@test.com');
+        $this->fixtures->assignVolunteerToStructure($other, $setup['structure']);
+        $this->em->persist($setup['volunteer']);
+        $this->em->persist($other);
+        $this->em->flush();
+        $this->loginUser($setup['user']);
+
+        $data = [
+            'volunteers'        => [$other->getId()],
+            'external_ids'      => [],
+            'preselection_key'  => null,
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [$setup['structure']->getId()],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        $this->assertSame([$other->getId()], array_values($audience));
+    }
+
+    public function testExtractAudienceStructureWithoutBadgeFilterAndNothingElseTargetsWholeStructure()
+    {
+        // The fallback from 76c4d929 must survive: structure picked, nothing
+        // else, no badge => everyone in the structure (and no empty audience).
+        $setup = $this->fixtures->createUserWithVolunteerAndStructure(
+            'ea6@test.com', false, 'VOL-EA-006', 'STRUCT EA6', 'EXT-EA-006'
+        );
+        $other = $this->fixtures->createStandaloneVolunteer('VOL-EA-006-B', 'ea6b@test.com');
+        $this->fixtures->assignVolunteerToStructure($other, $setup['structure']);
+        $this->em->persist($setup['volunteer']);
+        $this->em->persist($other);
+        $this->em->flush();
+        $this->loginUser($setup['user']);
+
+        $data = [
+            'volunteers'        => [],
+            'external_ids'      => [],
+            'preselection_key'  => null,
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'structures_local'  => [],
+            'structures_global' => [$setup['structure']->getId()],
+        ];
+
+        $audience = $this->audienceManager->extractAudience($data);
+
+        $this->assertEqualsCanonicalizing(
+            [$setup['volunteer']->getId(), $other->getId()],
+            array_values($audience)
+        );
+    }
+
     // ──────────────────────────────────────────────
     // extractStructures
     // ──────────────────────────────────────────────

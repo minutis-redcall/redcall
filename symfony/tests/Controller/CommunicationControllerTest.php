@@ -243,6 +243,38 @@ class CommunicationControllerTest extends BaseWebTestCase
         $this->assertSelectorExists('form');
     }
 
+    public function testNewCommunicationWithPreselectionTargetsOnlyPreselectedVolunteers(): void
+    {
+        // Regression (incident 2026-10-19): a user attached to a single
+        // structure opens "send a new message" for 1 selected volunteer and
+        // the page announces the whole structure as selected instead.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $user      = $fixtures->createRawUser('comm_presel-'.uniqid().'@example.com', 'password');
+        [$campaign, , , $structure, $volunteer] = $this->createCampaignForUser($fixtures, $user);
+
+        $other = $fixtures->createStandaloneVolunteer('VOL-COMM-PRESEL-B', 'presel-b@comm.test');
+        $fixtures->assignVolunteerToStructure($other, $structure);
+
+        $key = $container->get(\App\Manager\ExpirableManager::class)->set([
+            'volunteers' => [$volunteer->getId()],
+        ]);
+
+        $this->login($client, $user);
+        $crawler = $client->request('GET', sprintf('/campaign/%d/new-communication/sms/%s', $campaign->getId(), $key));
+
+        $this->assertResponseIsSuccessful();
+
+        $summary = $crawler->filter('.classification-summary');
+        $this->assertCount(1, $summary, 'Classification summary must be rendered');
+        $this->assertMatchesRegularExpression(
+            '~<strong>1</strong> (bénévoles sont sélectionnés|volunteers are selected)~u',
+            $summary->html(),
+            'Exactly one volunteer must be reported as selected, not the whole structure'
+        );
+    }
+
     // ──────────────────────────────────────────────
     // POST /campaign/preview/{type}
     // ──────────────────────────────────────────────
