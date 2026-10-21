@@ -32,7 +32,8 @@ RUN cd /usr/local/etc/php/conf.d/ \
   && echo 'output_buffering = 4096' >> app.ini \
   && echo 'date.timezone = Europe/Paris' >> app.ini \
   && echo 'display_errors = On' >> app.ini \
-  && echo 'error_reporting = E_ALL' >> app.ini
+  && echo 'error_reporting = E_ALL' >> app.ini \
+  && echo 'session.upload_progress.enabled = Off' >> app.ini
 
 RUN cd /usr/local/etc/php-fpm.d/ \
   && echo 'pm = dynamic' >> www.conf \
