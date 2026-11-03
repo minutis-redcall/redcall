@@ -157,6 +157,169 @@ class AudienceControllerTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
+    // Perimeter leaks on problems/selection (CERT-FR RM #1080870, audit H2)
+    //
+    // Both endpoints accept arbitrary volunteer ids / NIVOLs and used to render
+    // the full identity card (NIVOL, email, phone…) of every volunteer in the
+    // classification, including those outside the user's structures.
+    // ──────────────────────────────────────────────
+
+    /**
+     * A volunteer in a structure the logged-in user does not manage.
+     */
+    private function createForeignVolunteer($client, bool $enabled = true): array
+    {
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+
+        $suffix    = uniqid();
+        $structure = $fixtures->createStructure("FOREIGN STRUCT {$suffix}", "EXT-FOREIGN-{$suffix}");
+        $email     = "foreign-{$suffix}@leak.test";
+        $volunteer = $fixtures->createStandaloneVolunteer("FOREIGN-{$suffix}", $email);
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        if (!$enabled) {
+            $em = $container->get('doctrine.orm.entity_manager');
+            $volunteer->setEnabled(false);
+            $em->persist($volunteer);
+            $em->flush();
+        }
+
+        return ['volunteer' => $volunteer, 'email' => $email, 'externalId' => $volunteer->getExternalId()];
+    }
+
+    private function postAudience($client, string $endpoint, array $audience): string
+    {
+        $client->request(
+            'POST',
+            sprintf('/audience/%s?name=campaign[trigger][audience]', $endpoint),
+            $this->audiencePayload($audience)
+        );
+
+        $this->assertResponseIsSuccessful();
+
+        return $client->getResponse()->getContent();
+    }
+
+    public function testProblemsDoesNotExposeForeignVolunteerById(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createForeignVolunteer($client);
+
+        $html = $this->postAudience($client, 'problems', [
+            'volunteers' => (string) $foreign['volunteer']->getId(),
+        ]);
+
+        $this->assertStringNotContainsString($foreign['email'], $html);
+        $this->assertStringNotContainsString($foreign['externalId'], $html);
+    }
+
+    public function testProblemsDoesNotExposeForeignVolunteerByExternalId(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createForeignVolunteer($client);
+
+        $html = $this->postAudience($client, 'problems', [
+            'external_ids' => $foreign['externalId'],
+        ]);
+
+        $this->assertStringNotContainsString($foreign['email'], $html);
+    }
+
+    public function testProblemsDoesNotExposeDisabledForeignVolunteer(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createForeignVolunteer($client, false);
+
+        $html = $this->postAudience($client, 'problems', [
+            'volunteers' => (string) $foreign['volunteer']->getId(),
+        ]);
+
+        $this->assertStringNotContainsString($foreign['email'], $html);
+    }
+
+    public function testSelectionDoesNotExposeForeignExcludedVolunteer(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createForeignVolunteer($client);
+
+        $html = $this->postAudience($client, 'selection', [
+            'excluded_volunteers' => (string) $foreign['volunteer']->getId(),
+        ]);
+
+        $this->assertStringNotContainsString($foreign['email'], $html);
+    }
+
+    public function testSelectionDoesNotExposeForeignVolunteerById(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createForeignVolunteer($client);
+
+        $html = $this->postAudience($client, 'selection', [
+            'volunteers' => (string) $foreign['volunteer']->getId(),
+        ]);
+
+        $this->assertStringNotContainsString($foreign['email'], $html);
+    }
+
+    // Guards: the fix must not hide volunteers the user is allowed to see.
+
+    public function testSelectionStillShowsOwnVolunteer(): void
+    {
+        $client = static::createClient();
+        $data   = $this->setUpUser($client);
+
+        $html = $this->postAudience($client, 'selection', [
+            'volunteers' => (string) $data['volunteer']->getId(),
+        ]);
+
+        $this->assertStringContainsString($data['volunteer']->getEmail(), $html);
+    }
+
+    public function testProblemsStillShowsOwnDisabledVolunteer(): void
+    {
+        $client    = static::createClient();
+        $data      = $this->setUpUser($client);
+        $container = $client->getContainer();
+        $em        = $container->get('doctrine.orm.entity_manager');
+
+        $suffix = uniqid();
+        $own    = $this->getFixtures($container)->createStandaloneVolunteer("OWN-DIS-{$suffix}", "own-dis-{$suffix}@test.com");
+        $this->getFixtures($container)->assignVolunteerToStructure($own, $data['structure']);
+        $own->setEnabled(false);
+        $em->persist($own);
+        $em->flush();
+
+        $html = $this->postAudience($client, 'problems', [
+            'volunteers' => (string) $own->getId(),
+        ]);
+
+        $this->assertStringContainsString("own-dis-{$suffix}@test.com", $html);
+    }
+
+    public function testProblemsShowsForeignVolunteerToAdmin(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $suffix    = uniqid();
+        $admin     = $fixtures->createRawUser("aud-admin-{$suffix}@test.com", 'password', true);
+        $this->login($client, $admin);
+        $foreign   = $this->createForeignVolunteer($client, false);
+
+        $html = $this->postAudience($client, 'problems', [
+            'volunteers' => (string) $foreign['volunteer']->getId(),
+        ]);
+
+        $this->assertStringContainsString($foreign['email'], $html);
+    }
+
+    // ──────────────────────────────────────────────
     // GET /audience/home
     // ──────────────────────────────────────────────
 

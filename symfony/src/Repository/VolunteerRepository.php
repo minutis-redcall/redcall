@@ -393,10 +393,10 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('volunteer_ids', $volunteerIds);
     }
 
-    public function getVolunteerListForUser(User $user, array $volunteerIds) : array
+    public function getVolunteerListForUser(User $user, array $volunteerIds, bool $onlyEnabled = true) : array
     {
         return $this
-            ->createAccessibleVolunteersQueryBuilder($user)
+            ->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled)
             ->andWhere('v.id IN (:volunteer_ids)')
             ->setParameter('volunteer_ids', $volunteerIds)
             ->getQuery()

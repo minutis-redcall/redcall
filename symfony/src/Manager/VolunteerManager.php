@@ -124,16 +124,44 @@ class VolunteerManager
 
     public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
     {
-        $volunteers = [];
+        return $this->sortAndIndexById(
+            $this->volunteerRepository->getVolunteerList($volunteerIds, $onlyEnabled)
+        );
+    }
 
-        $list = $this->volunteerRepository->getVolunteerList($volunteerIds, $onlyEnabled);
+    /**
+     * Same contract as getVolunteerList() (sorted by last name, keyed by id),
+     * restricted to the volunteers the current user is allowed to see. Use it
+     * whenever volunteer identities are rendered from user-supplied ids.
+     */
+    public function getAccessibleVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->getVolunteerList($volunteerIds, $onlyEnabled);
+        }
 
+        return $this->sortAndIndexById(
+            $this->volunteerRepository->getVolunteerListForUser(
+                $this->security->getUser(),
+                $volunteerIds,
+                $onlyEnabled
+            )
+        );
+    }
+
+    /**
+     * @param Volunteer[] $list
+     *
+     * @return Volunteer[] sorted by last name, keyed by id
+     */
+    private function sortAndIndexById(array $list) : array
+    {
         usort($list, function (Volunteer $a, Volunteer $b) {
             return $a->getLastName() <=> $b->getLastName();
         });
 
+        $volunteers = [];
         foreach ($list as $volunteer) {
-            /** @var Volunteer $volunteer */
             $volunteers[$volunteer->getId()] = $volunteer;
         }
 
