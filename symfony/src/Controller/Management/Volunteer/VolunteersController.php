@@ -438,7 +438,8 @@ class VolunteersController extends BaseController
 
         return $this->json([
             'title' => $this->translator->trans('manage_volunteers.can_trigger', [
-                '%name%' => $volunteer->getDisplayName(),
+                // The client inserts the title with .html(): escape user data.
+                '%name%' => htmlspecialchars($volunteer->getDisplayName(), ENT_QUOTES),
             ]),
             'body'  => $this->renderView('management/volunteers/user_structures.html.twig', [
                 'user' => $user,

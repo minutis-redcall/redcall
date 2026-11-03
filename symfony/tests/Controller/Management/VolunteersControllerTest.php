@@ -554,4 +554,33 @@ class VolunteersControllerTest extends BaseWebTestCase
         $this->assertArrayHasKey('title', $decoded);
         $this->assertArrayHasKey('body', $decoded);
     }
+
+    public function testListUserStructuresEscapesVolunteerNameInTitle(): void
+    {
+        // Regression (CERT-FR RM #1080870, audit H6): the title is inserted
+        // with jQuery .html(), so a manager could plant a script in a
+        // volunteer's name and have it run in an admin's session.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $user      = $fixtures->createRawUser('vol_xss-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('XSS-STR-'.uniqid(), 'EXT-XSS-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createVolunteer($user, 'VOL-XSS-'.uniqid(), 'xss-vol-'.uniqid().'@test.com');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $em = $container->get('doctrine.orm.entity_manager');
+        $volunteer->setFirstName('<svg/onload=alert(1)>');
+        $volunteer->setLastName('Doe'); // display name needs both names
+        $em->persist($volunteer);
+        $em->flush();
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/volunteers/list-user-structures', ['id' => $volunteer->getId()]);
+
+        $this->assertResponseIsSuccessful();
+        $title = json_decode($client->getResponse()->getContent(), true)['title'];
+        $this->assertStringNotContainsString('<', $title);
+        $this->assertMatchesRegularExpression('/&lt;svg/i', $title);
+    }
 }
