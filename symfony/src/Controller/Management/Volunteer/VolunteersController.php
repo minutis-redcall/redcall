@@ -382,12 +382,19 @@ class VolunteersController extends BaseController
 
     #[Route(path: "/delete/{volunteerId}/{answerId}", name: "delete", defaults: ["answerId" => null])]
     #[Template("management/volunteers/delete.html.twig")]
+    #[IsGranted("VOLUNTEER", subject: "volunteer")]
     public function deleteAction(Request $request,
         SimpleProcessor $processor,
         #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
         #[MapEntity(expr: "answerId ? repository.find(answerId) : null")] ?Answer $answer = null)
     {
         if ($this->getRedCallUser($volunteer)) {
+            throw $this->createNotFoundException();
+        }
+
+        // The answer is displayed and mailed to managers: it must be one of
+        // this volunteer's own replies.
+        if ($answer && (!$answer->getMessage() || $answer->getMessage()->getVolunteer()->getId() !== $volunteer->getId())) {
             throw $this->createNotFoundException();
         }
 
@@ -407,7 +414,8 @@ class VolunteersController extends BaseController
                      ->getForm()
                      ->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        // "Cancel" is a submit button too (hidden by JS only): act on "confirm" alone.
+        if ($form->isSubmitted() && $form->isValid() && $form->get('confirm')->isClicked()) {
             $trigger = $this->deleteVolunteer($volunteer, $answer, $processor);
 
             if ($trigger) {

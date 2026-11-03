@@ -583,4 +583,147 @@ class VolunteersControllerTest extends BaseWebTestCase
         $this->assertStringNotContainsString('<', $title);
         $this->assertMatchesRegularExpression('/&lt;svg/i', $title);
     }
+
+    // ──────────────────────────────────────────────
+    // Anonymize page authorization (CERT-FR RM #1080870, audit M1)
+    // ──────────────────────────────────────────────
+
+    /**
+     * A manager of one structure, an own volunteer and a foreign volunteer,
+     * each with one SMS reply.
+     */
+    private function bootAnonymizeScenario($client): array
+    {
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $suffix    = uniqid();
+
+        $user      = $fixtures->createRawUser("m1-{$suffix}@test.com", 'password');
+        $structure = $fixtures->createStructure("M1-STR-{$suffix}", "EXT-M1-{$suffix}");
+        $fixtures->assignUserToStructure($user, $structure);
+        $other     = $fixtures->createStructure("M1-OTHER-{$suffix}", "EXT-M1O-{$suffix}");
+
+        $own = $fixtures->createStandaloneVolunteer("M1-OWN-{$suffix}", "m1-own-{$suffix}@test.com");
+        $fixtures->assignVolunteerToStructure($own, $structure);
+        $foreign = $fixtures->createStandaloneVolunteer("M1-FOR-{$suffix}", "m1-for-{$suffix}@test.com");
+        $fixtures->assignVolunteerToStructure($foreign, $other);
+
+        $campaign      = $fixtures->createCampaign("M1 {$suffix}");
+        $communication = $fixtures->createCommunication($campaign);
+        $ownAnswer     = $fixtures->createAnswer($fixtures->createMessage($communication, $own), "own secret {$suffix}");
+        $foreignAnswer = $fixtures->createAnswer($fixtures->createMessage($communication, $foreign), "foreign secret {$suffix}");
+
+        $this->login($client, $user);
+
+        return compact('own', 'foreign', 'ownAnswer', 'foreignAnswer');
+    }
+
+    public function testAnonymizePageDeniesVolunteerOutsidePerimeter(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['foreign']->getId(),
+            $s['foreignAnswer']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertStringNotContainsString($s['foreignAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    public function testAnonymizePageRejectsAnswerOfAnotherVolunteer(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['own']->getId(),
+            $s['foreignAnswer']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertStringNotContainsString($s['foreignAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    public function testAnonymizePageStillShowsOwnVolunteerAnswer(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['own']->getId(),
+            $s['ownAnswer']->getId()
+        ));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString($s['ownAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    /**
+     * Same setup as testDeleteVolunteer, where "confirm" does anonymize.
+     */
+    private function bootAnonymizableVolunteer($client): int
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $suffix   = uniqid();
+
+        $admin     = $fixtures->createRawUser("m1c-{$suffix}@example.com", 'password', true);
+        $structure = $fixtures->createStructure("M1C STRUCTURE {$suffix}", "EXT-M1C-{$suffix}");
+        $adminVol  = $fixtures->createVolunteer($admin, "M1C-ADMIN-{$suffix}", "m1c-{$suffix}@example.com");
+        $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->assignVolunteerToStructure($adminVol, $structure);
+
+        $volunteer = new Volunteer();
+        $volunteer->setExternalId("M1C-VOL-{$suffix}");
+        $volunteer->setFirstName('Keep');
+        $volunteer->setLastName('Me');
+        $volunteer->setEmail("keep.me.{$suffix}@example.com");
+        $volunteer->setEnabled(true);
+        $volunteer->setLocked(false);
+        $volunteer->setPhoneNumberOptin(true);
+        $volunteer->setEmailOptin(true);
+        $em->persist($volunteer);
+        $em->flush();
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $admin);
+
+        return $volunteer->getId();
+    }
+
+    private function postAnonymizeButton($client, int $id, string $button): ?Volunteer
+    {
+        $client->request('POST', sprintf('/management/volunteers/delete/%d', $id), [
+            'form' => [$button => ''],
+        ]);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Volunteer::class)->find($id);
+    }
+
+    public function testAnonymizeConfirmButtonAnonymizes(): void
+    {
+        // Control for the cancel test below: this setup really anonymizes.
+        $client = static::createClient();
+        $fresh  = $this->postAnonymizeButton($client, $this->bootAnonymizableVolunteer($client), 'confirm');
+
+        $this->assertTrue(null === $fresh || 'Keep' !== $fresh->getFirstName());
+    }
+
+    public function testAnonymizeCancelButtonDoesNotAnonymize(): void
+    {
+        // Without JavaScript, "Cancel" is a plain submit button.
+        $client = static::createClient();
+        $fresh  = $this->postAnonymizeButton($client, $this->bootAnonymizableVolunteer($client), 'cancel');
+
+        $this->assertNotNull($fresh);
+        $this->assertSame('Keep', $fresh->getFirstName());
+    }
 }
