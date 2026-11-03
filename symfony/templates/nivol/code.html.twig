@@ -14,6 +14,8 @@
             <img style="max-height:60px;" src="{{ asset('build/images/redcall-full.png') }}" alt="RedCall"/>
         </div>
 
+        <p class="text-center">{{ 'nivol_auth.code_sent_if_exists'|trans }}</p>
+
         {% form_theme code 'form/recaptcha_widget.html.twig' %}
         {{ form(code) }}
 

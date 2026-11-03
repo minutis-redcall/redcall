@@ -1136,6 +1136,7 @@ nivol_auth:
   nivol_not_found: 'NIvol not found'
   input_submit: 'Get a code by email'
   input_code: 'Please enter the code received by email'
+  code_sent_if_exists: 'If this NIVOL matches a RedCall account, a login code valid for 10 minutes has just been sent to you by email.'
   remember_me: 'Trust this device and keep the session open'
   input_connect: 'Connect'
   email:

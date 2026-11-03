@@ -335,27 +335,76 @@ class AuthenticatorTest extends BaseWebTestCase
         $this->assertNotAuthenticated($client);
     }
 
-    public function testNivolLoginUnknownNivolStaysOnForm() : void
+    public function testNivolUnknownNivolLooksLikeAKnownOne() : void
     {
+        // Regression (CERT-FR RM #1080870, audit M9): unknown NIVOLs used to
+        // get a "NIVOL invalide" error, revealing who has a RedCall account.
         $client    = static::createClient();
         $container = $client->getContainer();
         $this->whitelistIp($container);
 
         $client->followRedirects(false);
-        $crawler = $client->request('GET', '/nivol');
-        $this->assertResponseIsSuccessful();
-
+        $crawler              = $client->request('GET', '/nivol');
         $form                 = $crawler->filter('form')->first()->form();
         $form['nivol[nivol]'] = '00000000000'; // not in the DB
         $client->submit($form);
 
-        // NivolType has a Callback constraint that surfaces a "nivol_not_found"
-        // violation, so the form stays on /nivol with a 200 (re-rendered with
-        // errors) and no email is sent.
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $this->assertTrue($client->getResponse()->isRedirect());
+        $codeUrl = $client->getResponse()->headers->get('Location');
+        $this->assertMatchesRegularExpression('#/code/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$#', $codeUrl);
+
+        $client->request('GET', $codeUrl);
+        $this->assertResponseIsSuccessful();
 
         $emails = $container->get(FakeEmailManager::class)->findAllEmails();
         $this->assertEmpty($emails, 'No OTP email should be sent for an unknown NIVOL');
+    }
+
+    public function testNivolUnknownNivolDecreasesCaptchaGrace() : void
+    {
+        // Enumeration/flood attempts that send no email still count against the IP.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $em        = $container->get('doctrine.orm.entity_manager');
+        $repo      = $em->getRepository(Captcha::class);
+
+        $client->followRedirects(false);
+        $crawler              = $client->request('GET', '/nivol');
+        $form                 = $crawler->filter('form')->first()->form();
+        $form['nivol[nivol]'] = '00000000000';
+
+        $em->clear();
+        $captcha = $repo->findOneBy(['ip' => ip2long('127.0.0.1')]);
+        $before  = $captcha ? $captcha->getGrace() : (int) Captcha::FAILURE_GRACE;
+
+        $client->submit($form);
+
+        $em->clear();
+        $this->assertSame($before - 1, $repo->findOneBy(['ip' => ip2long('127.0.0.1')])->getGrace());
+    }
+
+    public function testNivolCodeEmailsAreThrottledPerNivol() : void
+    {
+        // Regression (audit M9): every /nivol submission emailed a new code.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        $fixtures = $this->getFixtures($container);
+        $user     = $fixtures->createRawUser('nivol_flood@test.com', 'pwd', false, true);
+        $fixtures->createVolunteer($user, '99110009', 'nivol_flood@test.com');
+
+        $client->followRedirects(false);
+        for ($i = 0; $i < NivolManager::MAX_CODES_PER_TTL + 2; $i++) {
+            $crawler              = $client->request('GET', '/nivol');
+            $form                 = $crawler->filter('form')->first()->form();
+            $form['nivol[nivol]'] = '99110009';
+            $client->submit($form);
+            $this->assertTrue($client->getResponse()->isRedirect());
+        }
+
+        $emails = $container->get(FakeEmailManager::class)->findMessagesForEmail('nivol_flood@test.com');
+        $this->assertCount(NivolManager::MAX_CODES_PER_TTL, $emails);
     }
 
     // ─────────────────────────────────────────────

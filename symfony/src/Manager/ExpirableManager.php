@@ -56,6 +56,11 @@ class ExpirableManager
         ];
     }
 
+    public function countValidCreatedSinceContaining(\DateTime $since, string $fragment) : int
+    {
+        return $this->expirableRepository->countValidCreatedSinceContaining($since, $fragment);
+    }
+
     public function remove(string $uuid) : void
     {
         $this->expirableRepository->removeByUuid($uuid);

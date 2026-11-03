@@ -47,6 +47,25 @@ class ExpirableRepository extends BaseRepository
         return 1 === $affected;
     }
 
+    /**
+     * Counts still-valid expirables created since $since whose JSON data
+     * contains $fragment (e.g. '"user_id":"<uuid>"').
+     */
+    public function countValidCreatedSinceContaining(\DateTime $since, string $fragment) : int
+    {
+        return (int) $this
+            ->createQueryBuilder('e')
+            ->select('COUNT(e.id)')
+            ->where('e.createdAt >= :since')
+            ->andWhere('e.expiresAt > :now')
+            ->andWhere('e.data LIKE :fragment')
+            ->setParameter('since', $since->format('Y-m-d H:i:s'))
+            ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
+            ->setParameter('fragment', '%'.addcslashes($fragment, '%_\\').'%')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function refresh(Expirable $expirable) : void
     {
         $this->getEntityManager()->refresh($expirable);
