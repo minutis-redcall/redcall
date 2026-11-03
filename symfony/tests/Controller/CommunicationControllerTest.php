@@ -432,4 +432,57 @@ class CommunicationControllerTest extends BaseWebTestCase
             'User without matching structures should be denied access to the campaign'
         );
     }
+
+    // ──────────────────────────────────────────────
+    // Communication must belong to the voted campaign (CERT-FR RM #1080870, audit M2/M3)
+    // ──────────────────────────────────────────────
+
+    /**
+     * A campaign the user can access, plus a communication of a campaign
+     * they have nothing to do with.
+     */
+    private function bootForeignCommunication($client, bool $admin = false): array
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('m2-'.uniqid().'@example.com', 'password', $admin);
+        [$campaign] = $this->createCampaignForUser($fixtures, $user);
+
+        $foreignCampaign      = $fixtures->createCampaign('Foreign campaign');
+        $foreignCommunication = $fixtures->createCommunication($foreignCampaign);
+        $foreignCommunication->setLabel('Original label');
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($foreignCommunication);
+        $em->flush();
+
+        $this->login($client, $user);
+
+        return [$campaign, $foreignCommunication];
+    }
+
+    private function reloadCommunication($client, int $id): Communication
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Communication::class)->find($id);
+    }
+
+    public function testRenameRejectsCommunicationOfAnotherCampaign(): void
+    {
+        $client = static::createClient();
+        [$campaign, $foreign] = $this->bootForeignCommunication($client);
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', sprintf(
+            '/campaign/%d/rename-communication/%d',
+            $campaign->getId(),
+            $foreign->getId()
+        ), [
+            'new_name' => 'pwned',
+            'csrf'     => $csrf,
+        ]);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertSame('Original label', $this->reloadCommunication($client, $foreign->getId())->getLabel());
+    }
 }

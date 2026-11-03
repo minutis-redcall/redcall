@@ -480,6 +480,11 @@ class CommunicationController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
+        // The voter covers {campaignId} only: the communication must be one of its own.
+        if (!$communicationEntity->getCampaign()->equals($campaign)) {
+            throw $this->createNotFoundException();
+        }
+
         $communication = new SmsTrigger();
         $communication->setLabel($request->request->get('new_name'));
         $errors = $validator->validate($communication, null, ['label_edition']);
