@@ -19,6 +19,50 @@ class ExpirableRepository extends BaseRepository
         parent::__construct($registry, Expirable::class);
     }
 
+    /**
+     * Atomically records one attempt against a still-valid expirable.
+     *
+     * The increment happens in a single conditional UPDATE so that concurrent
+     * requests cannot all read the same counter and bypass the limit: only
+     * $maxAttempts requests can ever succeed, whatever the parallelism.
+     *
+     * Returns true if the attempt was recorded (expirable exists, has not
+     * expired, and had attempts left), false otherwise.
+     */
+    public function incrementAttempts(string $uuid, int $maxAttempts) : bool
+    {
+        $affected = $this
+            ->createQueryBuilder('e')
+            ->update()
+            ->set('e.attempts', 'e.attempts + 1')
+            ->where('e.uuid = :uuid')
+            ->andWhere('e.attempts < :max')
+            ->andWhere('e.expiresAt > :now')
+            ->setParameter('uuid', $uuid)
+            ->setParameter('max', $maxAttempts)
+            ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
+            ->getQuery()
+            ->execute();
+
+        return 1 === $affected;
+    }
+
+    public function refresh(Expirable $expirable) : void
+    {
+        $this->getEntityManager()->refresh($expirable);
+    }
+
+    public function removeByUuid(string $uuid) : void
+    {
+        $this
+            ->createQueryBuilder('e')
+            ->delete()
+            ->where('e.uuid = :uuid')
+            ->setParameter('uuid', $uuid)
+            ->getQuery()
+            ->execute();
+    }
+
     public function clearExpired()
     {
         return $this

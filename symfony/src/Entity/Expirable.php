@@ -28,6 +28,9 @@ class Expirable
     #[ORM\Column(type: 'datetime')]
     private $expiresAt;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private $attempts = 0;
+
     public function getId() : ?int
     {
         return $this->id;
@@ -79,5 +82,15 @@ class Expirable
         $this->expiresAt = $expiresAt;
 
         return $this;
+    }
+
+    public function getAttempts() : int
+    {
+        return (int) $this->attempts;
+    }
+
+    public function isExpired() : bool
+    {
+        return $this->expiresAt <= new \DateTime();
     }
 }

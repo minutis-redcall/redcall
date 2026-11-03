@@ -9,6 +9,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NivolManager
 {
+    // Login codes are short (~22.7 bits): keep them short-lived and cap the
+    // number of guesses so they cannot be brute-forced.
+    public const CODE_TTL     = 'PT10M';
+    public const MAX_ATTEMPTS = 10;
+
     private VolunteerManager    $volunteerManager;
     private UserManager         $userManager;
     private ExpirableManager    $expirableManager;
@@ -61,7 +66,7 @@ class NivolManager
         $identifier = $this->expirableManager->set([
             'user_id' => $user->getId(),
             'code'    => $code,
-        ]);
+        ], (new \DateTime())->add(new \DateInterval(self::CODE_TTL)));
 
         $this->mailManager->simple(
             $user->getUserIdentifier(),
