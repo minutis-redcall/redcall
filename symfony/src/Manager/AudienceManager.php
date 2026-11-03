@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Badge;
+use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Model\Classification;
 use App\Security\Helper\Security;
@@ -29,11 +30,18 @@ class AudienceManager
      */
     private $security;
 
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
     public function __construct(VolunteerManager $volunteerManager,
         BadgeManager $badgeManager,
         ExpirableManager $expirableManager,
-        Security $security)
+        Security $security,
+        StructureManager $structureManager)
     {
+        $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->badgeManager     = $badgeManager;
         $this->expirableManager = $expirableManager;
@@ -234,10 +242,29 @@ class AudienceManager
         // every descendant as its own tick client-side, so unticking one
         // sub-structure genuinely removes it — the backend must not re-add
         // descendants implicitly.
-        return array_unique(array_merge(
+        $structureIds = array_unique(array_merge(
             $data['structures_local'] ?? [],
             $data['structures_global'] ?? []
         ));
+
+        // No user = internal call (CLI, tasks): nothing to scope. HTTP callers
+        // are all behind the firewall and always carry a user.
+        $user = $this->security->getUser();
+        if (!$structureIds || !$user || $this->security->isGranted('ROLE_ADMIN')) {
+            return $structureIds;
+        }
+
+        // Ids come from the request: keep only the user's structures and
+        // their descendants (what the audience form offers them).
+        $mine = array_map(function (Structure $structure) {
+            return $structure->getId();
+        }, $user->getStructures()->toArray());
+
+        $allowed = array_map('intval', $this->structureManager->getDescendantStructures($mine));
+
+        return array_values(array_filter($structureIds, function ($id) use ($allowed) {
+            return in_array((int) $id, $allowed, true);
+        }));
     }
 
     public function extractBadgeCounts(array $data, array $badgeList) : array

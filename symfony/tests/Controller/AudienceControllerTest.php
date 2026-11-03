@@ -320,6 +320,71 @@ class AudienceControllerTest extends BaseWebTestCase
     }
 
     // ──────────────────────────────────────────────
+    // Structure scoping on numbers (CERT-FR RM #1080870, audit M4)
+    //
+    // Structure ids were taken from the request as-is, so any user could
+    // count volunteers (per badge) in any structure of the organisation.
+    // ──────────────────────────────────────────────
+
+    private function createStructureWithVolunteers($client, int $count, $parent = null)
+    {
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $suffix    = uniqid();
+        $structure = $fixtures->createStructure("M4 {$suffix}", "EXT-M4-{$suffix}");
+
+        if ($parent) {
+            $em = $container->get('doctrine.orm.entity_manager');
+            $structure->setParentStructure($parent);
+            $em->persist($structure);
+            $em->flush();
+        }
+
+        for ($i = 0; $i < $count; $i++) {
+            $volunteer = $fixtures->createStandaloneVolunteer("M4-{$suffix}-{$i}", "m4-{$suffix}-{$i}@test.com");
+            $fixtures->assignVolunteerToStructure($volunteer, $structure);
+        }
+
+        return $structure;
+    }
+
+    private function postNumbers($client, array $structureIds): array
+    {
+        $client->request(
+            'POST',
+            '/audience/numbers?name=campaign[trigger][audience]',
+            $this->audiencePayload(['structures_global' => implode(',', $structureIds)])
+        );
+        $this->assertResponseIsSuccessful();
+
+        return json_decode($client->getResponse()->getContent(), true);
+    }
+
+    public function testNumbersIgnoresStructuresOutsidePerimeter(): void
+    {
+        $client  = static::createClient();
+        $this->setUpUser($client);
+        $foreign = $this->createStructureWithVolunteers($client, 3);
+
+        $numbers = $this->postNumbers($client, [$foreign->getId()]);
+
+        $this->assertSame(0, $numbers['badge_counts'][0]);
+        $this->assertSame(0, $numbers['triggered_count']);
+    }
+
+    public function testNumbersStillCountsOwnAndChildStructures(): void
+    {
+        $client = static::createClient();
+        $data   = $this->setUpUser($client); // 1 volunteer in the user's structure
+        $child  = $this->createStructureWithVolunteers($client, 2, $data['structure']);
+
+        $numbers = $this->postNumbers($client, [$data['structure']->getId(), $child->getId()]);
+
+        $this->assertSame(3, $numbers['badge_counts'][0]);
+        $this->assertSame(3, $numbers['triggered_count']);
+    }
+
+    // ──────────────────────────────────────────────
     // GET /audience/home
     // ──────────────────────────────────────────────
 
