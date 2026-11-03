@@ -64,20 +64,28 @@ class CampaignVoter extends Voter
             return true;
         }
 
-        if ($campaign->getUser()) {
-            // A user has ownership of a campaign if he shares one structure with
-            // the operator who triggered the campaign.
-            $isOwner = $me->hasCommonStructure(
-                $campaign->getUser()->getStructures()
-            );
+        $author = $campaign->getUser();
+
+        if ($author) {
+            // Ownership belongs to the operator who triggered the campaign and
+            // to whoever covers one of their structures.
+            $isOwner = $author->getId() === $me->getId()
+                       || $me->hasCommonStructure($author->getStructures());
 
             if ($isOwner) {
                 return true;
             }
+
+            // Being linked to a recipient grants access, never ownership:
+            // otherwise any local manager could close/rename a national campaign.
+            if (self::OWNER === $attribute) {
+                return false;
+            }
         }
 
         // A user can access a campaign if any of the triggered volunteer has a
-        // common structure with that user.
+        // common structure with that user. Campaigns without an author (legacy,
+        // or author deleted) keep this rule for ownership too.
         return $me->hasCommonStructure(
             $this->structureManager->getCampaignStructures($campaign)
         );
