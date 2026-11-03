@@ -157,4 +157,165 @@ class VolunteerListControllerTest extends BaseWebTestCase
             $list->getId()
         ));
     }
+
+    // ──────────────────────────────────────────────
+    // Cross-structure access (CERT-FR RM #1080870, audit H3/H4)
+    //
+    // Only {structureId} went through the STRUCTURE voter; {volunteerListId}
+    // was never checked against it, so any list could be read, moved into
+    // the caller's structure or deleted.
+    // ──────────────────────────────────────────────
+
+    /**
+     * A list owned by a structure the logged-in user does not manage, with
+     * one member whose email is easy to spot in a response.
+     */
+    private function createForeignList($client): array
+    {
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $suffix    = uniqid();
+        $structure = $fixtures->createStructure("VL-FOREIGN-{$suffix}", "EXT-VLF-{$suffix}");
+        $email     = "vl-foreign-{$suffix}@leak.test";
+        $volunteer = $fixtures->createStandaloneVolunteer("VLF-{$suffix}", $email);
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+        $list      = $fixtures->createVolunteerList($structure, "Foreign-List-{$suffix}", [$volunteer]);
+
+        return compact('structure', 'volunteer', 'list', 'email');
+    }
+
+    private function reloadList($container, int $listId): ?VolunteerList
+    {
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(VolunteerList::class)->find($listId);
+    }
+
+    public function testCardsRejectsListOfAnotherStructure(): void
+    {
+        $client        = static::createClient();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $foreign       = $this->createForeignList($client);
+
+        $client->request('GET', sprintf(
+            '/management/structures/volunteer-lists/%d/cards/%d',
+            $structure->getId(),
+            $foreign['list']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertStringNotContainsString($foreign['email'], $client->getResponse()->getContent());
+    }
+
+    public function testCardsReturns404ForUnknownList(): void
+    {
+        $client        = static::createClient();
+        [, $structure] = $this->bootUserWithStructure($client);
+
+        $client->request('GET', sprintf(
+            '/management/structures/volunteer-lists/%d/cards/%d',
+            $structure->getId(),
+            999999999
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testCreateRejectsListOfAnotherStructure(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $foreign       = $this->createForeignList($client);
+
+        $client->request('POST', sprintf(
+            '/management/structures/volunteer-lists/%d/create/%d',
+            $structure->getId(),
+            $foreign['list']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertSame(
+            $foreign['structure']->getId(),
+            $this->reloadList($container, $foreign['list']->getId())->getStructure()->getId(),
+            'A foreign list must never be moved into the caller\'s structure'
+        );
+    }
+
+    public function testDeleteRejectsListOfAnotherStructure(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $foreign       = $this->createForeignList($client);
+
+        $client->request('GET', sprintf(
+            '/management/structures/volunteer-lists/%d/remove/%s/%d',
+            $structure->getId(),
+            $this->getCsrfToken($container),
+            $foreign['list']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertNotNull($this->reloadList($container, $foreign['list']->getId()));
+    }
+
+    public function testDeleteOneVolunteerRejectsListOfAnotherStructure(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $foreign       = $this->createForeignList($client);
+
+        $client->request('GET', sprintf(
+            '/management/structures/volunteer-lists/%d/remove-one-volunteer/%s/%d/%d',
+            $structure->getId(),
+            $this->getCsrfToken($container),
+            $foreign['list']->getId(),
+            $foreign['volunteer']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertCount(1, $this->reloadList($container, $foreign['list']->getId())->getVolunteers());
+    }
+
+    public function testCardsAddVolunteerRejectsVolunteerOutsidePerimeter(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $foreign       = $this->createForeignList($client);
+        $ownList       = $this->getFixtures($container)->createVolunteerList($structure, 'Own-List-'.uniqid());
+        $url           = sprintf('/management/structures/volunteer-lists/%d/cards/%d', $structure->getId(), $ownList->getId());
+
+        $client->request('POST', $url, [
+            'add_volunteer' => ['externalId' => $foreign['volunteer']->getExternalId()],
+        ]);
+
+        $this->assertCount(0, $this->reloadList($container, $ownList->getId())->getVolunteers());
+
+        $client->request('GET', $url);
+        $this->assertStringNotContainsString($foreign['email'], $client->getResponse()->getContent());
+    }
+
+    public function testCardsAddVolunteerStillAddsOwnVolunteer(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootUserWithStructure($client);
+        $fixtures      = $this->getFixtures($container);
+        $own           = $fixtures->createStandaloneVolunteer('VL-OWN-'.uniqid(), 'vl-own-'.uniqid().'@test.com');
+        $fixtures->assignVolunteerToStructure($own, $structure);
+        $ownList       = $fixtures->createVolunteerList($structure, 'Own-List-'.uniqid());
+
+        $client->request('POST', sprintf(
+            '/management/structures/volunteer-lists/%d/cards/%d',
+            $structure->getId(),
+            $ownList->getId()
+        ), [
+            'add_volunteer' => ['externalId' => $own->getExternalId()],
+        ]);
+
+        $this->assertCount(1, $this->reloadList($container, $ownList->getId())->getVolunteers());
+    }
 }
