@@ -17,9 +17,12 @@
             {% endif %}
 
             {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}" onclick="return confirm('{{ 'campaign_status.relaunch_communication_confirm'| trans }}');">
-                    {{ 'campaign_status.relaunch_communication'| trans }}
-                </a>
+                <form method="post" class="d-inline"
+                      action="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}"
+                      onsubmit="return confirm('{{ 'campaign_status.relaunch_communication_confirm'|trans|e('js') }}');">
+                    <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
+                    <button type="submit" class="btn btn-link p-0 align-baseline">{{ 'campaign_status.relaunch_communication'|trans }}</button>
+                </form>
             {% endif %}
 
             {% if campaign.active and campaign.code %}

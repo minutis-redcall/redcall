@@ -501,12 +501,20 @@ class CommunicationController extends BaseController
         ]));
     }
 
-    #[Route("campaign/{campaign}/communication/{communication}/relaunch", name: "relaunch")]
+    #[Route("campaign/{campaign}/communication/{communication}/relaunch", name: "relaunch", methods: ["POST"])]
     #[IsGranted(new Expression("is_granted('ROLE_ADMIN')"))]
-    public function relaunchCommunication(Campaign $campaign,
+    public function relaunchCommunication(Request $request,
+        Campaign $campaign,
         Communication $communication,
         ProcessorInterface $processor)
     {
+        // Re-sends every SMS/call/email: POST + CSRF only, never from a link.
+        $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
+
+        if (!$communication->getCampaign()->equals($campaign)) {
+            throw $this->createNotFoundException();
+        }
+
         foreach ($communication->getMessages() as $message) {
             $message->setError(false);
             $message->setSent(false);

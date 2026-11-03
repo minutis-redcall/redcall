@@ -400,7 +400,7 @@ class CommunicationControllerTest extends BaseWebTestCase
         [$campaign, $communication] = $this->createCampaignForUser($fixtures, $user);
 
         $this->login($client, $user);
-        $client->request('GET', sprintf(
+        $client->request('POST', sprintf(
             '/campaign/%d/communication/%d/relaunch',
             $campaign->getId(),
             $communication->getId()
@@ -484,5 +484,79 @@ class CommunicationControllerTest extends BaseWebTestCase
 
         $this->assertResponseStatusCodeSame(404);
         $this->assertSame('Original label', $this->reloadCommunication($client, $foreign->getId())->getLabel());
+    }
+
+    private function relaunchUrl($campaign, $communication): string
+    {
+        return sprintf('/campaign/%d/communication/%d/relaunch', $campaign->getId(), $communication->getId());
+    }
+
+    /**
+     * Admin with a campaign whose single message has already been sent.
+     */
+    private function bootRelaunch($client): array
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $admin    = $fixtures->createRawUser('m3-'.uniqid().'@example.com', 'password', true);
+        [$campaign, $communication, $message] = $this->createCampaignForUser($fixtures, $admin);
+        $this->login($client, $admin);
+
+        return [$campaign, $communication, $message];
+    }
+
+    private function isMessageSent($client, int $messageId): bool
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(\App\Entity\Message::class)->find($messageId)->isSent();
+    }
+
+    public function testRelaunchRejectsGet(): void
+    {
+        // An <img src=".../relaunch"> seen by an admin used to re-send everything.
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $client->request('GET', $this->relaunchUrl($campaign, $communication));
+
+        $this->assertResponseStatusCodeSame(405);
+        $this->assertTrue($this->isMessageSent($client, $message->getId()));
+    }
+
+    public function testRelaunchRejectsMissingCsrf(): void
+    {
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $client->request('POST', $this->relaunchUrl($campaign, $communication), ['csrf' => 'forged']);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertTrue($this->isMessageSent($client, $message->getId()));
+    }
+
+    public function testRelaunchRejectsCommunicationOfAnotherCampaign(): void
+    {
+        $client = static::createClient();
+        [$campaign] = $this->bootRelaunch($client);
+        $fixtures   = $this->getFixtures($client->getContainer());
+        $foreign    = $fixtures->createCommunication($fixtures->createCampaign('Other campaign'));
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', $this->relaunchUrl($campaign, $foreign), ['csrf' => $csrf]);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testRelaunchResetsMessagesWithValidCsrf(): void
+    {
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', $this->relaunchUrl($campaign, $communication), ['csrf' => $csrf]);
+
+        $this->assertResponseRedirects();
+        $this->assertFalse($this->isMessageSent($client, $message->getId()));
     }
 }
