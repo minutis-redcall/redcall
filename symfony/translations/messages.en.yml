@@ -838,6 +838,7 @@ manage_volunteers:
     volunteer: 'Volunteer'
   form:
     added: 'Volunteer has properly been added.'
+    privileged_badge: 'Only an administrator can grant or remove the "%badge%" nomination.'
     create: 'Create volunteer'
     email: Email
     email_locked: 'Locked email *'

@@ -834,6 +834,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
+    privileged_badge: 'Seul un administrateur peut attribuer ou retirer la nomination « %badge% ».'
     create: 'Créer un bénévole'
     email: Email
     email_locked: 'Geler l''email *'

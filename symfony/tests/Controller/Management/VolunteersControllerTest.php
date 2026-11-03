@@ -726,4 +726,147 @@ class VolunteersControllerTest extends BaseWebTestCase
         $this->assertNotNull($fresh);
         $this->assertSame('Keep', $fresh->getFirstName());
     }
+
+    // ──────────────────────────────────────────────
+    // NIVOL and privilege badges (CERT-FR RM #1080870, audit M6)
+    //
+    // A manager could create a volunteer carrying the "RT MR" badge (the sync
+    // then creates a verified, trusted RedCall user for it), and could rewrite
+    // the NIVOL of an existing volunteer (unbinding it from its RedCall user).
+    // ──────────────────────────────────────────────
+
+    private function bootManagerWithVolunteer($client, bool $admin = false): array
+    {
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $suffix    = uniqid();
+        $user      = $fixtures->createRawUser("m6-{$suffix}@test.com", 'password', $admin);
+        $structure = $fixtures->createStructure("M6 {$suffix}", "EXT-M6-{$suffix}");
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createStandaloneVolunteer("M6VOL{$suffix}", "m6-vol-{$suffix}@test.com");
+        $volunteer->setFirstName('Jean');
+        $volunteer->setLastName('Dupont');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+        $this->login($client, $user);
+
+        return [$user, $structure, $volunteer];
+    }
+
+    private function reloadVolunteer($client, int $id): Volunteer
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Volunteer::class)->find($id);
+    }
+
+    private function volunteerBadgeNames(Volunteer $volunteer): array
+    {
+        return array_map(function ($badge) {
+            return $badge->getName();
+        }, $volunteer->getBadges()->toArray());
+    }
+
+    public function testNonAdminCannotRewriteNivolOfExistingVolunteer(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $nivol  = $volunteer->getExternalId();
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['externalId'] = 'HIJACKED';
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertSame($nivol, $this->reloadVolunteer($client, $volunteer->getId())->getExternalId());
+    }
+
+    public static function rtmrVisibilityProvider(): array
+    {
+        return ['invisible badge' => [false], 'visible badge' => [true]];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('rtmrVisibilityProvider')]
+    public function testNonAdminCannotGrantRtmrBadge(bool $visible): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $rtmr   = $this->getFixtures($client->getContainer())
+                       ->createBadge(\App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE, 'M6-RTMR-'.uniqid(), true, $visible);
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        if ($visible) {
+            $values['volunteer']['badges']['visible'][] = (string) $rtmr->getId();
+        } else {
+            $values['volunteer']['badges']['invisible'] = (string) $rtmr->getId();
+        }
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertNotContains(
+            \App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE,
+            $this->volunteerBadgeNames($this->reloadVolunteer($client, $volunteer->getId()))
+        );
+    }
+
+    public function testAdminCanStillGrantRtmrBadge(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client, true);
+        $rtmr   = $this->getFixtures($client->getContainer())
+                       ->createBadge(\App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE, 'M6-RTMR-'.uniqid(), true, false);
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['badges']['invisible'] = (string) $rtmr->getId();
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertContains(
+            \App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE,
+            $this->volunteerBadgeNames($this->reloadVolunteer($client, $volunteer->getId()))
+        );
+    }
+
+    public function testNonAdminCannotCreateVolunteerOutsideTheirStructures(): void
+    {
+        $client = static::createClient();
+        $this->bootManagerWithVolunteer($client);
+        $email  = 'm6-orphan-'.uniqid().'@test.com';
+
+        $crawler = $client->request('GET', '/management/volunteers/create');
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['firstName'] = 'Orphan';
+        $values['volunteer']['lastName']  = 'Volunteer';
+        $values['volunteer']['email']     = $email;
+        unset($values['volunteer']['structures']);
+        $client->request('POST', $form->getUri(), $values);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $this->assertNull($em->getRepository(Volunteer::class)->findOneBy(['email' => $email]));
+    }
+
+    public function testNonAdminCanStillCreateVolunteerInTheirStructure(): void
+    {
+        $client = static::createClient();
+        [, $structure] = $this->bootManagerWithVolunteer($client);
+        $email  = 'm6-new-'.uniqid().'@test.com';
+
+        $crawler = $client->request('GET', '/management/volunteers/create');
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['externalId'] = 'M6NEW'.strtoupper(uniqid());
+        $values['volunteer']['firstName']  = 'New';
+        $values['volunteer']['lastName']   = 'Volunteer';
+        $values['volunteer']['email']      = $email;
+        $values['volunteer']['structures'] = [(string) $structure->getId()];
+        $client->request('POST', $form->getUri(), $values);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $this->assertNotNull($em->getRepository(Volunteer::class)->findOneBy(['email' => $email]));
+    }
 }

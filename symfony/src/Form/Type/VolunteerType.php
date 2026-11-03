@@ -7,6 +7,7 @@ use App\Entity\Volunteer;
 use App\Manager\DeletedVolunteerManager;
 use App\Repository\StructureRepository;
 use App\Security\Helper\Security;
+use App\Sync\Reconciliation\RtmrReconciliator;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -15,10 +16,12 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Count;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -138,6 +141,17 @@ class VolunteerType extends AbstractType
 
             if (!$this->security->isGranted('ROLE_ADMIN')) {
                 $currentUser = $this->security->getUser();
+                /** @var Volunteer|null $volunteer */
+                $volunteer = $event->getData();
+
+                // The NIVOL binds a volunteer to its RedCall user: once the
+                // volunteer exists, only admins may change it.
+                if ($volunteer && $volunteer->getId()) {
+                    $builder->add('externalId', TextType::class, [
+                        'label'    => 'manage_volunteers.form.external_id',
+                        'disabled' => true,
+                    ]);
+                }
 
                 $builder
                     ->add('structures', EntityType::class, [
@@ -151,9 +165,46 @@ class VolunteerType extends AbstractType
                         },
                         'multiple'      => true,
                         'expanded'      => true,
+                        // A manager's volunteer must stay in their perimeter.
+                        'constraints'   => [new Count(min: 1)],
                     ]);
             }
         });
+
+        // Privilege badges (e.g. "RT MR") make the sync create a trusted
+        // RedCall user: only admins may grant or remove them.
+        $privilegedBefore = [];
+        $builder->addEventListener(FormEvents::POST_SET_DATA, function (FormEvent $event) use (&$privilegedBefore) {
+            $privilegedBefore = $this->getPrivilegedBadgeNames($event->getData());
+        });
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use (&$privilegedBefore) {
+            if ($this->security->isGranted('ROLE_ADMIN')) {
+                return;
+            }
+
+            $after = $this->getPrivilegedBadgeNames($event->getData());
+            foreach (array_merge(array_diff($after, $privilegedBefore), array_diff($privilegedBefore, $after)) as $name) {
+                $event->getForm()->get('badges')->addError(new FormError(
+                    $this->translator->trans('manage_volunteers.form.privileged_badge', ['%badge%' => $name])
+                ));
+            }
+        });
+    }
+
+    private function getPrivilegedBadgeNames(?Volunteer $volunteer) : array
+    {
+        if (!$volunteer) {
+            return [];
+        }
+
+        $names = [];
+        foreach ($volunteer->getBadges() as $badge) {
+            if (in_array($badge->getName(), [RtmrReconciliator::RTMR_BADGE, RtmrReconciliator::INVALID_RTMR_BADGE], true)) {
+                $names[] = $badge->getName();
+            }
+        }
+
+        return array_values(array_unique($names));
     }
 
     /**
