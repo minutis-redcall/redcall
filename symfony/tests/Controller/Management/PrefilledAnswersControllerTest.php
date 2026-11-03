@@ -193,4 +193,137 @@ class PrefilledAnswersControllerTest extends BaseWebTestCase
         $deleted = $em->getRepository(PrefilledAnswers::class)->find($pfaId);
         $this->assertNull($deleted, 'Prefilled answers should be removed from DB');
     }
+
+    // ──────────────────────────────────────────────
+    // Cross-structure access (CERT-FR RM #1080870, audit H5)
+    //
+    // The class-level STRUCTURE voter only covers {structure}: the prefilled
+    // answers taken from the URL (or the POST body) were never checked
+    // against it, so a manager could edit or delete any set, including the
+    // global (structure-less) ones offered to every user.
+    // ──────────────────────────────────────────────
+
+    private function bootManager($client): array
+    {
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $suffix    = uniqid();
+        $user      = $fixtures->createRawUser("pfa-mgr-{$suffix}@test.com", 'password');
+        $structure = $fixtures->createStructure("PFA MGR {$suffix}", "EXT-PFA-MGR-{$suffix}");
+        $fixtures->assignUserToStructure($user, $structure);
+        $this->login($client, $user);
+
+        return [$user, $structure];
+    }
+
+    /**
+     * @return PrefilledAnswers[] keyed 'foreign' (another structure) and 'global' (no structure)
+     */
+    private function createOutOfScopeSets($client): array
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $suffix   = uniqid();
+        $other    = $fixtures->createStructure("PFA OTHER {$suffix}", "EXT-PFA-OTH-{$suffix}");
+
+        return [
+            'foreign' => $fixtures->createPrefilledAnswers("Foreign {$suffix}", ['A', 'B'], $other),
+            'global'  => $fixtures->createPrefilledAnswers("Global {$suffix}", ['C', 'D']),
+        ];
+    }
+
+    private function reload($container, int $id): ?PrefilledAnswers
+    {
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(PrefilledAnswers::class)->find($id);
+    }
+
+    public static function outOfScopeProvider(): array
+    {
+        return [['foreign'], ['global']];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('outOfScopeProvider')]
+    public function testEditorRejectsOutOfScopeSet(string $kind): void
+    {
+        $client        = static::createClient();
+        [, $structure] = $this->bootManager($client);
+        $target        = $this->createOutOfScopeSets($client)[$kind];
+
+        $client->request('GET', sprintf(
+            '/management/structures/%d/prefilled-answers/%d/editor',
+            $structure->getId(),
+            $target->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('outOfScopeProvider')]
+    public function testNewRejectsOutOfScopeSetSmuggledInBody(string $kind): void
+    {
+        $client        = static::createClient();
+        [, $structure] = $this->bootManager($client);
+        $target        = $this->createOutOfScopeSets($client)[$kind];
+
+        $client->request('POST', sprintf(
+            '/management/structures/%d/prefilled-answers/new',
+            $structure->getId()
+        ), ['prefilledAnswers' => $target->getId()]);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('outOfScopeProvider')]
+    public function testDeleteRejectsOutOfScopeSet(string $kind): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootManager($client);
+        $target        = $this->createOutOfScopeSets($client)[$kind];
+
+        $client->request('GET', sprintf(
+            '/management/structures/%d/prefilled-answers/%d/delete?csrf=%s',
+            $structure->getId(),
+            $target->getId(),
+            $this->getCsrfToken($container)
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertNotNull($this->reload($container, $target->getId()));
+    }
+
+    public function testEditorStillOpensOwnSet(): void
+    {
+        $client        = static::createClient();
+        [, $structure] = $this->bootManager($client);
+        $own           = $this->getFixtures($client->getContainer())->createPrefilledAnswers('Own '.uniqid(), ['Y', 'N'], $structure);
+
+        $client->request('GET', sprintf(
+            '/management/structures/%d/prefilled-answers/%d/editor',
+            $structure->getId(),
+            $own->getId()
+        ));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testDeleteStillRemovesOwnSet(): void
+    {
+        $client        = static::createClient();
+        $container     = $client->getContainer();
+        [, $structure] = $this->bootManager($client);
+        $own           = $this->getFixtures($container)->createPrefilledAnswers('Own '.uniqid(), ['Y', 'N'], $structure);
+        $ownId         = $own->getId();
+
+        $client->request('GET', sprintf(
+            '/management/structures/%d/prefilled-answers/%d/delete?csrf=%s',
+            $structure->getId(),
+            $ownId,
+            $this->getCsrfToken($container)
+        ));
+
+        $this->assertResponseRedirects();
+        $this->assertNull($this->reload($container, $ownId));
+    }
 }

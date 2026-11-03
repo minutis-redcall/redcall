@@ -53,9 +53,7 @@ class PrefilledAnswersController extends BaseController
             $prefilledAnswers->setStructure($structure);
         } else {
             $prefilledAnswers = $this->prefilledAnswersManager->findById($prefilledAnswersId);
-            if (!$prefilledAnswers) {
-                throw $this->createNotFoundException();
-            }
+            $this->assertBelongsToStructure($prefilledAnswers, $structure);
         }
 
         $form = $this
@@ -75,9 +73,24 @@ class PrefilledAnswersController extends BaseController
     public function deleteAction(Request $request, PrefilledAnswers $prefilledAnswers, Structure $structure)
     {
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
+        $this->assertBelongsToStructure($prefilledAnswers, $structure);
 
         $this->prefilledAnswersManager->remove($prefilledAnswers);
 
         return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
+    }
+
+    /**
+     * The class-level STRUCTURE voter only covers {structure}: the prefilled
+     * answers must belong to that very structure. Global sets (no structure)
+     * are managed from the admin area only.
+     */
+    private function assertBelongsToStructure(?PrefilledAnswers $prefilledAnswers, Structure $structure) : void
+    {
+        if (!$prefilledAnswers
+            || !$prefilledAnswers->getStructure()
+            || $prefilledAnswers->getStructure()->getId() !== $structure->getId()) {
+            throw $this->createNotFoundException();
+        }
     }
 }
