@@ -869,4 +869,88 @@ class VolunteersControllerTest extends BaseWebTestCase
         $em->clear();
         $this->assertNotNull($em->getRepository(Volunteer::class)->findOneBy(['email' => $email]));
     }
+
+    // ──────────────────────────────────────────────
+    // Structures outside the form's choices (CERT-FR RM #1080870, audit M7)
+    //
+    // Non-admin choices only listed the user's direct structures, and saving
+    // replaced the collection: every other structure (another unit's, or a
+    // sub-structure of the manager's own) was silently dropped.
+    // ──────────────────────────────────────────────
+
+    private function saveVolunteerForm($client, Volunteer $volunteer, ?callable $alter = null): void
+    {
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        // Proves the form was actually saved (a rejected form keeps everything).
+        $values['volunteer']['firstName'] = 'Saved';
+        if ($alter) {
+            $values = $alter($values);
+        }
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertSame('Saved', $this->reloadVolunteer($client, $volunteer->getId())->getFirstName(), 'The form should have been saved');
+    }
+
+    private function structureIdsOf($client, Volunteer $volunteer): array
+    {
+        $ids = array_map(function ($structure) {
+            return $structure->getId();
+        }, $this->reloadVolunteer($client, $volunteer->getId())->getStructures()->toArray());
+        sort($ids);
+
+        return $ids;
+    }
+
+    public function testSavingKeepsStructuresOutsideManagerPerimeter(): void
+    {
+        $client = static::createClient();
+        [, $own, $volunteer] = $this->bootManagerWithVolunteer($client);
+        $other  = $this->getFixtures($client->getContainer())->createStructure('M7 OTHER '.uniqid(), 'EXT-M7O-'.uniqid());
+        $this->getFixtures($client->getContainer())->assignVolunteerToStructure($volunteer, $other);
+        $expected = [$own->getId(), $other->getId()];
+        sort($expected);
+
+        $this->saveVolunteerForm($client, $volunteer);
+
+        $this->assertSame($expected, $this->structureIdsOf($client, $volunteer));
+    }
+
+    public function testSavingKeepsChildStructureOfManager(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        [, $own]  = $this->bootManagerWithVolunteer($client);
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $child = $fixtures->createStructure('M7 CHILD '.uniqid(), 'EXT-M7C-'.uniqid());
+        $child->setParentStructure($own);
+        $em->persist($child);
+        $em->flush();
+        $volunteer = $fixtures->createStandaloneVolunteer('M7CHILD'.uniqid(), 'm7-child-'.uniqid().'@test.com');
+        $volunteer->setFirstName('Paul');
+        $volunteer->setLastName('Child');
+        $fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $this->saveVolunteerForm($client, $volunteer);
+
+        $this->assertSame([$child->getId()], $this->structureIdsOf($client, $volunteer));
+    }
+
+    public function testManagerCanStillRemoveTheirOwnStructure(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $other  = $this->getFixtures($client->getContainer())->createStructure('M7 LEFT '.uniqid(), 'EXT-M7L-'.uniqid());
+        $this->getFixtures($client->getContainer())->assignVolunteerToStructure($volunteer, $other);
+
+        $this->saveVolunteerForm($client, $volunteer, function (array $values) {
+            unset($values['volunteer']['structures']);
+
+            return $values;
+        });
+
+        $this->assertSame([$other->getId()], $this->structureIdsOf($client, $volunteer));
+    }
 }

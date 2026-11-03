@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Manager\DeletedVolunteerManager;
+use App\Manager\StructureManager;
 use App\Repository\StructureRepository;
 use App\Security\Helper\Security;
 use App\Sync\Reconciliation\RtmrReconciliator;
@@ -43,10 +44,17 @@ class VolunteerType extends AbstractType
      */
     private $translator;
 
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
     public function __construct(Security $security,
         DeletedVolunteerManager $deletedVolunteerManager,
-        TranslatorInterface $translator)
+        TranslatorInterface $translator,
+        StructureManager $structureManager)
     {
+        $this->structureManager        = $structureManager;
         $this->security                = $security;
         $this->deletedVolunteerManager = $deletedVolunteerManager;
         $this->translator              = $translator;
@@ -136,7 +144,17 @@ class VolunteerType extends AbstractType
             }
         ));
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+        // Structures the manager cannot see in the form must survive a save.
+        $keptStructures = [];
+        $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use (&$keptStructures) {
+            /** @var Volunteer $volunteer */
+            $volunteer = $event->getData();
+            foreach ($keptStructures as $structure) {
+                $volunteer->addStructure($structure);
+            }
+        });
+
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use (&$keptStructures) {
             $builder = $event->getForm();
 
             if (!$this->security->isGranted('ROLE_ADMIN')) {
@@ -153,20 +171,39 @@ class VolunteerType extends AbstractType
                     ]);
                 }
 
+                // Offer the manager's structures and their sub-structures; keep
+                // aside the volunteer's other structures (not theirs to edit).
+                $allowedIds = array_map('intval', $this->structureManager->getDescendantStructures(
+                    array_map(function (Structure $structure) {
+                        return $structure->getId();
+                    }, $currentUser->getStructures()->toArray())
+                ));
+
+                $keptStructures = [];
+                foreach ($volunteer ? $volunteer->getStructures() : [] as $structure) {
+                    if (!in_array($structure->getId(), $allowedIds, true)) {
+                        $keptStructures[] = $structure;
+                    }
+                }
+
                 $builder
                     ->add('structures', EntityType::class, [
                         'label'         => 'manage_volunteers.form.structures',
                         'class'         => Structure::class,
-                        'query_builder' => function (StructureRepository $er) use ($currentUser) {
-                            return $er->getStructuresForUserQueryBuilder($currentUser);
+                        'query_builder' => function (StructureRepository $er) use ($allowedIds) {
+                            return $er->createQueryBuilder('s')
+                                      ->where('s.id IN (:ids)')
+                                      ->setParameter('ids', $allowedIds ?: [0])
+                                      ->andWhere('s.enabled = true')
+                                      ->orderBy('s.externalId', 'asc');
                         },
                         'choice_label'  => function (Structure $structure) {
                             return $structure->getName();
                         },
                         'multiple'      => true,
                         'expanded'      => true,
-                        // A manager's volunteer must stay in their perimeter.
-                        'constraints'   => [new Count(min: 1)],
+                        // A volunteer created by a manager must land in their perimeter.
+                        'constraints'   => $volunteer && $volunteer->getId() ? [] : [new Count(min: 1)],
                     ]);
             }
         });
