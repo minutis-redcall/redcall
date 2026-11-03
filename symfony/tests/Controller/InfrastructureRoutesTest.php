@@ -75,6 +75,59 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         );
     }
 
+    // Regression (CERT-FR RM #1080870, audit M10): the query string was merged
+    // into the console input, so a caller could pass any command option (e.g.
+    // sync-data --dir to run the sync inline from a server-side directory).
+    public function testCronDoesNotForwardQueryParametersToTheCommand(): void
+    {
+        $client = static::createClient();
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('GET', '/cron/sync-data?--dir=/nonexistent-m10');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotEmpty(
+            $sender->getDispatched(),
+            'sync:data must ignore --dir from the URL and dispatch its task as scheduled'
+        );
+    }
+
+    private function loginCronUser($client, bool $root): void
+    {
+        $fixtures = new \App\Tests\Fixtures\DataFixtures(
+            $client->getContainer()->get('doctrine.orm.entity_manager'),
+            $client->getContainer()->get('security.password_hasher')
+        );
+        $user = $fixtures->createRawUser('m10-'.uniqid().'@test.com', 'password', $root);
+        if (!$root) {
+            $user->setIsAdmin(true);
+            $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+            $em->persist($user);
+            $em->flush();
+        }
+        $this->login($client, $user);
+    }
+
+    public function testCronManualTriggerIsDeniedToPlainAdmin(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, false);
+
+        $client->request('GET', '/cron/clear-expirable', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testCronManualTriggerIsAllowedToRoot(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+
+        $client->request('GET', '/cron/clear-expirable', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+    }
+
     // ──────────────────────────────────────────────
     // /deploy
     // ──────────────────────────────────────────────
