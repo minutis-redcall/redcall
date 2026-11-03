@@ -271,4 +271,69 @@ class UserControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorNotExists('.card .alert');
     }
+
+    public function testPlainAdminCannotRebindRootExternalId()
+    {
+        // Regression (CERT-FR RM #1080870, audit H7, path C): moving a root's
+        // NIVOL onto one's own account then logging in through Minutis.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $em        = $container->get('doctrine.orm.entity_manager');
+
+        $admin = $fixtures->createRawUser('h7_admin_'.uniqid().'@test.com', 'password', false);
+        $admin->setIsAdmin(true);
+        $em->persist($admin);
+        $root  = $fixtures->createRawUser('h7_root_'.uniqid().'@test.com', 'password', true);
+        $root->setExternalId('ROOTNIVOL'.uniqid());
+        $em->persist($root);
+        $em->flush();
+        $rootNivol = $root->getExternalId();
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container);
+
+        $client->request('POST', sprintf('/admin/redcall-users/update/%s/%s', $csrf, $root->getId()), [
+            'externalId' => 'HIJACKED',
+        ]);
+        $this->assertResponseStatusCodeSame(403);
+
+        $client->request('GET', sprintf('/admin/redcall-users/toggle-trust/%s/%s', $csrf, $root->getId()));
+        $this->assertResponseStatusCodeSame(403);
+
+        $em->clear();
+        $fresh = $em->getRepository(User::class)->find($root->getId());
+        $this->assertSame($rootNivol, $fresh->getExternalId());
+        $this->assertTrue($fresh->isTrusted());
+    }
+
+    public function testIndexHidesRootActionsFromPlainAdmin()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $em        = $container->get('doctrine.orm.entity_manager');
+
+        $admin = $fixtures->createRawUser('h7_ui_admin_'.uniqid().'@test.com', 'password', false);
+        $admin->setIsAdmin(true);
+        $em->persist($admin);
+        $em->flush();
+        $root = $fixtures->createRawUser('h7_ui_root_'.uniqid().'@test.com', 'password', true);
+
+        $this->login($client, $admin);
+        $client->request('GET', '/admin/redcall-users?form[criteria]='.urlencode($root->getUsername()));
+        $this->assertResponseIsSuccessful();
+
+        $html = $client->getResponse()->getContent();
+        $this->assertStringContainsString($root->getUsername(), $html);
+
+        $id = preg_quote($root->getId(), '#');
+        $this->assertDoesNotMatchRegularExpression(
+            '#/admin/redcall-users/(toggle-verify|toggle-trust|toggle-admin|toggle-lock|delete|update)/[^/"]+/'.$id.'"#',
+            $html,
+            'Plain admins must not get action links on a root'
+        );
+        $this->assertStringNotContainsString('/admin/redcall-users/update-structures/'.$root->getId(), $html);
+        $this->assertStringNotContainsString('/admin/users/profile/'.$root->getUsername(), $html);
+    }
 }

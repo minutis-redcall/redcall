@@ -144,4 +144,46 @@ class UserVoterTest extends KernelTestCase
         $result = $this->voter->vote($token, $subjectUser, ['WHATEVER']);
         $this->assertEquals(VoterInterface::ACCESS_GRANTED, $result);
     }
+
+    // Root accounts (CERT-FR RM #1080870, audit H7): a plain admin used to
+    // hold every right on every user, roots included, so they could rebind,
+    // untrust, delete or take over a root account.
+
+    private function createPlainAdmin(string $username): User
+    {
+        $admin = $this->fixtures->createRawUser($username, 'password', false);
+        $admin->setIsAdmin(true);
+        $em = static::getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($admin);
+        $em->flush();
+
+        return $admin;
+    }
+
+    public function testPlainAdminIsDeniedOnRootUser(): void
+    {
+        $admin = $this->createPlainAdmin('uv_plain_admin@test.com');
+        $root  = $this->fixtures->createRawUser('uv_root_target@test.com', 'password', true);
+        $token = $this->createToken($admin);
+
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $this->voter->vote($token, $root, ['USER']));
+    }
+
+    public function testPlainAdminIsStillGrantedOnNonRootUser(): void
+    {
+        $admin   = $this->createPlainAdmin('uv_plain_admin2@test.com');
+        $subject = $this->fixtures->createRawUser('uv_plain_sub@test.com', 'password', false);
+        $token   = $this->createToken($admin);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $subject, ['USER']));
+    }
+
+    public function testRootIsGrantedOnAnotherRootUser(): void
+    {
+        $root  = $this->fixtures->createRawUser('uv_root_actor@test.com', 'password', true);
+        $other = $this->fixtures->createRawUser('uv_root_other@test.com', 'password', true);
+        $token = $this->createToken($root);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $other, ['USER']));
+    }
 }

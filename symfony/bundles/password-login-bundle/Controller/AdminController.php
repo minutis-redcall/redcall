@@ -154,6 +154,12 @@ class AdminController extends AbstractController
             throw $this->createNotFoundException();
         }
 
+        // Only a root may edit or reset a root: changing a root's username
+        // then logging in with Google / resetting its password is a takeover.
+        if (in_array('ROLE_ROOT', $user->getRoles(), true) && !$this->isGranted('ROLE_ROOT')) {
+            throw $this->createNotFoundException();
+        }
+
         return $user;
     }
 
