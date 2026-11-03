@@ -336,4 +336,33 @@ class UserControllerTest extends BaseWebTestCase
         $this->assertStringNotContainsString('/admin/redcall-users/update-structures/'.$root->getId(), $html);
         $this->assertStringNotContainsString('/admin/users/profile/'.$root->getUsername(), $html);
     }
+
+    public function testCreateUserDoesNotTrustAccountSquattingTheVolunteerEmail()
+    {
+        // Regression (CERT-FR RM #1080870, audit M8): an untrusted user renames
+        // their account to a future volunteer's email; when support creates
+        // that volunteer's access, the squatter's account used to be trusted.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $suffix   = uniqid();
+
+        $admin    = $fixtures->createRawUser("m8_admin_{$suffix}@test.com", 'password', true);
+        $squatter = $fixtures->createRawUser("m8_victim_{$suffix}@test.com", 'password', false);
+        $squatter->setExternalId("M8SQUAT{$suffix}");
+        $squatter->setIsTrusted(false);
+        $em->persist($squatter);
+        $em->flush();
+        $fixtures->createStandaloneVolunteer("M8VICTIM{$suffix}", "m8_victim_{$suffix}@test.com");
+
+        $this->login($client, $admin);
+        $this->submitCreateUser($client, "M8VICTIM{$suffix}");
+
+        $em->clear();
+        $fresh = $em->getRepository(User::class)->findOneBy(['username' => "m8_victim_{$suffix}@test.com"]);
+        $this->assertFalse($fresh->isTrusted());
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('.flashes-container', 'adresse email');
+    }
 }

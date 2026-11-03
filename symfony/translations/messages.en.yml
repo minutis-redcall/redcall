@@ -120,6 +120,7 @@ admin:
     create_user_flash:
       already_exists: 'This user already exists and their access is enabled.'
       created: 'The user has been created.'
+      email_taken: 'Another account, not bound to this NIVOL, already uses this volunteer''s email address: check it before granting access.'
       no_email: 'Cannot create the user: the volunteer has no email address.'
       trusted: 'This user already existed but their access was disabled: it has been re-enabled.'
     delete_confirm: 'Really remove "%email%"?'

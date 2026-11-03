@@ -245,7 +245,20 @@ class UserController extends BaseController
             } catch (\LogicException $e) {
                 $existing = $this->userManager->findOneByExternalId($volunteer->getExternalId());
                 if (!$existing && $volunteer->getEmail()) {
-                    $existing = $this->userManager->findOneByUsername($volunteer->getEmail());
+                    $byEmail = $this->userManager->findOneByUsername($volunteer->getEmail());
+
+                    // An account merely holding the volunteer's email is not
+                    // theirs: anyone can rename their account to that address.
+                    // Never trust it on the volunteer's behalf.
+                    if ($byEmail && $byEmail->getExternalId() !== $volunteer->getExternalId()) {
+                        $this->addFlash('danger', 'admin.users.create_user_flash.email_taken');
+
+                        return $this->redirectToRoute('admin_redcall_users_index', [
+                            'form[criteria]' => $byEmail->getUsername(),
+                        ]);
+                    }
+
+                    $existing = $byEmail;
                 }
 
                 if (!$existing) {
