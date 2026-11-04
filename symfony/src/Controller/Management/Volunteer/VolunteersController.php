@@ -325,8 +325,10 @@ class VolunteersController extends BaseController
 
     #[Route(path: "/remove-all-structures/{csrf}/{id}", name: "remove_all_structures")]
     #[IsGranted("ROLE_ADMIN")]
-    public function removeAllStructures(Volunteer $volunteer)
+    public function removeAllStructures(string $csrf, Volunteer $volunteer)
     {
+        $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
+
         foreach ($volunteer->getStructures() as $structure) {
             $volunteer->removeStructure($structure);
         }

@@ -1175,3 +1175,7 @@ costs:
     campaigns: 'Campaigns'
     total: 'Total'
   yearly_total: 'Yearly total'
+cron:
+  confirm:
+    title: 'Run the scheduled task "%command%" now?'
+    run: 'Run'

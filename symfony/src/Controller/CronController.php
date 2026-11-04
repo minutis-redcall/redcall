@@ -44,12 +44,21 @@ class CronController extends AbstractController
 
         if ($request->getClientIp() !== '127.0.0.1'
             && 'true' !== $request->headers->get('X-Appengine-Cron')) {
-            // Manual runs are a root-only maintenance tool.
-            if ($this->isGranted('ROLE_ROOT')) {
-                $this->requestStack->getSession()->save();
-            } else {
+            // Manual runs are a root-only maintenance tool, and never run from
+            // a mere link: a GET shows a confirmation, its POST runs the cron.
+            if (!$this->isGranted('ROLE_ROOT')) {
                 throw $this->createAccessDeniedException();
             }
+
+            if (!$request->isMethod('POST')) {
+                return $this->render('cron/confirm.html.twig', ['key' => $key]);
+            }
+
+            if (!$this->isCsrfTokenValid('cron', (string) $request->request->get('csrf'))) {
+                throw $this->createNotFoundException();
+            }
+
+            $this->requestStack->getSession()->save();
         }
 
         $application = new Application($kernel);

@@ -61,4 +61,55 @@ class MaintenanceControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
     }
+
+    // Regression (CERT-FR RM #1080870, ANSSI-06): heavy syncs were triggered
+    // by a plain GET link, so any page a root visited could start them.
+
+    private function loginRoot($client): void
+    {
+        $fixtures = new \App\Tests\Fixtures\DataFixtures(
+            $client->getContainer()->get('doctrine.orm.entity_manager'),
+            $client->getContainer()->get('security.password_hasher')
+        );
+        $this->login($client, $fixtures->createRawUser('maint-csrf-'.uniqid().'@test.com', 'password', true));
+    }
+
+    public static function syncActionProvider(): array
+    {
+        return [['/admin/maintenance/data-sync'], ['/admin/maintenance/annuaire-national']];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('syncActionProvider')]
+    public function testSyncActionRejectsGet(string $url): void
+    {
+        $client = static::createClient();
+        $this->loginRoot($client);
+
+        $client->request('GET', $url);
+
+        $this->assertResponseStatusCodeSame(405);
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('syncActionProvider')]
+    public function testSyncActionRejectsForgedCsrf(string $url): void
+    {
+        $client = static::createClient();
+        $this->loginRoot($client);
+
+        $client->request('POST', $url, ['csrf' => 'forged']);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('syncActionProvider')]
+    public function testSyncActionRunsWithValidCsrf(string $url): void
+    {
+        $client = static::createClient();
+        $this->loginRoot($client);
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('maintenance')->getValue();
+
+        $client->request('POST', $url, ['csrf' => $csrf]);
+
+        $this->assertResponseRedirects('/admin/maintenance/');
+    }
 }

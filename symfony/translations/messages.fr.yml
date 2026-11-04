@@ -1177,3 +1177,7 @@ costs:
     campaigns: 'Campagnes'
     total: 'Total'
   yearly_total: 'Total annuel'
+cron:
+  confirm:
+    title: 'Lancer la tâche planifiée « %command% » maintenant ?'
+    run: 'Lancer'

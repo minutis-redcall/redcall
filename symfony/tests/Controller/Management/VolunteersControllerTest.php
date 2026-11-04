@@ -953,4 +953,23 @@ class VolunteersControllerTest extends BaseWebTestCase
 
         $this->assertSame([$other->getId()], $this->structureIdsOf($client, $volunteer));
     }
+
+    public function testRemoveAllStructuresRejectsBadCsrf(): void
+    {
+        // Regression (CERT-FR RM #1080870, ANSSI-06): {csrf} was in the route
+        // but never checked, so any page could strip a volunteer's structures.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $admin     = $fixtures->createRawUser('vol_ras_csrf-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-RASC-'.uniqid());
+        $structure = $fixtures->createStructure('RASC-STR-'.uniqid(), 'EXT-RASC-'.uniqid());
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf('/management/volunteers/remove-all-structures/forged/%d', $volunteer->getId()));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertCount(1, $this->reloadVolunteer($client, $volunteer->getId())->getStructures());
+    }
 }

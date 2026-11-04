@@ -150,6 +150,46 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         }
     }
 
+    // Regression (CERT-FR RM #1080870, ANSSI-02): a root following a link
+    // used to run the cron immediately (GET, no CSRF).
+    public function testCronManualGetOnlyShowsAConfirmation(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('GET', '/cron/sync-data', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form[method="post"]');
+        $this->assertEmpty($sender->getDispatched(), 'A GET must not run the cron');
+    }
+
+    public function testCronManualPostWithForgedCsrfIsRejected(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('POST', '/cron/sync-data', ['csrf' => 'forged'], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertEmpty($sender->getDispatched());
+    }
+
+    public function testCronManualPostWithCsrfRunsTheCron(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+        $csrf   = $client->getContainer()->get('security.csrf.token_manager')->getToken('cron')->getValue();
+
+        $client->request('POST', '/cron/sync-data', ['csrf' => $csrf], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotEmpty($sender->getDispatched());
+    }
+
     // ──────────────────────────────────────────────
     // /deploy
     // ──────────────────────────────────────────────
