@@ -29,7 +29,8 @@
                                 <div class="col-md-6">
                                     {% if 'invalid' == key %}
                                         {{ id }} {# it is an external identifier for which we didn't find a volunteer #}
-                                    {% else %}
+                                    {% elseif volunteers[id] is defined %}
+                                        {# out-of-perimeter volunteers are not loaded: counted, never displayed #}
                                         {{ macros.volunteer(volunteers[id]) }}
                                     {% endif %}
                                 </div>

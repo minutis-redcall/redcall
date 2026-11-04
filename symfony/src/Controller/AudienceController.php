@@ -129,7 +129,9 @@ class AudienceController extends BaseController
         $classification = $this->audienceManager->classifyAudience($data);
         $classification->setReachable([]);
 
-        $volunteers = $this->volunteerManager->getVolunteerList(
+        // Ids come straight from the request: only render volunteers the
+        // user is allowed to see (out-of-perimeter ones are just counted).
+        $volunteers = $this->volunteerManager->getAccessibleVolunteerList(
             call_user_func_array('array_merge', array_values($classification->toArray())),
             false
         );
@@ -147,7 +149,7 @@ class AudienceController extends BaseController
 
         $classification = $this->audienceManager->classifyAudience($data);
 
-        $mixedVolunteers = $this->volunteerManager->getVolunteerList(
+        $mixedVolunteers = $this->volunteerManager->getAccessibleVolunteerList(
             array_merge($classification->getExcluded(), $classification->getReachable())
         );
 

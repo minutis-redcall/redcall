@@ -118,16 +118,59 @@ class ExpirableManagerTest extends KernelTestCase
 
         $this->manager->save($expirable);
 
-        // Verify it exists
-        $found = $this->manager->get('expired-test-uuid');
-        $this->assertSame('expired data', $found);
+        // Verify the row exists (get() hides it since it has expired)
+        $this->assertNotNull($this->repository->findOneByUuid('expired-test-uuid'));
 
         // Clear expired
         $this->manager->clearExpired();
 
         // Verify it was removed
-        $found = $this->manager->get('expired-test-uuid');
-        $this->assertNull($found);
+        $this->assertNull($this->repository->findOneByUuid('expired-test-uuid'));
+    }
+
+    public function testGetReturnsNullForExpiredEntryEvenBeforeCleanup()
+    {
+        // Regression (CERT-FR RM #1080870 / NIVOL brute force): get() used to
+        // ignore expiresAt and rely on the clear:expirable cron only.
+        $uuid = $this->manager->set(['code' => 'A00A00'], new \DateTime('-1 second'));
+
+        $this->assertNotNull($this->repository->findOneByUuid($uuid));
+        $this->assertNull($this->manager->get($uuid));
+    }
+
+    public function testConsumeAttemptCountsAndStopsAtMax()
+    {
+        $uuid = $this->manager->set(['code' => 'A00A00']);
+
+        for ($i = 1; $i <= 3; $i++) {
+            $attempt = $this->manager->consumeAttempt($uuid, 3);
+            $this->assertNotNull($attempt);
+            $this->assertSame($i, $attempt['attempts']);
+            $this->assertSame(['code' => 'A00A00'], $attempt['data']);
+        }
+
+        $this->assertNull($this->manager->consumeAttempt($uuid, 3));
+    }
+
+    public function testConsumeAttemptReturnsNullWhenExpired()
+    {
+        $uuid = $this->manager->set(['code' => 'A00A00'], new \DateTime('-1 second'));
+
+        $this->assertNull($this->manager->consumeAttempt($uuid, 10));
+    }
+
+    public function testConsumeAttemptReturnsNullForUnknownUuid()
+    {
+        $this->assertNull($this->manager->consumeAttempt('non-existent-uuid', 10));
+    }
+
+    public function testRemoveDeletesEntry()
+    {
+        $uuid = $this->manager->set('to delete');
+
+        $this->manager->remove($uuid);
+
+        $this->assertNull($this->repository->findOneByUuid($uuid));
     }
 
     public function testClearExpiredDoesNotRemoveNonExpiredEntries()

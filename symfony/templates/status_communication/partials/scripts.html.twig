@@ -16,7 +16,7 @@
         if (data['groupNames']) {
             $.each(data['groupNames'], function (index, name) {
                 var label = name || '{{ 'campaign_status.groups.default'|trans|e('js') }} ' + (parseInt(index) + 1);
-                $('.group-label-' + index).html(label);
+                $('.group-label-' + index).text(label);
                 $('.group-name-input[data-index="' + index + '"]').val(name);
             });
         }
@@ -64,7 +64,14 @@
 
             {# Replace note contents #}
             if (data['notes']['content'] && data['notes']['content'].length > 0) {
-                $('#campaign-notes-content').html(data['notes']['content']);
+                {# Notes are user text: rebuild them as text nodes + <br>, never as HTML #}
+                var notesContainer = $('#campaign-notes-content').empty();
+                $.each(String(data['notes']['content']).split(/\r?\n/), function (index, line) {
+                    if (index > 0) {
+                        notesContainer.append(document.createElement('br'));
+                    }
+                    notesContainer.append(document.createTextNode(line));
+                });
             } else {
                 $('#campaign-notes-content').html('{{ 'campaign_status.no_notes_yet'|trans|e('js') }}');
             }
@@ -296,7 +303,7 @@
     {% endfor %}
 
     var activeGroupFilters = [];
-    var previousVolunteerGroups = {{ volunteerGroups|json_encode|raw }};
+    var previousVolunteerGroups = {{ volunteerGroups|js_json }};
     var hasActiveFilters = false;
 
     var communicationIds = [];
@@ -305,7 +312,7 @@
     {% endfor %}
 
     // Use server-rendered initial data to avoid data format mismatch
-    var initialCampaignStatus = {{ campaignStatus|json_encode|raw }};
+    var initialCampaignStatus = {{ campaignStatus|js_json }};
 
     if ('{{ app.environment == 'dev' }}' === '0') {
         // Production: use initial data immediately, then start long polling
@@ -686,13 +693,40 @@
     {# -------------------------------------------------------------------------------- #}
     {# Transform text links into clickable links #}
     {# -------------------------------------------------------------------------------- #}
+    {# Links are built as DOM nodes from text nodes only: the URL is never #}
+    {# parsed as HTML, so quotes in it cannot break out of the attribute.   #}
+    function linkifyTextNodes(node) {
+        $(node).contents().each(function () {
+            if (this.nodeType === 3) {
+                var text = this.nodeValue;
+                var regex = /https?:\/\/[^\s<>"']+/ig;
+                var fragment = document.createDocumentFragment();
+                var last = 0;
+                var match;
+                while ((match = regex.exec(text)) !== null) {
+                    fragment.appendChild(document.createTextNode(text.slice(last, match.index)));
+                    var link = document.createElement('a');
+                    link.setAttribute('href', match[0]);
+                    link.setAttribute('target', '_blank');
+                    link.setAttribute('rel', 'noopener noreferrer');
+                    link.textContent = match[0];
+                    fragment.appendChild(link);
+                    last = match.index + match[0].length;
+                }
+                if (last > 0) {
+                    fragment.appendChild(document.createTextNode(text.slice(last)));
+                    this.parentNode.replaceChild(fragment, this);
+                }
+            } else if (this.nodeType === 1 && this.tagName !== 'A') {
+                linkifyTextNodes(this);
+            }
+        });
+    }
+
     function refreshTextToHypertext(container) {
         var elements = container ? $(container).find('.text-to-hypertext').addBack('.text-to-hypertext') : $('.text-to-hypertext');
         elements.each(function () {
-            var str = $(this).html();
-            var regex = /(https?:\/\/([^\s]+))/ig;
-            var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
-            $(this).html(replaced_text);
+            linkifyTextNodes(this);
         });
     }
 

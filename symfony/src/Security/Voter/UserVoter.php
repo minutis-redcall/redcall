@@ -55,6 +55,12 @@ class UserVoter extends Voter
         //            return false;
         //        }
 
+        // Root accounts are out of reach of plain admins: otherwise an admin
+        // could rebind, untrust or delete a root and take over its access.
+        if ($user->isRoot()) {
+            return false;
+        }
+
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

@@ -120,6 +120,7 @@ admin:
     create_user_flash:
       already_exists: 'Cet utilisateur existe déjà et son accès est actif.'
       created: 'L''utilisateur a été créé.'
+      email_taken: 'Un autre compte, non rattaché à ce NIVOL, utilise déjà l''adresse email de ce bénévole : vérifiez-le avant de lui donner accès.'
       no_email: 'Impossible de créer l''utilisateur : le bénévole n''a pas d''adresse email.'
       trusted: 'Cet utilisateur existait déjà mais son accès était désactivé : il a été réactivé.'
     delete_confirm: 'Vraiment supprimer "%email%" ?'
@@ -834,6 +835,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
+    privileged_badge: 'Seul un administrateur peut attribuer ou retirer la nomination « %badge% ».'
     create: 'Créer un bénévole'
     email: Email
     email_locked: 'Geler l''email *'
@@ -1136,6 +1138,7 @@ nivol_auth:
   nivol_not_found: 'NIVOL invalide'
   input_submit: 'Recevoir un code par email'
   input_code: 'Veuillez saisir le code reçu par email'
+  code_sent_if_exists: 'Si ce NIVOL correspond à un compte RedCall, un code de connexion valable 10 minutes vient de vous être envoyé par email.'
   remember_me: 'Faire confiance à cet appareil'
   input_connect: 'Se connecter'
   email:
@@ -1174,3 +1177,7 @@ costs:
     campaigns: 'Campagnes'
     total: 'Total'
   yearly_total: 'Total annuel'
+cron:
+  confirm:
+    title: 'Lancer la tâche planifiée « %command% » maintenant ?'
+    run: 'Lancer'

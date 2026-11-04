@@ -39,15 +39,15 @@ class MessageController extends BaseController
     {
         $this->validateRequestSignature($request);
 
+        // No SMS body / phone numbers in logs (shipped to Cloud Logging & Slack).
         $this->logger->info('Twilio webhooks - incoming message', [
-            'payload' => $request->request->all(),
+            'sid' => $request->request->get('MessageSid'),
         ]);
 
+        // Signed POST body only: the query string is not covered by the
+        // signature when the webhook is relayed through a Cloud Task.
         $response = $this->messageManager->handleInboundMessage(
-            array_merge(
-                $request->query->all(),
-                $request->request->all()
-            )
+            $request->request->all()
         );
 
         if (!$response) {

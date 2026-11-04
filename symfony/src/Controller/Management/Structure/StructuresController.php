@@ -145,7 +145,8 @@ class StructuresController extends BaseController
 
         return $this->json([
             'title' => $this->translator->trans('manage_structures.redcall_users'.($includeChildren ? '_children' : ''), [
-                '%name%'  => $structure->getName(),
+                // The client inserts the title with .html(): escape user data.
+                '%name%'  => htmlspecialchars($structure->getName(), ENT_QUOTES),
                 '%count%' => count($users),
             ]),
             'body'  => $this->renderView('management/structures/users.html.twig', [

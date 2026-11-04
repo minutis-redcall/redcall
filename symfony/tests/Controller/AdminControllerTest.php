@@ -107,4 +107,56 @@ class AdminControllerTest extends BaseWebTestCase
         $client->request('GET', '/admin/users/');
         $this->assertTrue($client->getResponse()->isForbidden() || $client->getResponse()->isRedirect());
     }
+
+    // Regression (CERT-FR RM #1080870, audit H7, paths A/B): a plain admin
+    // could change a root's username to an address they control, then sign
+    // in with Google or reset the root's password.
+
+    private function createPlainAdminAndRoot($container): array
+    {
+        $fixtures = $this->getFixtures($container);
+        $em       = $container->get('doctrine.orm.entity_manager');
+        $suffix   = uniqid();
+
+        $admin = $fixtures->createRawUser("h7_plain_admin_{$suffix}@example.com", 'password', false);
+        $admin->setIsAdmin(true);
+        $em->persist($admin);
+        $em->flush();
+        $root = $fixtures->createRawUser("h7_root_{$suffix}@example.com", 'password', true);
+
+        return [$admin, $root];
+    }
+
+    public function testPlainAdminCannotOpenRootProfile()
+    {
+        $client          = static::createClient();
+        [$admin, $root]  = $this->createPlainAdminAndRoot($client->getContainer());
+        $this->login($client, $admin);
+
+        $client->request('GET', '/admin/users/profile/'.$root->getUsername());
+        $this->assertResponseStatusCodeSame(404);
+
+        $client->request('POST', '/admin/users/profile/'.$root->getUsername(), [
+            'profile' => ['username' => 'attacker@example.com'],
+        ]);
+        $this->assertResponseStatusCodeSame(404);
+
+        $userRepo = $client->getContainer()->get('doctrine')->getRepository(User::class);
+        $this->assertNull($userRepo->findOneBy(['username' => 'attacker@example.com']));
+    }
+
+    public function testPlainAdminCannotResetRootPassword()
+    {
+        $client          = static::createClient();
+        $container       = $client->getContainer();
+        [$admin, $root]  = $this->createPlainAdminAndRoot($container);
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container);
+
+        $client->request('GET', sprintf('/admin/users/reset-password/%s/%s', $root->getUsername(), $csrf));
+        $this->assertResponseStatusCodeSame(404);
+
+        $emails = $container->get(FakeEmailManager::class)->findMessagesForEmail($root->getUsername());
+        $this->assertCount(0, $emails, 'No reset email may be sent for a root on a plain admin request');
+    }
 }

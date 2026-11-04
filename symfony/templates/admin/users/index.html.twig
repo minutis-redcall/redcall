@@ -56,7 +56,8 @@
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
                                     </small>
                                 </div>
-                                {% if not user.isEqualTo(app.user) or user.root %}
+                                {# Root accounts are only manageable by roots (UserVoter). #}
+                                {% if (not user.isEqualTo(app.user) or user.root) and is_granted('USER', user) %}
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-link text-muted" type="button" data-toggle="dropdown" style="text-decoration: none;">
                                             &#8942;
@@ -148,8 +149,8 @@
                                 <span class="badge {{ user.locked ? 'badge-dark' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.users.locked'|trans }}">L</span>
                             </div>
 
-                            <div class="external-id-editor mb-3" data-id="{{ user.id }}" data-uri="{{ path('admin_redcall_users_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
-                                {% if user.locked %}
+                            <div class="external-id-editor mb-3" data-id="{{ user.id }}"{% if is_granted('USER', user) %} data-uri="{{ path('admin_redcall_users_update', {csrf: csrf_token('pegass'), id: user.id}) }}"{% endif %}>
+                                {% if user.locked or not is_granted('USER', user) %}
                                     <code class="p-1 px-2 bg-light rounded text-dark">{{ user.externalId }}</code>
                                 {% else %}
                                     {{ render(controller('\\App\\Controller\\WidgetController::volunteerEditor', {user: user})) }}
@@ -162,9 +163,11 @@
                                 {% endfor %}
                             </div>
 
-                            <a href="{{ path('admin_redcall_users_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
-                                <i class="fas fa-sitemap mr-2"></i>{{ 'management.update_structures'|trans }}
-                            </a>
+                            {% if is_granted('USER', user) %}
+                                <a href="{{ path('admin_redcall_users_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
+                                    <i class="fas fa-sitemap mr-2"></i>{{ 'management.update_structures'|trans }}
+                                </a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

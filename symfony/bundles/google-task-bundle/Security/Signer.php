@@ -22,6 +22,11 @@ class Signer
             }
         }
 
-        return $payload['signature'] === self::sign($payload['name'], $payload['context']);
+        if (!is_string($payload['signature'])) {
+            return false;
+        }
+
+        // Constant-time comparison.
+        return hash_equals(self::sign($payload['name'], $payload['context']), $payload['signature']);
     }
 }

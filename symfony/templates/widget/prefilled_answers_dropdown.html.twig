@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 
-    var answerSets = {{ answers|json_encode|raw }};
+    var answerSets = {{ answers|js_json }};
 
     {# When clicking on a color, changing the answers selector #}
     $('.answer-color').change(function () {

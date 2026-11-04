@@ -12,7 +12,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NivolType extends AbstractType
@@ -50,20 +50,16 @@ class NivolType extends AbstractType
                     'autofocus'      => 'autofocus',
                     'autocapitalize' => 'characters',
                 ],
+                // No "NIVOL not found" error: it would tell anyone which NIVOLs
+                // have a RedCall account. Unknown NIVOLs get a decoy code page.
                 'constraints' => [
-                    new Callback(callback: function ($nivol, $context) {
-                            if ($nivol && !$this->nivolManager->getUserByNivol($nivol)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('nivol_auth.nivol_not_found'))
-                                    ->addViolation();
-                            }
-                        }),
+                    new NotBlank(),
                 ],
             ]);
 
         $ip = $this->requestStack->getMainRequest()->getClientIp();
 
-        if ($ip === '169.155.250.88' /* test alain */ || !$this->captchaManager->isAllowed($ip)) {
+        if (!$this->captchaManager->isAllowed($ip)) {
             $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.connect.captcha',
                 'constraints' => [

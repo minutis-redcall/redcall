@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Expirable;
 use App\Form\Type\CodeType;
 use App\Form\Type\NivolType;
 use App\Manager\NivolManager;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Psr\Log\LoggerInterface;
+use Ramsey\Uuid\Uuid;
 use Psr\Log\NullLogger;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,11 +17,13 @@ use Symfony\Component\Routing\Attribute\Route;
 class NivolController extends AbstractController
 {
     private NivolManager    $nivolManager;
+    private CaptchaManager  $captchaManager;
     private LoggerInterface $logger;
 
-    public function __construct(NivolManager $nivolManager, ?LoggerInterface $logger = null)
+    public function __construct(NivolManager $nivolManager, CaptchaManager $captchaManager, ?LoggerInterface $logger = null)
     {
-        $this->nivolManager = $nivolManager;
+        $this->nivolManager   = $nivolManager;
+        $this->captchaManager = $captchaManager;
         $this->logger       = $logger ?? new NullLogger();
     }
 
@@ -63,7 +65,15 @@ class NivolController extends AbstractController
             $identifier = $this->nivolManager->sendEmail($nivolValue);
 
             if (null === $identifier) {
-                $this->logger->warning('NivolController::login: sendEmail returned null (no user matched nivol)');
+                // Unknown NIVOL or too many codes requested: answer exactly as
+                // for a known one (decoy code page) so nothing can be inferred,
+                // and count it against the IP's captcha grace.
+                $this->logger->warning('NivolController::login: no code sent (unknown nivol or throttled)');
+
+                $identifier = Uuid::uuid4()->toString();
+                if ($ip = $request->getClientIp()) {
+                    $this->captchaManager->decreaseGrace($ip);
+                }
             }
 
             return $this->redirectToRoute('code', ['uuid' => $identifier]);
@@ -76,8 +86,10 @@ class NivolController extends AbstractController
 
     #[Route("/code/{uuid}", name: "code")]
     #[Template("nivol/code.html.twig")]
-    public function code(Request $request, #[MapEntity(mapping: ['uuid' => 'uuid'])] Expirable $expirable)
+    public function code(Request $request, string $uuid)
     {
+        // Rendered whether or not {uuid} exists: a 404 would reveal which
+        // NIVOLs have an account. The authenticator validates the code.
         $codeForm = $this
             ->createForm(CodeType::class)
             ->handleRequest($request);

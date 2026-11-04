@@ -400,7 +400,7 @@ class CommunicationControllerTest extends BaseWebTestCase
         [$campaign, $communication] = $this->createCampaignForUser($fixtures, $user);
 
         $this->login($client, $user);
-        $client->request('GET', sprintf(
+        $client->request('POST', sprintf(
             '/campaign/%d/communication/%d/relaunch',
             $campaign->getId(),
             $communication->getId()
@@ -431,5 +431,153 @@ class CommunicationControllerTest extends BaseWebTestCase
             $client->getResponse()->isForbidden(),
             'User without matching structures should be denied access to the campaign'
         );
+    }
+
+    // ──────────────────────────────────────────────
+    // Communication must belong to the voted campaign (CERT-FR RM #1080870, audit M2/M3)
+    // ──────────────────────────────────────────────
+
+    /**
+     * A campaign the user can access, plus a communication of a campaign
+     * they have nothing to do with.
+     */
+    private function bootForeignCommunication($client, bool $admin = false): array
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('m2-'.uniqid().'@example.com', 'password', $admin);
+        [$campaign] = $this->createCampaignForUser($fixtures, $user);
+
+        $foreignCampaign      = $fixtures->createCampaign('Foreign campaign');
+        $foreignCommunication = $fixtures->createCommunication($foreignCampaign);
+        $foreignCommunication->setLabel('Original label');
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($foreignCommunication);
+        $em->flush();
+
+        $this->login($client, $user);
+
+        return [$campaign, $foreignCommunication];
+    }
+
+    private function reloadCommunication($client, int $id): Communication
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Communication::class)->find($id);
+    }
+
+    public function testRenameRejectsCommunicationOfAnotherCampaign(): void
+    {
+        $client = static::createClient();
+        [$campaign, $foreign] = $this->bootForeignCommunication($client);
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', sprintf(
+            '/campaign/%d/rename-communication/%d',
+            $campaign->getId(),
+            $foreign->getId()
+        ), [
+            'new_name' => 'pwned',
+            'csrf'     => $csrf,
+        ]);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertSame('Original label', $this->reloadCommunication($client, $foreign->getId())->getLabel());
+    }
+
+    private function relaunchUrl($campaign, $communication): string
+    {
+        return sprintf('/campaign/%d/communication/%d/relaunch', $campaign->getId(), $communication->getId());
+    }
+
+    /**
+     * Admin with a campaign whose single message has already been sent.
+     */
+    private function bootRelaunch($client): array
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $admin    = $fixtures->createRawUser('m3-'.uniqid().'@example.com', 'password', true);
+        [$campaign, $communication, $message] = $this->createCampaignForUser($fixtures, $admin);
+        $this->login($client, $admin);
+
+        return [$campaign, $communication, $message];
+    }
+
+    private function isMessageSent($client, int $messageId): bool
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(\App\Entity\Message::class)->find($messageId)->isSent();
+    }
+
+    public function testRelaunchRejectsGet(): void
+    {
+        // An <img src=".../relaunch"> seen by an admin used to re-send everything.
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $client->request('GET', $this->relaunchUrl($campaign, $communication));
+
+        $this->assertResponseStatusCodeSame(405);
+        $this->assertTrue($this->isMessageSent($client, $message->getId()));
+    }
+
+    public function testRelaunchRejectsMissingCsrf(): void
+    {
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $client->request('POST', $this->relaunchUrl($campaign, $communication), ['csrf' => 'forged']);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertTrue($this->isMessageSent($client, $message->getId()));
+    }
+
+    public function testRelaunchRejectsCommunicationOfAnotherCampaign(): void
+    {
+        $client = static::createClient();
+        [$campaign] = $this->bootRelaunch($client);
+        $fixtures   = $this->getFixtures($client->getContainer());
+        $foreign    = $fixtures->createCommunication($fixtures->createCampaign('Other campaign'));
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', $this->relaunchUrl($campaign, $foreign), ['csrf' => $csrf]);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testRelaunchResetsMessagesWithValidCsrf(): void
+    {
+        $client = static::createClient();
+        [$campaign, $communication, $message] = $this->bootRelaunch($client);
+
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('communication')->getValue();
+        $client->request('POST', $this->relaunchUrl($campaign, $communication), ['csrf' => $csrf]);
+
+        $this->assertResponseRedirects();
+        $this->assertFalse($this->isMessageSent($client, $message->getId()));
+    }
+
+    public function testCampaignPageDoesNotEmitRawScriptFromGroupNames(): void
+    {
+        // Regression (CERT-FR RM #1080870, ANSSI-06): group names are user
+        // input, embedded as JSON in the dashboard's <script> block.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('xss-groups-'.uniqid().'@example.com', 'password');
+        [$campaign] = $this->createCampaignForUser($fixtures, $user);
+
+        $campaign->setGroupNames(['<script>alert(1)</script>']);
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($campaign);
+        $em->flush();
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/campaign/%d', $campaign->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringNotContainsString('<script>alert(1)', $client->getResponse()->getContent());
     }
 }

@@ -554,4 +554,422 @@ class VolunteersControllerTest extends BaseWebTestCase
         $this->assertArrayHasKey('title', $decoded);
         $this->assertArrayHasKey('body', $decoded);
     }
+
+    public function testListUserStructuresEscapesVolunteerNameInTitle(): void
+    {
+        // Regression (CERT-FR RM #1080870, audit H6): the title is inserted
+        // with jQuery .html(), so a manager could plant a script in a
+        // volunteer's name and have it run in an admin's session.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $user      = $fixtures->createRawUser('vol_xss-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('XSS-STR-'.uniqid(), 'EXT-XSS-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createVolunteer($user, 'VOL-XSS-'.uniqid(), 'xss-vol-'.uniqid().'@test.com');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $em = $container->get('doctrine.orm.entity_manager');
+        $volunteer->setFirstName('<svg/onload=alert(1)>');
+        $volunteer->setLastName('Doe'); // display name needs both names
+        $em->persist($volunteer);
+        $em->flush();
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/volunteers/list-user-structures', ['id' => $volunteer->getId()]);
+
+        $this->assertResponseIsSuccessful();
+        $title = json_decode($client->getResponse()->getContent(), true)['title'];
+        $this->assertStringNotContainsString('<', $title);
+        $this->assertMatchesRegularExpression('/&lt;svg/i', $title);
+    }
+
+    // ──────────────────────────────────────────────
+    // Anonymize page authorization (CERT-FR RM #1080870, audit M1)
+    // ──────────────────────────────────────────────
+
+    /**
+     * A manager of one structure, an own volunteer and a foreign volunteer,
+     * each with one SMS reply.
+     */
+    private function bootAnonymizeScenario($client): array
+    {
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $suffix    = uniqid();
+
+        $user      = $fixtures->createRawUser("m1-{$suffix}@test.com", 'password');
+        $structure = $fixtures->createStructure("M1-STR-{$suffix}", "EXT-M1-{$suffix}");
+        $fixtures->assignUserToStructure($user, $structure);
+        $other     = $fixtures->createStructure("M1-OTHER-{$suffix}", "EXT-M1O-{$suffix}");
+
+        $own = $fixtures->createStandaloneVolunteer("M1-OWN-{$suffix}", "m1-own-{$suffix}@test.com");
+        $fixtures->assignVolunteerToStructure($own, $structure);
+        $foreign = $fixtures->createStandaloneVolunteer("M1-FOR-{$suffix}", "m1-for-{$suffix}@test.com");
+        $fixtures->assignVolunteerToStructure($foreign, $other);
+
+        $campaign      = $fixtures->createCampaign("M1 {$suffix}");
+        $communication = $fixtures->createCommunication($campaign);
+        $ownAnswer     = $fixtures->createAnswer($fixtures->createMessage($communication, $own), "own secret {$suffix}");
+        $foreignAnswer = $fixtures->createAnswer($fixtures->createMessage($communication, $foreign), "foreign secret {$suffix}");
+
+        $this->login($client, $user);
+
+        return compact('own', 'foreign', 'ownAnswer', 'foreignAnswer');
+    }
+
+    public function testAnonymizePageDeniesVolunteerOutsidePerimeter(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['foreign']->getId(),
+            $s['foreignAnswer']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertStringNotContainsString($s['foreignAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    public function testAnonymizePageRejectsAnswerOfAnotherVolunteer(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['own']->getId(),
+            $s['foreignAnswer']->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertStringNotContainsString($s['foreignAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    public function testAnonymizePageStillShowsOwnVolunteerAnswer(): void
+    {
+        $client = static::createClient();
+        $s      = $this->bootAnonymizeScenario($client);
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete/%d/%d',
+            $s['own']->getId(),
+            $s['ownAnswer']->getId()
+        ));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString($s['ownAnswer']->getRaw(), $client->getResponse()->getContent());
+    }
+
+    /**
+     * Same setup as testDeleteVolunteer, where "confirm" does anonymize.
+     */
+    private function bootAnonymizableVolunteer($client): int
+    {
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $suffix   = uniqid();
+
+        $admin     = $fixtures->createRawUser("m1c-{$suffix}@example.com", 'password', true);
+        $structure = $fixtures->createStructure("M1C STRUCTURE {$suffix}", "EXT-M1C-{$suffix}");
+        $adminVol  = $fixtures->createVolunteer($admin, "M1C-ADMIN-{$suffix}", "m1c-{$suffix}@example.com");
+        $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->assignVolunteerToStructure($adminVol, $structure);
+
+        $volunteer = new Volunteer();
+        $volunteer->setExternalId("M1C-VOL-{$suffix}");
+        $volunteer->setFirstName('Keep');
+        $volunteer->setLastName('Me');
+        $volunteer->setEmail("keep.me.{$suffix}@example.com");
+        $volunteer->setEnabled(true);
+        $volunteer->setLocked(false);
+        $volunteer->setPhoneNumberOptin(true);
+        $volunteer->setEmailOptin(true);
+        $em->persist($volunteer);
+        $em->flush();
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $admin);
+
+        return $volunteer->getId();
+    }
+
+    private function postAnonymizeButton($client, int $id, string $button): ?Volunteer
+    {
+        $client->request('POST', sprintf('/management/volunteers/delete/%d', $id), [
+            'form' => [$button => ''],
+        ]);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Volunteer::class)->find($id);
+    }
+
+    public function testAnonymizeConfirmButtonAnonymizes(): void
+    {
+        // Control for the cancel test below: this setup really anonymizes.
+        $client = static::createClient();
+        $fresh  = $this->postAnonymizeButton($client, $this->bootAnonymizableVolunteer($client), 'confirm');
+
+        $this->assertTrue(null === $fresh || 'Keep' !== $fresh->getFirstName());
+    }
+
+    public function testAnonymizeCancelButtonDoesNotAnonymize(): void
+    {
+        // Without JavaScript, "Cancel" is a plain submit button.
+        $client = static::createClient();
+        $fresh  = $this->postAnonymizeButton($client, $this->bootAnonymizableVolunteer($client), 'cancel');
+
+        $this->assertNotNull($fresh);
+        $this->assertSame('Keep', $fresh->getFirstName());
+    }
+
+    // ──────────────────────────────────────────────
+    // NIVOL and privilege badges (CERT-FR RM #1080870, audit M6)
+    //
+    // A manager could create a volunteer carrying the "RT MR" badge (the sync
+    // then creates a verified, trusted RedCall user for it), and could rewrite
+    // the NIVOL of an existing volunteer (unbinding it from its RedCall user).
+    // ──────────────────────────────────────────────
+
+    private function bootManagerWithVolunteer($client, bool $admin = false): array
+    {
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $suffix    = uniqid();
+        $user      = $fixtures->createRawUser("m6-{$suffix}@test.com", 'password', $admin);
+        $structure = $fixtures->createStructure("M6 {$suffix}", "EXT-M6-{$suffix}");
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createStandaloneVolunteer("M6VOL{$suffix}", "m6-vol-{$suffix}@test.com");
+        $volunteer->setFirstName('Jean');
+        $volunteer->setLastName('Dupont');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+        $this->login($client, $user);
+
+        return [$user, $structure, $volunteer];
+    }
+
+    private function reloadVolunteer($client, int $id): Volunteer
+    {
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Volunteer::class)->find($id);
+    }
+
+    private function volunteerBadgeNames(Volunteer $volunteer): array
+    {
+        return array_map(function ($badge) {
+            return $badge->getName();
+        }, $volunteer->getBadges()->toArray());
+    }
+
+    public function testNonAdminCannotRewriteNivolOfExistingVolunteer(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $nivol  = $volunteer->getExternalId();
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['externalId'] = 'HIJACKED';
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertSame($nivol, $this->reloadVolunteer($client, $volunteer->getId())->getExternalId());
+    }
+
+    public static function rtmrVisibilityProvider(): array
+    {
+        return ['invisible badge' => [false], 'visible badge' => [true]];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('rtmrVisibilityProvider')]
+    public function testNonAdminCannotGrantRtmrBadge(bool $visible): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $rtmr   = $this->getFixtures($client->getContainer())
+                       ->createBadge(\App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE, 'M6-RTMR-'.uniqid(), true, $visible);
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        if ($visible) {
+            $values['volunteer']['badges']['visible'][] = (string) $rtmr->getId();
+        } else {
+            $values['volunteer']['badges']['invisible'] = (string) $rtmr->getId();
+        }
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertNotContains(
+            \App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE,
+            $this->volunteerBadgeNames($this->reloadVolunteer($client, $volunteer->getId()))
+        );
+    }
+
+    public function testAdminCanStillGrantRtmrBadge(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client, true);
+        $rtmr   = $this->getFixtures($client->getContainer())
+                       ->createBadge(\App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE, 'M6-RTMR-'.uniqid(), true, false);
+
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['badges']['invisible'] = (string) $rtmr->getId();
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertContains(
+            \App\Sync\Reconciliation\RtmrReconciliator::RTMR_BADGE,
+            $this->volunteerBadgeNames($this->reloadVolunteer($client, $volunteer->getId()))
+        );
+    }
+
+    public function testNonAdminCannotCreateVolunteerOutsideTheirStructures(): void
+    {
+        $client = static::createClient();
+        $this->bootManagerWithVolunteer($client);
+        $email  = 'm6-orphan-'.uniqid().'@test.com';
+
+        $crawler = $client->request('GET', '/management/volunteers/create');
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['firstName'] = 'Orphan';
+        $values['volunteer']['lastName']  = 'Volunteer';
+        $values['volunteer']['email']     = $email;
+        unset($values['volunteer']['structures']);
+        $client->request('POST', $form->getUri(), $values);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $this->assertNull($em->getRepository(Volunteer::class)->findOneBy(['email' => $email]));
+    }
+
+    public function testNonAdminCanStillCreateVolunteerInTheirStructure(): void
+    {
+        $client = static::createClient();
+        [, $structure] = $this->bootManagerWithVolunteer($client);
+        $email  = 'm6-new-'.uniqid().'@test.com';
+
+        $crawler = $client->request('GET', '/management/volunteers/create');
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        $values['volunteer']['externalId'] = 'M6NEW'.strtoupper(uniqid());
+        $values['volunteer']['firstName']  = 'New';
+        $values['volunteer']['lastName']   = 'Volunteer';
+        $values['volunteer']['email']      = $email;
+        $values['volunteer']['structures'] = [(string) $structure->getId()];
+        $client->request('POST', $form->getUri(), $values);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $this->assertNotNull($em->getRepository(Volunteer::class)->findOneBy(['email' => $email]));
+    }
+
+    // ──────────────────────────────────────────────
+    // Structures outside the form's choices (CERT-FR RM #1080870, audit M7)
+    //
+    // Non-admin choices only listed the user's direct structures, and saving
+    // replaced the collection: every other structure (another unit's, or a
+    // sub-structure of the manager's own) was silently dropped.
+    // ──────────────────────────────────────────────
+
+    private function saveVolunteerForm($client, Volunteer $volunteer, ?callable $alter = null): void
+    {
+        $crawler = $client->request('GET', sprintf('/management/volunteers/manual-update/%d', $volunteer->getId()));
+        $form    = $crawler->filter('form[name="volunteer"]')->form();
+        $values  = $form->getPhpValues();
+        // Proves the form was actually saved (a rejected form keeps everything).
+        $values['volunteer']['firstName'] = 'Saved';
+        if ($alter) {
+            $values = $alter($values);
+        }
+        $client->request('POST', $form->getUri(), $values);
+
+        $this->assertSame('Saved', $this->reloadVolunteer($client, $volunteer->getId())->getFirstName(), 'The form should have been saved');
+    }
+
+    private function structureIdsOf($client, Volunteer $volunteer): array
+    {
+        $ids = array_map(function ($structure) {
+            return $structure->getId();
+        }, $this->reloadVolunteer($client, $volunteer->getId())->getStructures()->toArray());
+        sort($ids);
+
+        return $ids;
+    }
+
+    public function testSavingKeepsStructuresOutsideManagerPerimeter(): void
+    {
+        $client = static::createClient();
+        [, $own, $volunteer] = $this->bootManagerWithVolunteer($client);
+        $other  = $this->getFixtures($client->getContainer())->createStructure('M7 OTHER '.uniqid(), 'EXT-M7O-'.uniqid());
+        $this->getFixtures($client->getContainer())->assignVolunteerToStructure($volunteer, $other);
+        $expected = [$own->getId(), $other->getId()];
+        sort($expected);
+
+        $this->saveVolunteerForm($client, $volunteer);
+
+        $this->assertSame($expected, $this->structureIdsOf($client, $volunteer));
+    }
+
+    public function testSavingKeepsChildStructureOfManager(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        [, $own]  = $this->bootManagerWithVolunteer($client);
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        $child = $fixtures->createStructure('M7 CHILD '.uniqid(), 'EXT-M7C-'.uniqid());
+        $child->setParentStructure($own);
+        $em->persist($child);
+        $em->flush();
+        $volunteer = $fixtures->createStandaloneVolunteer('M7CHILD'.uniqid(), 'm7-child-'.uniqid().'@test.com');
+        $volunteer->setFirstName('Paul');
+        $volunteer->setLastName('Child');
+        $fixtures->assignVolunteerToStructure($volunteer, $child);
+
+        $this->saveVolunteerForm($client, $volunteer);
+
+        $this->assertSame([$child->getId()], $this->structureIdsOf($client, $volunteer));
+    }
+
+    public function testManagerCanStillRemoveTheirOwnStructure(): void
+    {
+        $client = static::createClient();
+        [, , $volunteer] = $this->bootManagerWithVolunteer($client);
+        $other  = $this->getFixtures($client->getContainer())->createStructure('M7 LEFT '.uniqid(), 'EXT-M7L-'.uniqid());
+        $this->getFixtures($client->getContainer())->assignVolunteerToStructure($volunteer, $other);
+
+        $this->saveVolunteerForm($client, $volunteer, function (array $values) {
+            unset($values['volunteer']['structures']);
+
+            return $values;
+        });
+
+        $this->assertSame([$other->getId()], $this->structureIdsOf($client, $volunteer));
+    }
+
+    public function testRemoveAllStructuresRejectsBadCsrf(): void
+    {
+        // Regression (CERT-FR RM #1080870, ANSSI-06): {csrf} was in the route
+        // but never checked, so any page could strip a volunteer's structures.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $admin     = $fixtures->createRawUser('vol_ras_csrf-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-RASC-'.uniqid());
+        $structure = $fixtures->createStructure('RASC-STR-'.uniqid(), 'EXT-RASC-'.uniqid());
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf('/management/volunteers/remove-all-structures/forged/%d', $volunteer->getId()));
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertCount(1, $this->reloadVolunteer($client, $volunteer->getId())->getStructures());
+    }
 }

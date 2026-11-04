@@ -75,6 +75,121 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         );
     }
 
+    // Regression (CERT-FR RM #1080870, audit M10): the query string was merged
+    // into the console input, so a caller could pass any command option (e.g.
+    // sync-data --dir to run the sync inline from a server-side directory).
+    public function testCronDoesNotForwardQueryParametersToTheCommand(): void
+    {
+        $client = static::createClient();
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('GET', '/cron/sync-data?--dir=/nonexistent-m10');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotEmpty(
+            $sender->getDispatched(),
+            'sync:data must ignore --dir from the URL and dispatch its task as scheduled'
+        );
+    }
+
+    private function loginCronUser($client, bool $root): void
+    {
+        $fixtures = new \App\Tests\Fixtures\DataFixtures(
+            $client->getContainer()->get('doctrine.orm.entity_manager'),
+            $client->getContainer()->get('security.password_hasher')
+        );
+        $user = $fixtures->createRawUser('m10-'.uniqid().'@test.com', 'password', $root);
+        if (!$root) {
+            $user->setIsAdmin(true);
+            $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+            $em->persist($user);
+            $em->flush();
+        }
+        $this->login($client, $user);
+    }
+
+    public function testCronManualTriggerIsDeniedToPlainAdmin(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, false);
+
+        $client->request('GET', '/cron/clear-expirable', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testCronManualTriggerIsAllowedToRoot(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+
+        $client->request('GET', '/cron/clear-expirable', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testTaskWebhookDoesNotLogThePayload(): void
+    {
+        // Regression (ANSSI-05): the whole Cloud Task payload (inbound SMS
+        // body, phone numbers, Twilio signature) was logged on every hit.
+        $client  = static::createClient();
+        $handler = new \Monolog\Handler\TestHandler();
+        $client->getContainer()->get('logger')->pushHandler($handler);
+
+        $client->request('POST', '/task/webhook', [], [], [
+            'HTTP_X_APPENGINE_QUEUENAME' => 'test',
+            'CONTENT_TYPE'               => 'application/json',
+        ], json_encode(['WebhookRequest' => [
+            'origin' => 'unknown-queue',
+            'body'   => ['Body' => 'secret sms content', 'From' => '+33600000000'],
+        ]]));
+
+        foreach ($handler->getRecords() as $record) {
+            $this->assertStringNotContainsString('secret sms content', json_encode($record->toArray()));
+            $this->assertStringNotContainsString('+33600000000', json_encode($record->toArray()));
+        }
+    }
+
+    // Regression (CERT-FR RM #1080870, ANSSI-02): a root following a link
+    // used to run the cron immediately (GET, no CSRF).
+    public function testCronManualGetOnlyShowsAConfirmation(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('GET', '/cron/sync-data', [], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form[method="post"]');
+        $this->assertEmpty($sender->getDispatched(), 'A GET must not run the cron');
+    }
+
+    public function testCronManualPostWithForgedCsrfIsRejected(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+
+        $client->request('POST', '/cron/sync-data', ['csrf' => 'forged'], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseStatusCodeSame(404);
+        $this->assertEmpty($sender->getDispatched());
+    }
+
+    public function testCronManualPostWithCsrfRunsTheCron(): void
+    {
+        $client = static::createClient();
+        $this->loginCronUser($client, true);
+        $sender = $client->getContainer()->get(\Bundles\GoogleTaskBundle\Service\TaskSender::class);
+        $csrf   = $client->getContainer()->get('security.csrf.token_manager')->getToken('cron')->getValue();
+
+        $client->request('POST', '/cron/sync-data', ['csrf' => $csrf], [], ['REMOTE_ADDR' => '203.0.113.5']);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertNotEmpty($sender->getDispatched());
+    }
+
     // ──────────────────────────────────────────────
     // /deploy
     // ──────────────────────────────────────────────

@@ -9,6 +9,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NivolManager
 {
+    // Login codes are short (~22.7 bits): keep them short-lived and cap the
+    // number of guesses so they cannot be brute-forced.
+    public const CODE_TTL     = 'PT10M';
+    public const MAX_ATTEMPTS = 10;
+    // Codes emailed per user within CODE_TTL (anti-flood, caps guesses too).
+    public const MAX_CODES_PER_TTL = 3;
+
     private VolunteerManager    $volunteerManager;
     private UserManager         $userManager;
     private ExpirableManager    $expirableManager;
@@ -56,12 +63,20 @@ class NivolManager
             return null;
         }
 
+        // Anti-flood: a bounded number of codes per user and per TTL window
+        // (shared across instances, unlike a local cache).
+        $since = (new \DateTime())->sub(new \DateInterval(self::CODE_TTL));
+        $fragment = substr(json_encode(['user_id' => $user->getId()]), 1, -1);
+        if ($this->expirableManager->countValidCreatedSinceContaining($since, $fragment) >= self::MAX_CODES_PER_TTL) {
+            return null;
+        }
+
         $code = $this->createDigits();
 
         $identifier = $this->expirableManager->set([
             'user_id' => $user->getId(),
             'code'    => $code,
-        ]);
+        ], (new \DateTime())->add(new \DateInterval(self::CODE_TTL)));
 
         $this->mailManager->simple(
             $user->getUserIdentifier(),

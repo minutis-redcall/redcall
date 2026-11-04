@@ -120,6 +120,7 @@ admin:
     create_user_flash:
       already_exists: 'This user already exists and their access is enabled.'
       created: 'The user has been created.'
+      email_taken: 'Another account, not bound to this NIVOL, already uses this volunteer''s email address: check it before granting access.'
       no_email: 'Cannot create the user: the volunteer has no email address.'
       trusted: 'This user already existed but their access was disabled: it has been re-enabled.'
     delete_confirm: 'Really remove "%email%"?'
@@ -838,6 +839,7 @@ manage_volunteers:
     volunteer: 'Volunteer'
   form:
     added: 'Volunteer has properly been added.'
+    privileged_badge: 'Only an administrator can grant or remove the "%badge%" nomination.'
     create: 'Create volunteer'
     email: Email
     email_locked: 'Locked email *'
@@ -1134,6 +1136,7 @@ nivol_auth:
   nivol_not_found: 'NIvol not found'
   input_submit: 'Get a code by email'
   input_code: 'Please enter the code received by email'
+  code_sent_if_exists: 'If this NIVOL matches a RedCall account, a login code valid for 10 minutes has just been sent to you by email.'
   remember_me: 'Trust this device and keep the session open'
   input_connect: 'Connect'
   email:
@@ -1172,3 +1175,7 @@ costs:
     campaigns: 'Campaigns'
     total: 'Total'
   yearly_total: 'Yearly total'
+cron:
+  confirm:
+    title: 'Run the scheduled task "%command%" now?'
+    run: 'Run'

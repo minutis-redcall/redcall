@@ -112,26 +112,62 @@ class ContextProcessorTest extends TestCase
 
         $result = $processor($record);
 
-        $this->assertSame('http://example.com/test', $result->extra['uri']);
+        $this->assertSame('/test', $result->extra['uri']);
+        $this->assertSame('GET', $result->extra['method']);
     }
 
-    public function testAddsBodyWhenRequestHasContent(): void
+    // Regression (CERT-FR RM #1080870, ANSSI-05): the raw body (passwords,
+    // CSRF tokens, JWTs, inbound SMS...) was attached to every log record and
+    // shipped to Google Cloud Logging and Slack.
+    public function testNeverLogsTheRequestBody(): void
     {
-        $request = Request::create(
-            'http://example.com/api',
-            'POST',
-            [],
-            [],
-            [],
-            [],
-            '{"key":"value"}'
-        );
+        $request = Request::create('http://example.com/connect', 'POST', [
+            '_username' => 'root@example.com',
+            '_password' => 'hunter2-secret',
+        ]);
         $processor = $this->createProcessor('test', $request);
-        $record = $this->createLogRecord();
 
-        $result = $processor($record);
+        $result = $processor($this->createLogRecord());
 
-        $this->assertSame('{"key":"value"}', $result->extra['body']);
+        $this->assertArrayNotHasKey('body', $result->extra);
+        $this->assertStringNotContainsString('hunter2-secret', json_encode($result->extra));
+        $this->assertSame(['_username', '_password'], $result->extra['body_keys']);
+    }
+
+    public function testNeverLogsTheRawJsonBody(): void
+    {
+        $request = Request::create('http://example.com/auth', 'POST', [], [], [], [], '{"jwt":"eyJsecret"}');
+        $processor = $this->createProcessor('test', $request);
+
+        $result = $processor($this->createLogRecord());
+
+        $this->assertStringNotContainsString('eyJsecret', json_encode($result->extra));
+    }
+
+    public function testStripsTheQueryString(): void
+    {
+        $request = Request::create('http://example.com/google-verify?code=oauth-secret&state=x');
+        $processor = $this->createProcessor('test', $request);
+
+        $result = $processor($this->createLogRecord());
+
+        $this->assertSame('/google-verify', $result->extra['uri']);
+        $this->assertStringNotContainsString('oauth-secret', json_encode($result->extra));
+    }
+
+    public function testRedactsRouteParametersFromThePath(): void
+    {
+        // Capability URLs: the path itself is the secret.
+        $request = Request::create('http://example.com/space/3f2b-session-secret/home');
+        $request->attributes->set('_route', 'space_home');
+        $request->attributes->set('_route_params', ['sessionId' => '3f2b-session-secret']);
+        $processor = $this->createProcessor('test', $request);
+
+        $result = $processor($this->createLogRecord());
+
+        $this->assertSame('/space/{sessionId}/home', $result->extra['uri']);
+        $this->assertSame('space_home', $result->extra['route']);
+        $this->assertStringNotContainsString('3f2b-session-secret', json_encode($result->extra));
     }
 
     public function testDoesNotAddBodyWhenRequestHasNoContent(): void

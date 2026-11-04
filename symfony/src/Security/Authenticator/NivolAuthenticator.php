@@ -4,6 +4,8 @@ namespace App\Security\Authenticator;
 
 use App\Form\Type\CodeType;
 use App\Manager\ExpirableManager;
+use App\Manager\NivolManager;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Psr\Log\LoggerInterface;
@@ -36,6 +38,7 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
     private RouterInterface $router;
     private ExpirableManager $expirableManager;
     private UserManager $userManager;
+    private CaptchaManager $captchaManager;
     private LoggerInterface $logger;
 
     public function __construct(
@@ -46,6 +49,7 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         RouterInterface $router,
         ExpirableManager $expirableManager,
         UserManager $userManager,
+        CaptchaManager $captchaManager,
         ?LoggerInterface $logger = null)
     {
         $this->formFactory      = $formFactory;
@@ -55,6 +59,7 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         $this->router           = $router;
         $this->expirableManager = $expirableManager;
         $this->userManager      = $userManager;
+        $this->captchaManager   = $captchaManager;
         $this->logger           = $logger ?? new NullLogger();
     }
 
@@ -136,23 +141,36 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
             throw new BadCredentialsException();
         }
 
-        $expirable = $this->expirableManager->get($uuid);
+        // Every submission burns one attempt *before* the code is compared,
+        // atomically, so parallel guesses cannot exceed the limit.
+        $attempt = $this->expirableManager->consumeAttempt($uuid, NivolManager::MAX_ATTEMPTS);
 
-        if (null === $expirable) {
-            $this->logger->warning('NivolAuthenticator: expirable not found (likely expired)', [
+        if (null === $attempt) {
+            $this->logger->warning('NivolAuthenticator: expirable not found, expired or out of attempts', [
                 'uuid' => $uuid,
             ]);
 
             throw new BadCredentialsException();
         }
 
-        if (strtolower($expirable['code']) !== strtolower($code)) {
+        $expirable = $attempt['data'];
+
+        if (!is_array($expirable) || !isset($expirable['code'], $expirable['user_id'])
+            || !hash_equals(strtoupper($expirable['code']), strtoupper($code))) {
             $this->logger->warning('NivolAuthenticator: code mismatch', [
-                'uuid' => $uuid,
+                'uuid'     => $uuid,
+                'attempts' => $attempt['attempts'],
             ]);
+
+            if ($attempt['attempts'] >= NivolManager::MAX_ATTEMPTS) {
+                $this->expirableManager->remove($uuid);
+            }
 
             throw new BadCredentialsException();
         }
+
+        // One-time code: it can never be replayed once accepted.
+        $this->expirableManager->remove($uuid);
 
         $user = $this->userManager->find($expirable['user_id']);
 
@@ -192,6 +210,12 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
             'previous'          => $previous ? get_class($previous) : null,
             'previous_message'  => $previous ? $previous->getMessage() : null,
         ]);
+
+        // CodeType renders a captcha once the IP runs out of grace.
+        $ip = $request->getClientIp();
+        if (null !== $ip) {
+            $this->captchaManager->decreaseGrace($ip);
+        }
 
         return new RedirectResponse($this->getLoginUrl($request));
     }

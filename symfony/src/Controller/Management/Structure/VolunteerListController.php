@@ -88,6 +88,10 @@ class VolunteerListController extends BaseController
         Request $request,
         #[MapEntity(expr: "repository.findOneById(volunteerListId)")] ?VolunteerList $volunteerList = null)
     {
+        if ($volunteerList) {
+            $this->assertListBelongsToStructure($volunteerList, $structure);
+        }
+
         $volunteerList = $volunteerList ?? new VolunteerList();
         $volunteerList->setStructure($structure);
         $volunteerList->setAudience([
@@ -130,11 +134,15 @@ class VolunteerListController extends BaseController
         #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
         #[MapEntity(expr: "repository.findOneById(volunteerListId)")] ?VolunteerList $volunteerList = null)
     {
+        $volunteerList = $this->assertListBelongsToStructure($volunteerList, $structure);
+
         $add = $this->createAddVolunteerForm($request);
         if ($add->isSubmitted() && $add->isValid()) {
             $volunteer = $this->volunteerManager->findOneByExternalId($add->get('externalId')->getData());
 
-            if ($volunteer) {
+            // Out-of-perimeter volunteers are ignored like unknown NIVOLs, so
+            // the form can neither leak their identity nor confirm they exist.
+            if ($volunteer && $this->isGranted('VOLUNTEER', $volunteer)) {
                 $volunteerList->addVolunteer($volunteer);
                 $this->volunteerListManager->save($volunteerList);
             }
@@ -186,6 +194,8 @@ class VolunteerListController extends BaseController
         #[MapEntity(expr: "repository.findOneById(volunteerId)")] Volunteer $volunteer,
         Csrf $csrf)
     {
+        $this->assertListBelongsToStructure($volunteerList, $structure);
+
         $volunteerList->removeVolunteer($volunteer);
         $this->volunteerListManager->save($volunteerList);
 
@@ -202,11 +212,28 @@ class VolunteerListController extends BaseController
         #[MapEntity(expr: "repository.findOneById(volunteerListId)")] VolunteerList $volunteerList,
         Csrf $csrf)
     {
+        $this->assertListBelongsToStructure($volunteerList, $structure);
+
         $this->volunteerListManager->remove($volunteerList);
 
         return $this->redirectToRoute('management_structures_volunteer_lists_index', [
             'structureId' => $structure->getId(),
         ]);
+    }
+
+    /**
+     * The STRUCTURE voter only covers {structureId}: the list taken from the
+     * URL must belong to that very structure, or it is someone else's list.
+     */
+    private function assertListBelongsToStructure(?VolunteerList $volunteerList, Structure $structure) : VolunteerList
+    {
+        if (!$volunteerList
+            || !$volunteerList->getStructure()
+            || $volunteerList->getStructure()->getId() !== $structure->getId()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $volunteerList;
     }
 
     private function createSearchForm(Request $request, VolunteerList $volunteerList) : FormInterface

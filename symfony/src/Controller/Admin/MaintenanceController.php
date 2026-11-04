@@ -41,9 +41,11 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/index.html.twig');
     }
 
-    #[Route(name: "data_sync", path: "/data-sync")]
-    public function dataSync()
+    #[Route(name: "data_sync", path: "/data-sync", methods: ["POST"])]
+    public function dataSync(Request $request)
     {
+        $this->validateCsrfOrThrowNotFoundException('maintenance', $request->request->get('csrf'));
+
         $this->maintenanceManager->dataSync();
 
         $this->addFlash('success', $this->translator->trans('maintenance.data_sync_started'));
@@ -51,9 +53,11 @@ class MaintenanceController extends BaseController
         return $this->redirectToRoute('admin_maintenance_index');
     }
 
-    #[Route(name: "annuaire_national", path: "/annuaire-national")]
-    public function annuaireNational()
+    #[Route(name: "annuaire_national", path: "/annuaire-national", methods: ["POST"])]
+    public function annuaireNational(Request $request)
     {
+        $this->validateCsrfOrThrowNotFoundException('maintenance', $request->request->get('csrf'));
+
         $this->maintenanceManager->annuaireNational();
 
         $this->addFlash('success', $this->translator->trans('maintenance.annuaire_national_started'));

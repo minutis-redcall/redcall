@@ -5,6 +5,7 @@ namespace App\Tests\Security\Voter;
 use App\Entity\Badge;
 use App\Entity\Campaign;
 use App\Entity\Communication;
+use App\Entity\User;
 use App\Security\Voter\CampaignVoter;
 use App\Tests\Fixtures\DataFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -302,5 +303,91 @@ class CampaignVoterTest extends KernelTestCase
         // Sf6: returns DENIED instead of throwing
         $result = $this->voter->vote($token, $campaign, [CampaignVoter::ACCESS]);
         $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
+    }
+
+    // ────────────────────────────────────────────────────────
+    // OWNER vs ACCESS (CERT-FR RM #1080870, audit M5)
+    //
+    // OWNER used to fall through to the ACCESS rule: any manager of a single
+    // recipient could close, reopen, rename or recolor someone else's campaign.
+    // ────────────────────────────────────────────────────────
+
+    /**
+     * A campaign authored by a user of structure A that messaged one
+     * volunteer of structure B.
+     */
+    private function createCampaignAuthoredInAWithRecipientInB(?User $author = null): array
+    {
+        $suffix = uniqid();
+        $a      = $this->fixtures->createStructure("M5 A {$suffix}", "STR-M5A-{$suffix}");
+        $b      = $this->fixtures->createStructure("M5 B {$suffix}", "STR-M5B-{$suffix}");
+
+        if (!$author) {
+            $author = $this->fixtures->createRawUser("m5-author-{$suffix}@test.com", 'password', false);
+            $this->fixtures->assignUserToStructure($author, $a);
+        }
+
+        $recipient = $this->fixtures->createStandaloneVolunteer("VOL-M5-{$suffix}", "m5-{$suffix}@test.com");
+        $recipient->addStructure($b);
+        $this->em()->persist($recipient);
+        $this->em()->flush();
+
+        $campaign = $this->fixtures->createCampaign("M5 {$suffix}");
+        $campaign->setUser($author);
+        $this->em()->persist($campaign);
+        $this->em()->flush();
+        $this->fixtures->createMessage($this->fixtures->createCommunication($campaign), $recipient);
+
+        return [$campaign, $a, $b, $author];
+    }
+
+    public function testRecipientManagerHasAccessButIsNotOwner(): void
+    {
+        [$campaign, , $b] = $this->createCampaignAuthoredInAWithRecipientInB();
+        $manager = $this->fixtures->createRawUser('m5-mgr-'.uniqid().'@test.com', 'password', false);
+        $this->fixtures->assignUserToStructure($manager, $b);
+        $token = $this->createToken($manager);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $campaign, [CampaignVoter::ACCESS]));
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $this->voter->vote($token, $campaign, [CampaignVoter::OWNER]));
+    }
+
+    public function testAuthorIsOwnerEvenWithoutStructures(): void
+    {
+        $author = $this->fixtures->createRawUser('m5-lone-'.uniqid().'@test.com', 'password', false);
+        [$campaign] = $this->createCampaignAuthoredInAWithRecipientInB($author);
+        $token = $this->createToken($author);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $campaign, [CampaignVoter::OWNER]));
+    }
+
+    public function testManagerOfAuthorParentStructureIsOwner(): void
+    {
+        [$campaign, $a] = $this->createCampaignAuthoredInAWithRecipientInB();
+        $parent = $this->fixtures->createStructure('M5 PARENT '.uniqid(), 'STR-M5P-'.uniqid());
+        $a->setParentStructure($parent);
+        $this->em()->persist($a);
+        $this->em()->flush();
+
+        $manager = $this->fixtures->createRawUser('m5-parent-'.uniqid().'@test.com', 'password', false);
+        $this->fixtures->assignUserToStructure($manager, $parent);
+        $token = $this->createToken($manager);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $campaign, [CampaignVoter::OWNER]));
+    }
+
+    public function testAuthorlessCampaignOwnershipFallsBackToAccess(): void
+    {
+        // Legacy campaigns (author deleted / never set) must stay manageable.
+        [$campaign, , $b] = $this->createCampaignAuthoredInAWithRecipientInB();
+        $campaign->setUser(null);
+        $this->em()->persist($campaign);
+        $this->em()->flush();
+
+        $manager = $this->fixtures->createRawUser('m5-legacy-'.uniqid().'@test.com', 'password', false);
+        $this->fixtures->assignUserToStructure($manager, $b);
+        $token = $this->createToken($manager);
+
+        $this->assertEquals(VoterInterface::ACCESS_GRANTED, $this->voter->vote($token, $campaign, [CampaignVoter::OWNER]));
     }
 }

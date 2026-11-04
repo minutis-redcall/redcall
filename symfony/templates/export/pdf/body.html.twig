@@ -69,7 +69,8 @@
                 <br/>
                 <div style="color:black;font-weight:normal;font-size:14px;">
                     {% if communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
-                        {{ communication.body|purify }}
+                        {# 'pdf' profile: no resource URL may reach mPDF (SSRF) #}
+                        {{ communication.body|purify('pdf') }}
                     {% else %}
                         {{ communication.body|nl2br }}
                     {% endif %}

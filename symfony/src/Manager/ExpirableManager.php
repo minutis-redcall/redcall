@@ -22,11 +22,48 @@ class ExpirableManager
     {
         $expirable = $this->expirableRepository->findOneByUuid($uuid);
 
-        if (null === $expirable) {
+        if (null === $expirable || $expirable->isExpired()) {
             return null;
         }
 
         return $expirable->getData();
+    }
+
+    /**
+     * Consumes one attempt on a still-valid expirable and returns its data
+     * along with the number of attempts used so far (this one included), or
+     * null when the expirable is missing, expired or out of attempts.
+     *
+     * @return array{data: mixed, attempts: int}|null
+     */
+    public function consumeAttempt(string $uuid, int $maxAttempts) : ?array
+    {
+        if (!$this->expirableRepository->incrementAttempts($uuid, $maxAttempts)) {
+            return null;
+        }
+
+        $expirable = $this->expirableRepository->findOneByUuid($uuid);
+        if (null === $expirable) {
+            return null;
+        }
+
+        // The DQL UPDATE bypassed the identity map; reload the counter.
+        $this->expirableRepository->refresh($expirable);
+
+        return [
+            'data'     => $expirable->getData(),
+            'attempts' => $expirable->getAttempts(),
+        ];
+    }
+
+    public function countValidCreatedSinceContaining(\DateTime $since, string $fragment) : int
+    {
+        return $this->expirableRepository->countValidCreatedSinceContaining($since, $fragment);
+    }
+
+    public function remove(string $uuid) : void
+    {
+        $this->expirableRepository->removeByUuid($uuid);
     }
 
     public function set($data, ?\DateTime $expiresAt = null) : string

@@ -76,7 +76,8 @@
                     operations.find('option').remove();
 
                     $.each(data.operations, function (index, operation) {
-                        operations.append('<option value="' + operation.id + '">[' + operation.id + '] ' + operation.name + '</option>');
+                        // Operation names come from Minutis: never build HTML from them.
+                        operations.append($('<option>').val(operation.id).text('[' + operation.id + '] ' + operation.name));
                     });
 
                     $('#{{ form.operation.operation.vars.id }}').change();

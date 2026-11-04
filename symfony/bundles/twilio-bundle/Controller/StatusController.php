@@ -57,23 +57,25 @@ class StatusController extends BaseController
     {
         $this->validateRequestSignature($request);
 
+        // No headers (Twilio signature) / phone numbers in logs.
         $this->logger->info('Twilio webhooks - message delivery status', [
-            'headers' => $request->headers->all(),
-            'query'   => $request->query->all(),
-            'request' => $request->request->all(),
+            'sid'    => $request->request->get('MessageSid'),
+            'status' => $request->request->get('MessageStatus'),
         ]);
 
+        // Twilio fields come from the signed POST body only: in a Cloud Task
+        // relay the query string is not covered by the signature.
         $outbound = $this->messageManager->get($uuid);
 
         if ($outbound) {
-            $outbound->setStatus(($request->attributes->get('MessageStatus') ?? $request->query->get('MessageStatus') ?? $request->request->get('MessageStatus')));
+            $outbound->setStatus($request->request->get('MessageStatus'));
             $this->eventDispatcher->dispatch(new TwilioMessageEvent($outbound), TwilioEvents::STATUS_UPDATED);
             $this->messageManager->save($outbound);
         }
 
         $status = new TwilioStatus();
-        $status->setSid(($request->attributes->get('MessageSid') ?? $request->query->get('MessageSid') ?? $request->request->get('MessageSid')));
-        $status->setStatus(($request->attributes->get('MessageStatus') ?? $request->query->get('MessageStatus') ?? $request->request->get('MessageStatus')));
+        $status->setSid($request->request->get('MessageSid'));
+        $status->setStatus($request->request->get('MessageStatus'));
         $this->statusManager->save($status);
 
         return new Response();

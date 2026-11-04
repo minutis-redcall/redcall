@@ -5,11 +5,17 @@
 
     <div class="rc-section rc-section-center text-center">
 
-        <a class="text-lg-center large-button btn btn-secondary" href="{{ path('admin_maintenance_data_sync') }}">{{ 'maintenance.data_sync'| trans }}</a>
+        <form method="post" action="{{ path('admin_maintenance_data_sync') }}">
+            <input type="hidden" name="csrf" value="{{ csrf_token('maintenance') }}"/>
+            <button type="submit" class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.data_sync'|trans }}</button>
+        </form>
 
         <div class="mb-2"></div>
 
-        <a class="text-lg-center large-button btn btn-secondary" href="{{ path('admin_maintenance_annuaire_national') }}">{{ 'maintenance.annuaire'| trans }}</a>
+        <form method="post" action="{{ path('admin_maintenance_annuaire_national') }}">
+            <input type="hidden" name="csrf" value="{{ csrf_token('maintenance') }}"/>
+            <button type="submit" class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.annuaire'|trans }}</button>
+        </form>
 
         <div class="mb-2"></div>
 

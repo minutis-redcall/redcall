@@ -245,4 +245,22 @@ class StructuresControllerTest extends BaseWebTestCase
 
         $this->assertResponseStatusCodeSame(403);
     }
+
+    public function testListUsersEscapesStructureNameInTitle(): void
+    {
+        // Regression (audit H6, structure variant): title goes through .html().
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('struct_xss-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('<img src=x onerror=alert(1)>', 'EXT-SXSS-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/structures/list-users', ['id' => $structure->getId()]);
+
+        $this->assertResponseIsSuccessful();
+        $title = json_decode($client->getResponse()->getContent(), true)['title'];
+        $this->assertStringNotContainsString('<', $title);
+        $this->assertMatchesRegularExpression('/&lt;img/i', $title);
+    }
 }

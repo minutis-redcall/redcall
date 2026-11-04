@@ -2,8 +2,11 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\Expirable;
+use App\Manager\NivolManager;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
+use Bundles\PasswordLoginBundle\Entity\Captcha;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -332,27 +335,217 @@ class AuthenticatorTest extends BaseWebTestCase
         $this->assertNotAuthenticated($client);
     }
 
-    public function testNivolLoginUnknownNivolStaysOnForm() : void
+    public function testNivolUnknownNivolLooksLikeAKnownOne() : void
     {
+        // Regression (CERT-FR RM #1080870, audit M9): unknown NIVOLs used to
+        // get a "NIVOL invalide" error, revealing who has a RedCall account.
         $client    = static::createClient();
         $container = $client->getContainer();
         $this->whitelistIp($container);
 
         $client->followRedirects(false);
-        $crawler = $client->request('GET', '/nivol');
-        $this->assertResponseIsSuccessful();
-
+        $crawler              = $client->request('GET', '/nivol');
         $form                 = $crawler->filter('form')->first()->form();
         $form['nivol[nivol]'] = '00000000000'; // not in the DB
         $client->submit($form);
 
-        // NivolType has a Callback constraint that surfaces a "nivol_not_found"
-        // violation, so the form stays on /nivol with a 200 (re-rendered with
-        // errors) and no email is sent.
-        $this->assertSame(200, $client->getResponse()->getStatusCode());
+        $this->assertTrue($client->getResponse()->isRedirect());
+        $codeUrl = $client->getResponse()->headers->get('Location');
+        $this->assertMatchesRegularExpression('#/code/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$#', $codeUrl);
+
+        $client->request('GET', $codeUrl);
+        $this->assertResponseIsSuccessful();
 
         $emails = $container->get(FakeEmailManager::class)->findAllEmails();
         $this->assertEmpty($emails, 'No OTP email should be sent for an unknown NIVOL');
+    }
+
+    public function testNivolUnknownNivolDecreasesCaptchaGrace() : void
+    {
+        // Enumeration/flood attempts that send no email still count against the IP.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $em        = $container->get('doctrine.orm.entity_manager');
+        $repo      = $em->getRepository(Captcha::class);
+
+        $client->followRedirects(false);
+        $crawler              = $client->request('GET', '/nivol');
+        $form                 = $crawler->filter('form')->first()->form();
+        $form['nivol[nivol]'] = '00000000000';
+
+        $em->clear();
+        $captcha = $repo->findOneBy(['ip' => ip2long('127.0.0.1')]);
+        $before  = $captcha ? $captcha->getGrace() : (int) Captcha::FAILURE_GRACE;
+
+        $client->submit($form);
+
+        $em->clear();
+        $this->assertSame($before - 1, $repo->findOneBy(['ip' => ip2long('127.0.0.1')])->getGrace());
+    }
+
+    public function testNivolCodeEmailsAreThrottledPerNivol() : void
+    {
+        // Regression (audit M9): every /nivol submission emailed a new code.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        $fixtures = $this->getFixtures($container);
+        $user     = $fixtures->createRawUser('nivol_flood@test.com', 'pwd', false, true);
+        $fixtures->createVolunteer($user, '99110009', 'nivol_flood@test.com');
+
+        $client->followRedirects(false);
+        for ($i = 0; $i < NivolManager::MAX_CODES_PER_TTL + 2; $i++) {
+            $crawler              = $client->request('GET', '/nivol');
+            $form                 = $crawler->filter('form')->first()->form();
+            $form['nivol[nivol]'] = '99110009';
+            $client->submit($form);
+            $this->assertTrue($client->getResponse()->isRedirect());
+        }
+
+        $emails = $container->get(FakeEmailManager::class)->findMessagesForEmail('nivol_flood@test.com');
+        $this->assertCount(NivolManager::MAX_CODES_PER_TTL, $emails);
+    }
+
+    // ─────────────────────────────────────────────
+    // Nivol code brute-force protection (CERT-FR RM #1080870)
+    // ─────────────────────────────────────────────
+
+    /**
+     * Drives /nivol for a fresh trusted user and returns [codeUrl, uuid, code].
+     */
+    private function requestNivolCode(KernelBrowser $client, $container, string $email, string $nivol) : array
+    {
+        $fixtures = $this->getFixtures($container);
+        $user     = $fixtures->createRawUser($email, 'pwd', false, true);
+        $fixtures->createVolunteer($user, $nivol, $email);
+
+        $client->followRedirects(false);
+        $crawler              = $client->request('GET', '/nivol');
+        $form                 = $crawler->filter('form')->first()->form();
+        $form['nivol[nivol]'] = $nivol;
+        $client->submit($form);
+
+        $codeUrl = $client->getResponse()->headers->get('Location');
+        $this->assertMatchesRegularExpression('#/code/([a-f0-9-]+)#', $codeUrl);
+        preg_match('#/code/([a-f0-9-]+)#', $codeUrl, $uuidMatch);
+
+        $emails = $container->get(FakeEmailManager::class)->findMessagesForEmail($email);
+        $this->assertNotEmpty($emails);
+        preg_match('#<strong>([A-Z]\d{2}[A-Z]\d{2})</strong>#', $emails[0]->getBody(), $codeMatch);
+
+        return [$codeUrl, $uuidMatch[1], $codeMatch[1]];
+    }
+
+    private function submitNivolCode(KernelBrowser $client, string $codeUrl, string $code) : void
+    {
+        // CSRF is disabled in the test env; CodeType has an empty block prefix.
+        $client->followRedirects(false);
+        $client->request('POST', $codeUrl, ['code' => $code]);
+    }
+
+    private function findExpirable($container, string $uuid) : ?Expirable
+    {
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->clear();
+
+        return $em->getRepository(Expirable::class)->findOneByUuid($uuid);
+    }
+
+    public function testNivolCodeExpiresAfterTenMinutes() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        $before = time();
+        [, $uuid] = $this->requestNivolCode($client, $container, 'nivol_ttl@test.com', '99110001');
+
+        $expirable = $this->findExpirable($container, $uuid);
+        $this->assertNotNull($expirable);
+        $this->assertEqualsWithDelta($before + 600, $expirable->getExpiresAt()->getTimestamp(), 5);
+    }
+
+    public function testNivolExpiredCodeIsRejected() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        [$codeUrl, $uuid, $code] = $this->requestNivolCode($client, $container, 'nivol_exp@test.com', '99110002');
+
+        // Expired but not yet purged by the clear:expirable cron.
+        $em        = $container->get('doctrine.orm.entity_manager');
+        $expirable = $this->findExpirable($container, $uuid);
+        $expirable->setExpiresAt(new \DateTime('-1 second'));
+        $em->persist($expirable);
+        $em->flush();
+
+        $this->submitNivolCode($client, $codeUrl, $code);
+
+        $this->assertNotAuthenticated($client);
+    }
+
+    public function testNivolCodeIsSingleUse() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        [$codeUrl, $uuid, $code] = $this->requestNivolCode($client, $container, 'nivol_once@test.com', '99110003');
+
+        $this->submitNivolCode($client, $codeUrl, $code);
+        $this->assertAuthenticated($client);
+        $this->assertNull($this->findExpirable($container, $uuid), 'Code must be deleted once used');
+
+        // Replaying the same code from a fresh, anonymous browser must fail.
+        $client->getCookieJar()->clear();
+        $this->submitNivolCode($client, $codeUrl, $code);
+        $this->assertNotAuthenticated($client);
+    }
+
+    public function testNivolCodeIsDeletedAfterMaxFailedAttempts() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $this->whitelistIp($container);
+
+        [$codeUrl, $uuid, $code] = $this->requestNivolCode($client, $container, 'nivol_brute@test.com', '99110004');
+        $wrong = 'A00A00' === $code ? 'B11B11' : 'A00A00';
+
+        for ($i = 1; $i < NivolManager::MAX_ATTEMPTS; $i++) {
+            $this->submitNivolCode($client, $codeUrl, $wrong);
+        }
+        $this->assertSame(NivolManager::MAX_ATTEMPTS - 1, $this->findExpirable($container, $uuid)->getAttempts());
+
+        // The last allowed attempt fails too and burns the code.
+        $this->submitNivolCode($client, $codeUrl, $wrong);
+        $this->assertNull($this->findExpirable($container, $uuid), 'Code must be deleted after max attempts');
+
+        // Even the right code is now useless.
+        $this->submitNivolCode($client, $codeUrl, $code);
+        $this->assertNotAuthenticated($client);
+    }
+
+    public function testNivolWrongCodeDecreasesCaptchaGrace() : void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        [$codeUrl] = $this->requestNivolCode($client, $container, 'nivol_captcha@test.com', '99110005');
+
+        $em      = $container->get('doctrine.orm.entity_manager');
+        $repo    = $em->getRepository(Captcha::class);
+        $em->clear();
+        $captcha = $repo->findOneBy(['ip' => ip2long('127.0.0.1')]);
+        $before  = $captcha ? $captcha->getGrace() : Captcha::FAILURE_GRACE;
+
+        $this->submitNivolCode($client, $codeUrl, 'Z99Z99');
+
+        $em->clear();
+        $captcha = $repo->findOneBy(['ip' => ip2long('127.0.0.1')]);
+        $this->assertNotNull($captcha);
+        $this->assertSame($before - 1, $captcha->getGrace());
     }
 
     // ─────────────────────────────────────────────

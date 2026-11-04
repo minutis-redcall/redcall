@@ -32,7 +32,17 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFilter('snake', [$this, 'snake']),
+            new TwigFilter('js_json', [$this, 'jsJson'], ['is_safe' => ['html', 'js']]),
         ];
+    }
+
+    /**
+     * JSON safe to embed in a <script> block: <, >, &, ' and " are
+     * hex-escaped so user data can never close the block or open a comment.
+     */
+    public function jsJson($value) : string
+    {
+        return json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_THROW_ON_ERROR);
     }
 
     public function uuid() : string

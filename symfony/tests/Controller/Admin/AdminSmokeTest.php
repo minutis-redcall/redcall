@@ -126,7 +126,9 @@ class AdminSmokeTest extends BaseWebTestCase
         // tasks don't execute (and hit Google APIs without credentials).
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/maintenance/data-sync');
+        // POST + CSRF only since the CERT-FR fixes (ANSSI-06).
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('maintenance')->getValue();
+        $client->request('POST', '/admin/maintenance/data-sync', ['csrf' => $csrf]);
         $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
     }
 
@@ -134,7 +136,9 @@ class AdminSmokeTest extends BaseWebTestCase
     {
         $client = static::createClient();
         $this->admin($client);
-        $client->request('GET', '/admin/maintenance/annuaire-national');
+        // POST + CSRF only since the CERT-FR fixes (ANSSI-06).
+        $csrf = $client->getContainer()->get('security.csrf.token_manager')->getToken('maintenance')->getValue();
+        $client->request('POST', '/admin/maintenance/annuaire-national', ['csrf' => $csrf]);
         $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
     }
 

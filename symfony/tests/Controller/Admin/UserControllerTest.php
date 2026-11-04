@@ -271,4 +271,98 @@ class UserControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorNotExists('.card .alert');
     }
+
+    public function testPlainAdminCannotRebindRootExternalId()
+    {
+        // Regression (CERT-FR RM #1080870, audit H7, path C): moving a root's
+        // NIVOL onto one's own account then logging in through Minutis.
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $em        = $container->get('doctrine.orm.entity_manager');
+
+        $admin = $fixtures->createRawUser('h7_admin_'.uniqid().'@test.com', 'password', false);
+        $admin->setIsAdmin(true);
+        $em->persist($admin);
+        $root  = $fixtures->createRawUser('h7_root_'.uniqid().'@test.com', 'password', true);
+        $root->setExternalId('ROOTNIVOL'.uniqid());
+        $em->persist($root);
+        $em->flush();
+        $rootNivol = $root->getExternalId();
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container);
+
+        $client->request('POST', sprintf('/admin/redcall-users/update/%s/%s', $csrf, $root->getId()), [
+            'externalId' => 'HIJACKED',
+        ]);
+        $this->assertResponseStatusCodeSame(403);
+
+        $client->request('GET', sprintf('/admin/redcall-users/toggle-trust/%s/%s', $csrf, $root->getId()));
+        $this->assertResponseStatusCodeSame(403);
+
+        $em->clear();
+        $fresh = $em->getRepository(User::class)->find($root->getId());
+        $this->assertSame($rootNivol, $fresh->getExternalId());
+        $this->assertTrue($fresh->isTrusted());
+    }
+
+    public function testIndexHidesRootActionsFromPlainAdmin()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $em        = $container->get('doctrine.orm.entity_manager');
+
+        $admin = $fixtures->createRawUser('h7_ui_admin_'.uniqid().'@test.com', 'password', false);
+        $admin->setIsAdmin(true);
+        $em->persist($admin);
+        $em->flush();
+        $root = $fixtures->createRawUser('h7_ui_root_'.uniqid().'@test.com', 'password', true);
+
+        $this->login($client, $admin);
+        $client->request('GET', '/admin/redcall-users?form[criteria]='.urlencode($root->getUsername()));
+        $this->assertResponseIsSuccessful();
+
+        $html = $client->getResponse()->getContent();
+        $this->assertStringContainsString($root->getUsername(), $html);
+
+        $id = preg_quote($root->getId(), '#');
+        $this->assertDoesNotMatchRegularExpression(
+            '#/admin/redcall-users/(toggle-verify|toggle-trust|toggle-admin|toggle-lock|delete|update)/[^/"]+/'.$id.'"#',
+            $html,
+            'Plain admins must not get action links on a root'
+        );
+        $this->assertStringNotContainsString('/admin/redcall-users/update-structures/'.$root->getId(), $html);
+        $this->assertStringNotContainsString('/admin/users/profile/'.$root->getUsername(), $html);
+    }
+
+    public function testCreateUserDoesNotTrustAccountSquattingTheVolunteerEmail()
+    {
+        // Regression (CERT-FR RM #1080870, audit M8): an untrusted user renames
+        // their account to a future volunteer's email; when support creates
+        // that volunteer's access, the squatter's account used to be trusted.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $em       = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $suffix   = uniqid();
+
+        $admin    = $fixtures->createRawUser("m8_admin_{$suffix}@test.com", 'password', true);
+        $squatter = $fixtures->createRawUser("m8_victim_{$suffix}@test.com", 'password', false);
+        $squatter->setExternalId("M8SQUAT{$suffix}");
+        $squatter->setIsTrusted(false);
+        $em->persist($squatter);
+        $em->flush();
+        $fixtures->createStandaloneVolunteer("M8VICTIM{$suffix}", "m8_victim_{$suffix}@test.com");
+
+        $this->login($client, $admin);
+        $this->submitCreateUser($client, "M8VICTIM{$suffix}");
+
+        $em->clear();
+        $fresh = $em->getRepository(User::class)->findOneBy(['username' => "m8_victim_{$suffix}@test.com"]);
+        $this->assertFalse($fresh->isTrusted());
+
+        $client->followRedirect();
+        $this->assertSelectorTextContains('.flashes-container', 'adresse email');
+    }
 }
