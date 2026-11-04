@@ -8,6 +8,14 @@ exercise_html_purifier:
                 Core.Encoding: 'UTF-8'
                 # full configuration reference: http://htmlpurifier.org/live/configdoc/plain.html
 
+        # Server-side rendering (PDF export through mPDF): mPDF fetches every
+        # resource the HTML references, so none may survive (SSRF / local
+        # file read). Emails keep the default profile and their images.
+        pdf:
+            config:
+                Core.Encoding: 'UTF-8'
+                URI.DisableResources: true
+
 # Read the https://github.com/Exercise/HTMLPurifierBundle/blob/master/README.md file
 # to know how to whitelist elements
 
