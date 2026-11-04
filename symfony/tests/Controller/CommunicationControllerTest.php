@@ -559,4 +559,25 @@ class CommunicationControllerTest extends BaseWebTestCase
         $this->assertResponseRedirects();
         $this->assertFalse($this->isMessageSent($client, $message->getId()));
     }
+
+    public function testCampaignPageDoesNotEmitRawScriptFromGroupNames(): void
+    {
+        // Regression (CERT-FR RM #1080870, ANSSI-06): group names are user
+        // input, embedded as JSON in the dashboard's <script> block.
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('xss-groups-'.uniqid().'@example.com', 'password');
+        [$campaign] = $this->createCampaignForUser($fixtures, $user);
+
+        $campaign->setGroupNames(['<script>alert(1)</script>']);
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($campaign);
+        $em->flush();
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/campaign/%d', $campaign->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertStringNotContainsString('<script>alert(1)', $client->getResponse()->getContent());
+    }
 }

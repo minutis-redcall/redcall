@@ -139,4 +139,25 @@ class AppExtensionTest extends TestCase
     {
         $this->assertSame('app', $this->extension->getName());
     }
+
+    // Regression (CERT-FR RM #1080870, ANSSI-06): json_encode|raw inside
+    // <script> only escapes "/", so "<script" / "<!--" in user data (group
+    // names, notes...) could still break out of the script block.
+    public function testJsJsonHexEscapesHtmlSensitiveCharacters()
+    {
+        $filter = null;
+        foreach ($this->extension->getFilters() as $candidate) {
+            if ('js_json' === $candidate->getName()) {
+                $filter = $candidate;
+            }
+        }
+        $this->assertNotNull($filter, 'js_json filter must exist');
+
+        $json = call_user_func($filter->getCallable(), ['name' => '</script><script>alert(1)</script><!--\'"&']);
+
+        foreach (['<', '>', '\'', '&'] as $char) {
+            $this->assertStringNotContainsString($char, $json);
+        }
+        $this->assertSame(['name' => '</script><script>alert(1)</script><!--\'"&'], json_decode($json, true));
+    }
 }
