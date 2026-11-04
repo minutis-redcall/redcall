@@ -44,11 +44,10 @@ class MessageController extends BaseController
             'sid' => $request->request->get('MessageSid'),
         ]);
 
+        // Signed POST body only: the query string is not covered by the
+        // signature when the webhook is relayed through a Cloud Task.
         $response = $this->messageManager->handleInboundMessage(
-            array_merge(
-                $request->query->all(),
-                $request->request->all()
-            )
+            $request->request->all()
         );
 
         if (!$response) {
