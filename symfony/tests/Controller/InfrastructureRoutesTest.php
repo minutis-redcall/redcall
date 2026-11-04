@@ -128,6 +128,28 @@ class InfrastructureRoutesTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
     }
 
+    public function testTaskWebhookDoesNotLogThePayload(): void
+    {
+        // Regression (ANSSI-05): the whole Cloud Task payload (inbound SMS
+        // body, phone numbers, Twilio signature) was logged on every hit.
+        $client  = static::createClient();
+        $handler = new \Monolog\Handler\TestHandler();
+        $client->getContainer()->get('logger')->pushHandler($handler);
+
+        $client->request('POST', '/task/webhook', [], [], [
+            'HTTP_X_APPENGINE_QUEUENAME' => 'test',
+            'CONTENT_TYPE'               => 'application/json',
+        ], json_encode(['WebhookRequest' => [
+            'origin' => 'unknown-queue',
+            'body'   => ['Body' => 'secret sms content', 'From' => '+33600000000'],
+        ]]));
+
+        foreach ($handler->getRecords() as $record) {
+            $this->assertStringNotContainsString('secret sms content', json_encode($record->toArray()));
+            $this->assertStringNotContainsString('+33600000000', json_encode($record->toArray()));
+        }
+    }
+
     // ──────────────────────────────────────────────
     // /deploy
     // ──────────────────────────────────────────────

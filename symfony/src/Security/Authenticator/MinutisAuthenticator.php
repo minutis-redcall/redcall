@@ -80,15 +80,15 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
     {
         $jwt = $request->request->get('jwt');
 
+        // Never log the token itself: it is a bearer credential.
         $this->logger->debug('Minutis authenticator: received a JWT.', [
-            'jwt' => $jwt,
+            'jwt_length' => is_string($jwt) ? strlen($jwt) : 0,
         ]);
 
         try {
             $decoded = (array) JWT::decode($jwt, new Key($this->getMinutisPublicKey(), 'RS256'));
         } catch (\Throwable $e) {
             $this->logger->warning('Minutis authenticator: unable to decode JWT', [
-                'token'     => $jwt,
                 'exception' => $e->getMessage(),
             ]);
 
@@ -98,8 +98,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
         foreach (['exp', 'nivol'] as $requiredKey) {
             if (!array_key_exists($requiredKey, $decoded)) {
                 $this->logger->warning('Minutis authenticator: key not given in JWT', [
-                    'key'   => $requiredKey,
-                    'token' => $jwt,
+                    'key' => $requiredKey,
                 ]);
 
                 throw new BadCredentialsException();

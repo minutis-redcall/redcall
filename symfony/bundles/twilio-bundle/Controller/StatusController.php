@@ -57,10 +57,10 @@ class StatusController extends BaseController
     {
         $this->validateRequestSignature($request);
 
+        // No headers (Twilio signature) / phone numbers in logs.
         $this->logger->info('Twilio webhooks - message delivery status', [
-            'headers' => $request->headers->all(),
-            'query'   => $request->query->all(),
-            'request' => $request->request->all(),
+            'sid'    => $request->request->get('MessageSid'),
+            'status' => $request->request->get('MessageStatus'),
         ]);
 
         $outbound = $this->messageManager->get($uuid);

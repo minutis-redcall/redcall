@@ -40,8 +40,10 @@ class TaskController extends BaseController
     {
         $this->checkOrigin($request);
 
+        // The payload carries inbound SMS, phone numbers and Twilio
+        // signatures: log its size only.
         $logger->info('Task webhook endpoint was hit', [
-            'payload' => $request->getContent(),
+            'payload_length' => strlen((string) $request->getContent()),
         ]);
 
         $data = json_decode($request->getContent(), true);

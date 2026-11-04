@@ -3,6 +3,7 @@
 namespace App\Logger;
 
 use Monolog\LogRecord;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -30,9 +31,16 @@ class ContextProcessor
         $extra['platform'] = php_sapi_name();
 
         if ($request = $this->requestStack->getMainRequest()) {
-            $extra['uri'] = $request->getUri();
-            if ($request->getContent()) {
-                $extra['body'] = $request->getContent();
+            // Logs end up in Cloud Logging and Slack: never ship secrets there.
+            // No body (passwords, tokens, SMS...), no query string, and route
+            // parameters (capability URLs like /space/{sessionId}) redacted.
+            $extra['method'] = $request->getMethod();
+            $extra['uri']    = $this->redactedPath($request);
+            if ($route = $request->attributes->get('_route')) {
+                $extra['route'] = $route;
+            }
+            if ($keys = array_keys($request->request->all())) {
+                $extra['body_keys'] = $keys;
             }
 
             if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
@@ -41,5 +49,19 @@ class ContextProcessor
         }
 
         return $record->with(extra: $extra);
+    }
+
+    private function redactedPath(Request $request) : string
+    {
+        $path = $request->getPathInfo();
+
+        foreach ((array) $request->attributes->get('_route_params', []) as $name => $value) {
+            if (is_scalar($value) && '' !== (string) $value) {
+                $path = str_replace('/'.rawurlencode((string) $value), '/{'.$name.'}', $path);
+                $path = str_replace('/'.$value, '/{'.$name.'}', $path);
+            }
+        }
+
+        return $path;
     }
 }

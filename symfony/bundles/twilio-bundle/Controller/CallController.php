@@ -41,7 +41,8 @@ class CallController extends BaseController
         $this->validateRequestSignature($request);
 
         $this->logger->info('Twilio webhooks - incoming call', [
-            'payload' => $request->request->all(),
+            // No phone numbers / call data in logs (shipped to Cloud Logging & Slack).
+            'sid' => $request->request->get('CallSid'),
         ]);
 
         $response = $this->callManager->handleIncomingCall(
@@ -65,7 +66,8 @@ class CallController extends BaseController
         $this->validateRequestSignature($request);
 
         $this->logger->info('Twilio webhooks - outgoing call', [
-            'payload' => $request->request->all(),
+            // No phone numbers / call data in logs (shipped to Cloud Logging & Slack).
+            'sid' => $request->request->get('CallSid'),
         ]);
 
         $call = $this->callManager->get($uuid);
@@ -100,7 +102,8 @@ class CallController extends BaseController
         $this->validateRequestSignature($request);
 
         $this->logger->info('Twilio webhooks - answering machine hook', [
-            'payload' => $request->request->all(),
+            // No phone numbers / call data in logs (shipped to Cloud Logging & Slack).
+            'sid' => $request->request->get('CallSid'),
         ]);
 
         $call = $this->callManager->get($uuid);
